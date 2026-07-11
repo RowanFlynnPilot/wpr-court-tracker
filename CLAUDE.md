@@ -116,3 +116,10 @@ pattern as wpr-brewers-tracker, never committed).
   (changes.json stays per-run). The track-a-case workflow's first LIVE
   run is unproven — file a test issue and watch it before telling
   reporters about it.
+- Red-run semantics: a FAILED "Update court data and deploy" run has
+  usually still DEPLOYED. The fetch step is continue-on-error; if WCCA
+  is unreachable the site ships with last-good data and the final
+  "Propagate fetch failure" step marks the run red on purpose. WCCA
+  timed out from Actions runners twice on launch evening (fine from
+  local); if red runs persist for days, consider a longer TIMEOUT_S or
+  a second retry — never a fallback beyond the RSS endpoint.

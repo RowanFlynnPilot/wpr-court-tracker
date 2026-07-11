@@ -4,8 +4,9 @@ import react from '@vitejs/plugin-react';
 
 // publicDir points at the repo's generated data/ so feed.json is served in
 // dev and copied into dist at build time. One mechanism for both.
-// Two pages: the tracker (index) and the newsletter digest card, which
-// scripts/render-digest.mjs screenshots to dist/digest.png at deploy time.
+// Three pages: the tracker (index), the newsletter digest card, and the
+// social og-card - scripts/render-cards.mjs screenshots the latter two to
+// dist/*.png at deploy time.
 export default defineConfig({
   plugins: [react()],
   base: './',
@@ -15,6 +16,7 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         digest: fileURLToPath(new URL('./mini-digest.html', import.meta.url)),
+        og: fileURLToPath(new URL('./og-card.html', import.meta.url)),
       },
     },
   },

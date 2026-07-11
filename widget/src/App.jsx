@@ -81,6 +81,15 @@ export default function App() {
   }
 
   const generatedMs = Date.parse(feed.generatedAt);
+  // "New activity" = anything new on the file within 7 days - a reporter
+  // update is activity too, not just an observed court-record change.
+  const hasNewActivity = (c) => {
+    const last = latestActivity(c);
+    return last > 0 && generatedMs - last < 7 * DAY_MS;
+  };
+  const watchedCount = feed.cases.filter(
+    (c) => !c.placeholder && c.status !== 'closed'
+  ).length;
   const updatedLabel = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -104,6 +113,45 @@ export default function App() {
           <p className="updated">Checked {updatedLabel}</p>
         </div>
       </header>
+
+      <p className="statline">
+        <span>
+          <span className="mono statnum">{watchedCount}</span> case{watchedCount === 1 ? '' : 's'} watched
+        </span>
+        <span>Checked every 2 hours, weekdays</span>
+        <span>Official court record</span>
+      </p>
+
+      <details className="about">
+        <summary>How this tracker works</summary>
+        <div className="about-body">
+          <p>
+            <b>The newsroom chooses the cases.</b> Wausau Pilot &amp; Review
+            editors hand-pick cases of public interest. Family, juvenile,
+            guardianship, and mental-health cases are never tracked &mdash;
+            that&rsquo;s editorial policy, enforced in our software.
+          </p>
+          <p>
+            <b>The official record is checked automatically.</b> Every two
+            hours on weekdays we check each case against{' '}
+            <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>,
+            using the court system&rsquo;s sanctioned data feed. We never
+            scrape the court website.
+          </p>
+          <p>
+            <b>Machines observe; reporters explain.</b> A red entry in a
+            case&rsquo;s activity log means the official record changed. The
+            teal entries &mdash; what happened, in plain English &mdash; are
+            written by our reporters. Criminal cases always carry a
+            presumption-of-innocence note.
+          </p>
+          <p>
+            <b>See something wrong?</b> Email{' '}
+            <a href={`mailto:${feed.requestEmail}`}>{feed.requestEmail}</a>{' '}
+            and we&rsquo;ll correct the file.
+          </p>
+        </div>
+      </details>
 
       <nav className="filters" aria-label="Filter cases by topic">
         {tags.map((t) => (
@@ -130,10 +178,7 @@ export default function App() {
                 generatedMs={generatedMs}
                 presumptionNote={feed.presumptionNote}
                 defaultOpen={c.id === focusId}
-                isNew={
-                  c.observed?.length > 0 &&
-                  generatedMs - Date.parse(c.observed[0].updated) < 7 * DAY_MS
-                }
+                isNew={hasNewActivity(c)}
               />
             ))}
           </section>
@@ -154,10 +199,7 @@ export default function App() {
                     generatedMs={generatedMs}
                     presumptionNote={feed.presumptionNote}
                     defaultOpen={c.id === focusId}
-                    isNew={
-                      c.observed?.length > 0 &&
-                      generatedMs - Date.parse(c.observed[0].updated) < 7 * DAY_MS
-                    }
+                    isNew={hasNewActivity(c)}
                   />
                 ))}
               </section>

@@ -48,6 +48,37 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
 
   const hearingUpcoming =
     c.nextHearing && datePartsToMs(c.nextHearing.date) >= startOfToday();
+
+  // All-day .ics event as a data URI - no backend, works from the iframe.
+  // All-day on purpose: hearing times live in free-text notes; a wrong
+  // parsed time on a reader's calendar is worse than no time.
+  const icsHref = useMemo(() => {
+    if (!c.nextHearing) return null;
+    const start = c.nextHearing.date.replaceAll('-', '');
+    const nextDay = new Date(datePartsToMs(c.nextHearing.date) + 86400000);
+    const end =
+      `${nextDay.getFullYear()}` +
+      `${String(nextDay.getMonth() + 1).padStart(2, '0')}` +
+      `${String(nextDay.getDate()).padStart(2, '0')}`;
+    const esc = (s) => s.replace(/([,;\\])/g, '\\$1');
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Wausau Pilot & Review//Court Tracker//EN',
+      'BEGIN:VEVENT',
+      `UID:${c.caseNo}-${start}@wpr-court-tracker`,
+      `DTSTART;VALUE=DATE:${start}`,
+      `DTEND;VALUE=DATE:${end}`,
+      `SUMMARY:${esc(`Hearing: ${c.headline}`)}`,
+      `DESCRIPTION:${esc(`${c.nextHearing.note} (Case ${c.caseNo}, ${c.county} County)`)}`,
+      `URL:${c.wccaUrl}`,
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ];
+    return (
+      'data:text/calendar;charset=utf-8,' + encodeURIComponent(lines.join('\r\n'))
+    );
+  }, [c]);
   const lastActivity = ledger.length ? ledger[0].ms : null;
   const detailId = `detail-${c.id}`;
 
@@ -85,6 +116,13 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
               {dateFmt.format(datePartsToMs(c.nextHearing.date))}
             </span>
             <span>{c.nextHearing.note}</span>
+            <a
+              className="hearing-ics"
+              href={icsHref}
+              download={`hearing-${c.caseNo}.ics`}
+            >
+              Add to calendar
+            </a>
           </p>
         )}
 
@@ -127,7 +165,7 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
               <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{l.label}</a>
             ))}
             <a href={c.wccaUrl} target="_blank" rel="noreferrer">Full court record (WCCA)</a>
-            <button className="linkbtn" onClick={copyLink}>
+            <button className="linkbtn" aria-live="polite" onClick={copyLink}>
               {copied ? 'Link copied' : 'Copy link to this case'}
             </button>
           </p>

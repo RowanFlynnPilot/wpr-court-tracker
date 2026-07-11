@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "render:digest": "node scripts/render-digest.mjs"
+    "render:cards": "node scripts/render-cards.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

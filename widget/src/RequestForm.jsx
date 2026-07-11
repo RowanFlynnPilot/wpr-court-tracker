@@ -81,7 +81,7 @@ export default function RequestForm({ email }) {
         <button className="send" onClick={openDraft} disabled={!details.trim()}>
           Open email draft
         </button>
-        <button className="send-alt" onClick={copyMessage} disabled={!details.trim()}>
+        <button className="send-alt" aria-live="polite" onClick={copyMessage} disabled={!details.trim()}>
           {copied ? 'Copied — paste into any email' : 'No mail app? Copy the message'}
         </button>
       </div>

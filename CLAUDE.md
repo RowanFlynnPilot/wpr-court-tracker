@@ -18,7 +18,7 @@ data/feed.json         everything the widget renders (committed)
 data/changes.json      cases with new activity this run (per-run alerts)
 widget/                React/Vite app; vite publicDir = ../data
 widget/src/MiniDigest.jsx + mini-digest.html   newsletter digest card
-widget/scripts/render-digest.mjs  Playwright -> dist/digest.png at deploy
+widget/scripts/render-cards.mjs   Playwright -> digest.png + og-card.png
 tests/                 parser + policy tests vs a REAL captured feed fixture
 ```
 

@@ -12,6 +12,9 @@
   --ink: #111111;
   --ink-soft: #404040;
   --muted: #6b6f66;
+  /* Muted text ON MANILA needs a darker tone: #6b6f66 on #efe4c9 is
+     4.06:1 (< WCAG AA 4.5). This one measures 5.5:1 on manila. */
+  --muted-deep: #575b51;
   --stamp: #a23b34;
   --line: #ddd4bf;
   --font-display: 'Oswald', 'Arial Narrow', system-ui, sans-serif;
@@ -79,9 +82,53 @@ body {
   font-size: clamp(28px, 5vw, 42px);
   line-height: 1.05;
   letter-spacing: 0.01em;
+  text-wrap: balance;
 }
 .dek { margin: 8px 0 4px; max-width: 58ch; font-size: 14.5px; color: var(--ink-soft); }
 .updated { margin: 4px 0 0; font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+
+/* ---------- stat line + methodology ---------- */
+.statline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 0;
+  margin: 16px 0 0;
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted-deep);
+}
+.statline > span + span::before { content: '\00B7'; margin: 0 9px; color: var(--manila-edge); }
+.statline .statnum { font-weight: 700; color: var(--ink); font-size: 12.5px; }
+
+.about { margin: 10px 0 0; }
+.about summary {
+  display: inline-block;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.about summary:hover { color: var(--teal); }
+.about-body {
+  margin-top: 10px;
+  background: var(--paper-warm);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--ink);
+  border-radius: 0 0 8px 8px;
+  padding: 14px 18px 6px;
+  max-width: 70ch;
+}
+.about-body p { margin: 0 0 10px; font-size: 13.5px; }
+.about-body b { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em; }
 
 /* ---------- filters ---------- */
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 22px; }
@@ -103,6 +150,7 @@ body {
 .stack { display: flex; flex-direction: column; gap: 26px; }
 
 .folder { filter: drop-shadow(0 2px 4px rgba(17, 17, 17, 0.14)); }
+.folder:hover { filter: drop-shadow(0 3px 8px rgba(17, 17, 17, 0.2)); }
 
 .folder-tabrow { display: flex; align-items: flex-end; gap: 12px; padding-left: 14px; }
 .folder-tab {
@@ -127,9 +175,17 @@ body {
   text-transform: uppercase;
   color: var(--stamp);
   border: 2px solid var(--stamp);
-  border-radius: 3px;
+  border-radius: 4px 3px 5px 3px;
   padding: 2px 8px;
   transform: rotate(-2deg);
+  /* Ink voids: each layer is opaque except one small hole; layered masks
+     intersect, so all the holes show. Reads as a real rubber stamp. */
+  mask-image:
+    radial-gradient(3px 2px at 18% 30%, transparent 55%, #000 60%),
+    radial-gradient(2.5px 2px at 71% 74%, transparent 50%, #000 56%),
+    radial-gradient(2px 2.5px at 46% 88%, transparent 45%, #000 52%),
+    radial-gradient(2.5px 2px at 90% 22%, transparent 50%, #000 57%),
+    radial-gradient(2px 2px at 6% 80%, transparent 45%, #000 52%);
 }
 .sample-flag {
   align-self: center;
@@ -158,8 +214,9 @@ body {
   font-weight: 600;
   font-size: 23px;
   line-height: 1.12;
+  text-wrap: balance;
 }
-.case-meta { margin: 0; font-size: 13px; color: var(--muted); }
+.case-meta { margin: 0; font-size: 13px; color: var(--muted-deep); }
 
 .toggle {
   flex-shrink: 0;
@@ -190,6 +247,16 @@ body {
   font-size: 14px;
 }
 .hearing-date { font-weight: 700; color: var(--teal-deep); white-space: nowrap; }
+.hearing-ics {
+  margin-left: auto;
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 
 .case-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 0; }
 .tag {
@@ -202,7 +269,7 @@ body {
   border-radius: 999px;
   padding: 2px 10px;
 }
-.last-activity { margin-left: auto; font-size: 12px; color: var(--muted); }
+.last-activity { margin-left: auto; font-size: 12px; color: var(--muted-deep); }
 
 /* ---------- ledger detail ---------- */
 .detail { border-top: 1px solid var(--manila-edge); margin-top: 14px; padding-top: 12px; }
@@ -210,7 +277,7 @@ body {
   margin: 0 0 12px;
   font-size: 13px;
   font-style: italic;
-  color: var(--muted);
+  color: var(--muted-deep);
 }
 .ledger-title {
   margin: 0 0 8px;
@@ -234,8 +301,8 @@ body {
 .ledger-wpr .ledger-date { border-left: 3px solid var(--teal); padding-left: 8px; }
 .ledger-court .ledger-date { border-left: 3px solid var(--stamp); padding-left: 8px; }
 .ledger-note { font-size: 14px; }
-.ledger-court .ledger-note { color: var(--muted); }
-.ledger-empty { font-size: 14px; color: var(--muted); }
+.ledger-court .ledger-note { color: var(--muted-deep); }
+.ledger-empty { font-size: 14px; color: var(--muted-deep); }
 
 .detail-links { display: flex; flex-wrap: wrap; gap: 16px; margin: 14px 0 0; font-size: 13.5px; font-weight: 700; }
 .linkbtn {
@@ -350,6 +417,8 @@ a:hover { color: var(--teal); }
   .request-grid { grid-template-columns: 1fr; }
   .ledger-row { grid-template-columns: 100px 1fr; }
   .last-activity { margin-left: 0; }
+  .hearing { flex-wrap: wrap; }
+  .hearing-ics { margin-left: 0; flex-basis: 100%; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -438,3 +507,63 @@ a:hover { color: var(--teal); }
 .mini-presumption { font-style: italic; }
 .mini-full { font-weight: 700; font-size: 12px; }
 .digest-error { color: var(--stamp); font-weight: 700; padding: 12px; }
+
+/* ---------- social share card (og-card.html -> og-card.png, 1200x630) ---------- */
+.og-card {
+  width: 1200px;
+  height: 630px;
+  box-sizing: border-box;
+  background: #fff;
+  border-top: 10px solid var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  padding: 0 88px;
+  position: relative;
+  overflow: hidden;
+}
+.og-badge { width: 300px; height: 300px; border-radius: 50%; flex-shrink: 0; }
+.og-eyebrow {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.og-card h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 82px; line-height: 1.02; text-wrap: balance; }
+.og-dek { margin: 20px 0 0; font-size: 27px; line-height: 1.4; color: var(--ink-soft); max-width: 15em; }
+.og-stat {
+  margin: 26px 0 0;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--teal-deep);
+}
+.og-tabs { position: absolute; left: 88px; right: 88px; bottom: 0; display: flex; gap: 14px; }
+.og-tabs span {
+  background: var(--manila-tab);
+  border: 1px solid var(--manila-edge);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 9px 26px 7px;
+}
+
+/* ---------- print: the case files, on paper ---------- */
+@media print {
+  body { background: #fff; font-size: 12.5px; }
+  .filters, .toggle, .request, .linkbtn, .hearing-ics, .about { display: none !important; }
+  .folder, .folder:hover { filter: none; }
+  .folder-body { background: #fff; }
+  .folder-sample .folder-body { background: #fff; }
+  .detail[hidden] { display: block; } /* print every file fully open */
+  .stamp { mask-image: none; }
+  .cabinet[open] summary { color: var(--ink); }
+  a { color: var(--ink); text-decoration: none; }
+  .ledger-note a::after { content: ' (' attr(href) ')'; font-size: 10px; color: var(--muted-deep); }
+}

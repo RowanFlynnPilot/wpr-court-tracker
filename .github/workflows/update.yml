@@ -63,6 +63,7 @@ jobs:
         working-directory: widget
         run: |
           npm ci
+          node scripts/test-parse.mjs
           npm run build
 
       # Same pattern as wpr-brewers-tracker: email clients strip iframes

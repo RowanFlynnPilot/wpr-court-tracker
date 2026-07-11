@@ -1,0 +1,169 @@
+/* Case Entry Desk (editor.html) — newsroom-facing, shares the widget
+   token system from styles.css. */
+
+.desk { max-width: 1060px; }
+
+.desk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  margin-top: 26px;
+}
+@media (max-width: 860px) {
+  .desk-grid { grid-template-columns: 1fr; }
+}
+
+/* Section headings only - .desk h2 would leak into the CaseFile preview,
+   whose headline must render exactly as it publishes. */
+.desk-h {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 6px;
+}
+
+.desk-source, .desk-form {
+  background: var(--paper-warm);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 20px 20px;
+}
+
+.desk-label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.desk input[type='text'], .desk input[type='url'], .desk input[type='date'],
+.desk textarea, .desk select {
+  font: 400 14.5px var(--font-body);
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.desk textarea { resize: vertical; }
+
+.desk-ok { margin: -6px 0 12px; font-size: 13px; color: var(--teal-deep); font-weight: 700; }
+.desk-warn { margin: -2px 0 12px; font-size: 13px; color: #8a6d00; font-weight: 700; }
+.desk-block {
+  margin: -2px 0 12px;
+  font-size: 13.5px;
+  color: var(--stamp);
+  font-weight: 700;
+  border: 2px solid var(--stamp);
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+.desk-muted { color: var(--muted-deep); font-size: 13.5px; font-style: italic; }
+
+.desk-filerow { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.desk-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-deep);
+}
+.desk-upload input { font: 400 12.5px var(--font-body); }
+.desk-filestatus { margin: 8px 0 0; font-family: var(--font-mono); font-size: 12.5px; color: var(--teal-deep); }
+
+.desk-spotted {
+  margin-top: 16px;
+  background: #fff;
+  border: 1px dashed var(--manila-edge);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.desk-spotted h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+}
+.desk-spotted h4 {
+  margin: 12px 0 6px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-deep);
+}
+.desk-spotted ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
+.desk-spotted li { margin-bottom: 3px; }
+
+.desk-chip {
+  display: inline-block;
+  margin: 0 6px 6px 0;
+  border: 1px solid var(--teal-deep);
+  background: transparent;
+  color: var(--teal-deep);
+  font: 500 12px var(--font-body);
+  padding: 3px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: left;
+}
+.desk-chip:hover { background: rgba(58, 134, 124, 0.1); }
+.desk-chiprow { margin: -4px 0 12px; }
+
+.desk-two { display: grid; grid-template-columns: 170px 1fr; gap: 12px; }
+@media (max-width: 560px) { .desk-two { grid-template-columns: 1fr; } }
+
+.desk-subhead {
+  margin: 16px 0 8px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.desk-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 34px;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.desk-x {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted-deep);
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.desk-x:hover { color: var(--stamp); border-color: var(--stamp); }
+.desk-add { margin-top: 2px; }
+
+.desk-preview { margin-top: 34px; }
+.desk-preview > .desk-h { margin-bottom: 16px; }
+
+.desk-actions {
+  margin-top: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.desk-actions .send { text-decoration: none; display: inline-block; }
+.desk-flow { flex-basis: 100%; margin: 6px 0 0; max-width: 72ch; }

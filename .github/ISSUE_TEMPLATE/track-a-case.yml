@@ -12,6 +12,10 @@ body:
         sign-off** and publishes within minutes. If anything is off, a
         comment on this issue explains what to fix; edit the description
         and it re-checks automatically.
+
+        **Tip:** the [Case Entry Desk](https://rowanflynnpilot.github.io/wpr-court-tracker/editor.html)
+        prefills this whole form from a pasted case page or an uploaded
+        print-to-PDF — with a live preview of the published folder.
   - type: input
     id: wcca_url
     attributes:

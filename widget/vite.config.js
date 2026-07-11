@@ -17,6 +17,7 @@ export default defineConfig({
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         digest: fileURLToPath(new URL('./mini-digest.html', import.meta.url)),
         og: fileURLToPath(new URL('./og-card.html', import.meta.url)),
+        editor: fileURLToPath(new URL('./editor.html', import.meta.url)),
       },
     },
   },

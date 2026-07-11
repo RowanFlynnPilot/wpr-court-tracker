@@ -9,14 +9,26 @@ feeds** — the sanctioned automated channel. The feed signals *that* a case
 record changed; WPR reporters supply *what* changed. See CLAUDE.md for
 architecture and hard boundaries.
 
-## Adding a case (reporters)
+## Adding a case (reporters & editors)
 
-**Easiest way — no JSON:** open a ["Track a case" issue](../../issues/new?template=track-a-case.yml)
-and fill in the form. Automation validates it against editorial policy and
-opens a pull request; **merging that PR is the publisher sign-off** and
-publishes within minutes. If the form fails policy (blocked case type, bad
-date, already tracked), a comment on the issue says exactly what to fix —
-edit the issue description and it re-checks.
+**Easiest way — the Case Entry Desk:**
+https://rowanflynnpilot.github.io/wpr-court-tracker/editor.html
+
+Open the case on WCCA in your browser, select-all-copy the page (or
+Print → Save as PDF and upload that file), and the desk prefills the
+form — case number, hearing dates, charge lines — for you to review and
+edit against a live preview of the published folder. Submitting opens a
+prefilled "Track a case" issue; automation validates it and opens a pull
+request; **merging that PR is the publisher sign-off**. The desk parses
+everything in your browser — it never contacts the court system, and
+nothing you paste leaves the page until you submit the reviewed fields.
+
+**Or the bare issue form:** open a
+["Track a case" issue](../../issues/new?template=track-a-case.yml) and
+fill it in by hand. Same validation, same sign-off PR. If the form fails
+policy (blocked case type, bad date, already tracked), a comment on the
+issue says exactly what to fix — edit the issue description and it
+re-checks.
 
 **By hand**, if you prefer:
 

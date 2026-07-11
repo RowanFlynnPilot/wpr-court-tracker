@@ -18,6 +18,8 @@ data/feed.json         everything the widget renders (committed)
 data/changes.json      cases with new activity this run (per-run alerts)
 widget/                React/Vite app; vite publicDir = ../data
 widget/src/MiniDigest.jsx + mini-digest.html   newsletter digest card
+widget/src/CaseDesk.jsx + editor.html          Case Entry Desk (newsroom)
+widget/src/parseCase.js  desk parsing helpers (scripts/test-parse.mjs)
 widget/scripts/render-cards.mjs   Playwright -> digest.png + og-card.png
 tests/                 parser + policy tests vs a REAL captured feed fixture
 ```
@@ -26,6 +28,17 @@ Case intake: reporters file the "Track a case" issue form; the track-case
 workflow validates it through issue_case.py (same policy gate) and opens
 a PR — merging is the publisher sign-off. Issue bodies are untrusted
 input: env-passed, never shell-interpolated.
+
+The Case Entry Desk (/editor.html) prefills that issue form: the editor
+pastes the case page text or uploads their own saved copy (print-to-PDF
+via pdf.js, .html, .txt) and everything parses IN THE BROWSER —
+compatible with hard boundary #1 because a human obtained the record in
+their own session and the page makes zero requests to wicourts.gov.
+parseCase.js mirrors the policy allowlist for instant UX feedback; the
+Python gate remains the enforcement point. Entry file is desk-entry.jsx
+(NOT editor.jsx: Editor.jsx/editor.jsx collide on Windows's
+case-insensitive filesystem and the casing that lands in git breaks the
+case-sensitive Linux CI build).
 
 ## Verified facts this repo is built on (2026-07-11)
 

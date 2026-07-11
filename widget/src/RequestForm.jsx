@@ -10,10 +10,10 @@ export default function RequestForm({ email }) {
   const [kind, setKind] = useState(KINDS[0]);
   const [name, setName] = useState('');
   const [details, setDetails] = useState('');
+  const [copied, setCopied] = useState(false);
 
-  const openDraft = () => {
-    const subject = `Court tracker: ${kind}`;
-    const body = [
+  const body = () =>
+    [
       `Request type: ${kind}`,
       name ? `Name: ${name}` : null,
       '',
@@ -23,7 +23,23 @@ export default function RequestForm({ email }) {
     ]
       .filter((l) => l !== null)
       .join('\n');
-    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  const openDraft = () => {
+    const subject = `Court tracker: ${kind}`;
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body())}`;
+  };
+
+  // Fallback for devices with no mail app: put the whole message on the
+  // clipboard, addressed and ready to paste anywhere.
+  const copyMessage = async () => {
+    const text = `To: ${email}\nSubject: Court tracker: ${kind}\n\n${body()}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      window.prompt('Copy this message:', text);
+    }
   };
 
   return (
@@ -61,9 +77,14 @@ export default function RequestForm({ email }) {
           />
         </label>
       </div>
-      <button className="send" onClick={openDraft} disabled={!details.trim()}>
-        Open email draft
-      </button>
+      <div className="btnrow">
+        <button className="send" onClick={openDraft} disabled={!details.trim()}>
+          Open email draft
+        </button>
+        <button className="send-alt" onClick={copyMessage} disabled={!details.trim()}>
+          {copied ? 'Copied — paste into any email' : 'No mail app? Copy the message'}
+        </button>
+      </div>
     </section>
   );
 }

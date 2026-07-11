@@ -9,7 +9,13 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "pipeline"))
 
 import policy
-from fetch import parse_feed, parse_wcca_url, validate_date, PipelineError
+from fetch import (
+    parse_feed,
+    parse_wcca_url,
+    validate_date,
+    validate_status,
+    PipelineError,
+)
 
 
 def test_date_validation_blocks_todo_placeholders():
@@ -24,6 +30,19 @@ def test_date_validation_blocks_todo_placeholders():
             pass
         else:
             raise AssertionError(f"{bad!r} must fail date validation")
+
+def test_status_defaults_to_watching_and_rejects_unknown():
+    assert validate_status(None, "t") == "watching"
+    assert validate_status("watching", "t") == "watching"
+    assert validate_status("closed", "t") == "closed"
+    for bad in ("archived", "open", "CLOSED", "", 0):
+        try:
+            validate_status(bad, "test")
+        except PipelineError:
+            pass
+        else:
+            raise AssertionError(f"{bad!r} must fail status validation")
+
 
 FIXTURE = (ROOT / "tests" / "fixtures" / "wcca_feed_sample.xml").read_bytes()
 

@@ -238,6 +238,37 @@ body {
 .ledger-empty { font-size: 14px; color: var(--muted); }
 
 .detail-links { display: flex; flex-wrap: wrap; gap: 16px; margin: 14px 0 0; font-size: 13.5px; font-weight: 700; }
+.linkbtn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--teal-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.linkbtn:hover { color: var(--teal); }
+
+/* ---------- closed-files cabinet ---------- */
+.cabinet { margin-top: 34px; }
+.cabinet summary {
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 2px;
+  list-style-position: inside;
+}
+.cabinet summary:hover { color: var(--ink); }
+.cabinet[open] summary { margin-bottom: 22px; color: var(--ink); }
+.cabinet .folder-body { background: color-mix(in srgb, var(--manila) 70%, var(--paper)); }
 
 a { color: var(--teal-deep); text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 a:hover { color: var(--teal); }
@@ -275,8 +306,8 @@ a:hover { color: var(--teal); }
   padding: 8px 10px;
 }
 .request textarea { resize: vertical; }
+.btnrow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
 .send {
-  margin-top: 14px;
   border: none;
   background: var(--ink);
   color: #fff;
@@ -289,6 +320,19 @@ a:hover { color: var(--teal); }
 }
 .send:hover:not(:disabled) { background: var(--teal-deep); }
 .send:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.6; }
+.send-alt {
+  border: 1.5px solid var(--teal-deep);
+  background: transparent;
+  color: var(--teal-deep);
+  font: 600 13px var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.send-alt:hover:not(:disabled) { background: rgba(58, 134, 124, 0.1); }
+.send-alt:disabled { border-color: var(--muted); color: var(--muted); cursor: not-allowed; opacity: 0.6; }
 
 /* ---------- footer, states ---------- */
 .colophon { margin-top: 34px; border-top: 1px solid var(--ink); padding-top: 14px; font-size: 12.5px; color: var(--muted); }

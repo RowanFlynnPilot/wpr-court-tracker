@@ -24,6 +24,7 @@ Stdlib only. Any failure exits nonzero and loudly.
 import json
 import re
 import sys
+import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
@@ -42,8 +43,14 @@ CHANGES_PATH = ROOT / "data" / "changes.json"
 RSS_URL = "https://wcca.wicourts.gov/caseSearchResults.do?rss=1&countyNo={county_no}&caseNo={case_no}"
 USER_AGENT = "WPR-CourtTracker/1.0 (Wausau Pilot & Review; news@wausaupilotandreview.com)"
 TIMEOUT_S = 30
+RETRY_WAIT_S = 5
 
 REQUIRED_CASE_FIELDS = ("id", "wccaUrl", "county", "headline", "summary", "tags")
+
+# Editorial lifecycle. "closed" cases move to the widget's collapsed
+# "Closed files" drawer but KEEP being fetched - appeals and post-judgment
+# motions still show up on the record and should still alert the newsroom.
+VALID_STATUSES = ("watching", "closed")
 
 
 class PipelineError(Exception):
@@ -66,6 +73,17 @@ def validate_date(value, where: str) -> None:
         datetime.strptime(value, "%Y-%m-%d")
     except ValueError as e:
         raise PipelineError(f"{where} is not a real date: {value!r}") from e
+
+
+def validate_status(value, where: str) -> str:
+    """Normalize the optional editorial `status` field (default: watching)."""
+    if value is None:
+        return "watching"
+    if value not in VALID_STATUSES:
+        raise PipelineError(
+            f"{where} must be one of {', '.join(VALID_STATUSES)}, got {value!r}"
+        )
+    return value
 
 
 def parse_wcca_url(url: str) -> tuple[str, int]:
@@ -104,6 +122,7 @@ def load_config() -> dict:
         case["caseType"] = policy.case_type(case_no)
         case["caseTypeLabel"] = policy.case_type_label(case_no)
         case["isCriminal"] = policy.is_criminal(case_no)
+        case["status"] = validate_status(case.get("status"), f"{case['id']}: status")
         if "nextHearing" in case:
             validate_date(case["nextHearing"].get("date"),
                           f"{case['id']}: nextHearing.date")
@@ -135,12 +154,26 @@ def parse_feed(xml_bytes: bytes) -> list[dict]:
 
 
 def fetch_case_feed(case_no: str, county_no: int) -> list[dict]:
+    """Fetch one case's RSS feed, retrying once on a transient failure.
+
+    One retry only: a WCCA hiccup shouldn't redden the run, but anything
+    persistent must still fail loudly rather than quietly skip a case.
+    """
     url = RSS_URL.format(county_no=county_no, case_no=case_no)
     req = Request(url, headers={"User-Agent": USER_AGENT})
-    with urlopen(req, timeout=TIMEOUT_S) as resp:
-        if resp.status != 200:
-            raise PipelineError(f"HTTP {resp.status} for {url}")
-        return parse_feed(resp.read())
+    last_err = None
+    for attempt in (1, 2):
+        try:
+            with urlopen(req, timeout=TIMEOUT_S) as resp:
+                if resp.status != 200:
+                    raise PipelineError(f"HTTP {resp.status} for {url}")
+                return parse_feed(resp.read())
+        except (OSError, ET.ParseError, PipelineError) as e:
+            last_err = e
+            if attempt == 1:
+                print(f"retrying {case_no} in {RETRY_WAIT_S}s after: {e}")
+                time.sleep(RETRY_WAIT_S)
+    raise PipelineError(f"fetch failed for {url}: {last_err}")
 
 
 def load_prior_observations() -> dict[str, list[dict]]:

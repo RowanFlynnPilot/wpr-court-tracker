@@ -36,6 +36,16 @@ intentional (see `pipeline/policy.py`).
 
 4. Commit to `main`. The workflow validates, fetches, and redeploys.
 
+When a case resolves, add `"status": "closed"` instead of deleting the
+entry — it moves to the collapsed "Closed files" drawer but stays on the
+record (and is still fetched: appeals and post-judgment motions alert the
+newsroom too).
+
+Every case has a shareable deep link that opens its folder directly:
+append `#<case-id>` to the widget URL, e.g.
+`https://rowanflynnpilot.github.io/wpr-court-tracker/#wausau-2026cm000231`.
+Readers get the same link from "Copy link to this case" inside each file.
+
 ## Local development (PowerShell)
 
 ```
@@ -47,11 +57,27 @@ The pipeline is stdlib-only — nothing to pip install.
 
 ## Embed
 
+The widget reports its rendered height to the parent page, so the iframe
+can size itself instead of being pinned (and clipped) at a fixed height.
+Paste both blocks into a WordPress Custom HTML block:
+
 ```html
-<iframe src="https://rowanflynnpilot.github.io/wpr-court-tracker/"
+<iframe id="wpr-court-tracker"
+        src="https://rowanflynnpilot.github.io/wpr-court-tracker/"
         title="Marathon County Court Tracker"
-        style="width:100%;min-height:1100px;border:0;" loading="lazy"></iframe>
+        style="width:100%;min-height:600px;border:0;" loading="lazy"></iframe>
+<script>
+  window.addEventListener('message', function (e) {
+    if (e.origin !== 'https://rowanflynnpilot.github.io') return;
+    if (!e.data || e.data.source !== 'wpr-court-tracker') return;
+    document.getElementById('wpr-court-tracker').style.height = e.data.height + 'px';
+  });
+</script>
 ```
+
+If the page builder strips `<script>` tags, the plain iframe with
+`min-height:1100px` still works — the script is an enhancement, not a
+requirement.
 
 ## Newsroom alerts
 

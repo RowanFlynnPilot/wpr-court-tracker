@@ -18,8 +18,22 @@ function startOfToday() {
   return new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
 }
 
-export default function CaseFile({ c, generatedMs, presumptionNote, isNew }) {
-  const [open, setOpen] = useState(false);
+export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = async () => {
+    // Canonical standalone URL: works from the article embed and the
+    // GitHub Pages page alike.
+    const url = `${window.location.origin}${window.location.pathname}#${c.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt('Copy this link:', url);
+    }
+  };
 
   const ledger = useMemo(() => {
     const rows = [];
@@ -38,7 +52,7 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew }) {
   const detailId = `detail-${c.id}`;
 
   return (
-    <article className={`folder${c.placeholder ? ' folder-sample' : ''}`}>
+    <article id={c.id} className={`folder${c.placeholder ? ' folder-sample' : ''}`}>
       <div className="folder-tabrow">
         <span className="folder-tab">{c.caseTypeLabel}</span>
         {isNew && <span className="stamp">New activity</span>}
@@ -113,6 +127,9 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew }) {
               <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{l.label}</a>
             ))}
             <a href={c.wccaUrl} target="_blank" rel="noreferrer">Full court record (WCCA)</a>
+            <button className="linkbtn" onClick={copyLink}>
+              {copied ? 'Link copied' : 'Copy link to this case'}
+            </button>
           </p>
         </div>
       </div>

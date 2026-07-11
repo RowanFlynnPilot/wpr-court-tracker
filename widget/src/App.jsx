@@ -23,6 +23,12 @@ export default function App() {
   const [error, setError] = useState(null);
   const [activeTag, setActiveTag] = useState('All');
 
+  // Deep link: /#case-id opens that folder and scrolls to it.
+  const focusId = useMemo(
+    () => decodeURIComponent(window.location.hash.slice(1)),
+    []
+  );
+
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}feed.json`)
       .then((r) => {
@@ -32,6 +38,11 @@ export default function App() {
       .then(setFeed)
       .catch((e) => setError(e.message));
   }, []);
+
+  useEffect(() => {
+    if (!feed || !focusId) return;
+    document.getElementById(focusId)?.scrollIntoView({ block: 'start' });
+  }, [feed, focusId]);
 
   const tags = useMemo(() => {
     if (!feed) return [];
@@ -48,6 +59,9 @@ export default function App() {
         : feed.cases.filter((c) => c.tags.includes(activeTag));
     return [...list].sort((a, b) => latestActivity(b) - latestActivity(a));
   }, [feed, activeTag]);
+
+  const watching = cases.filter((c) => c.status !== 'closed');
+  const closed = cases.filter((c) => c.status === 'closed');
 
   if (error) {
     return (
@@ -107,20 +121,49 @@ export default function App() {
       {cases.length === 0 ? (
         <p className="empty">No tracked cases match this topic yet. Choose another topic, or ask us to track a case below.</p>
       ) : (
-        <section className="stack" aria-label="Tracked cases">
-          {cases.map((c) => (
-            <CaseFile
-              key={c.id}
-              c={c}
-              generatedMs={generatedMs}
-              presumptionNote={feed.presumptionNote}
-              isNew={
-                c.observed?.length > 0 &&
-                generatedMs - Date.parse(c.observed[0].updated) < 7 * DAY_MS
-              }
-            />
-          ))}
-        </section>
+        <>
+          <section className="stack" aria-label="Tracked cases">
+            {watching.map((c) => (
+              <CaseFile
+                key={c.id}
+                c={c}
+                generatedMs={generatedMs}
+                presumptionNote={feed.presumptionNote}
+                defaultOpen={c.id === focusId}
+                isNew={
+                  c.observed?.length > 0 &&
+                  generatedMs - Date.parse(c.observed[0].updated) < 7 * DAY_MS
+                }
+              />
+            ))}
+          </section>
+
+          {closed.length > 0 && (
+            <details
+              className="cabinet"
+              open={closed.some((c) => c.id === focusId) || undefined}
+            >
+              <summary>
+                Closed files <span className="mono">({closed.length})</span>
+              </summary>
+              <section className="stack" aria-label="Closed cases">
+                {closed.map((c) => (
+                  <CaseFile
+                    key={c.id}
+                    c={c}
+                    generatedMs={generatedMs}
+                    presumptionNote={feed.presumptionNote}
+                    defaultOpen={c.id === focusId}
+                    isNew={
+                      c.observed?.length > 0 &&
+                      generatedMs - Date.parse(c.observed[0].updated) < 7 * DAY_MS
+                    }
+                  />
+                ))}
+              </section>
+            </details>
+          )}
+        </>
       )}
 
       <RequestForm email={feed.requestEmail} />

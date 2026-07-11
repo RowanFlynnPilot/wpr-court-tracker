@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-11T19:30:16.615720+00:00",
+  "generatedAt": "2026-07-11T20:21:22.242175+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
@@ -66,6 +66,41 @@
       "caseTypeLabel": "Civil",
       "isCriminal": false,
       "observed": []
+    },
+    {
+      "id": "wausau-2026cm000231",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CM000231&countyNo=37",
+      "county": "Marathon",
+      "headline": "TODO: plain-English headline (newsroom)",
+      "summary": "TODO: one or two sentences on what this case is and why WPR is tracking it.",
+      "tags": [
+        "Public safety"
+      ],
+      "nextHearing": {
+        "date": "TODO-YYYY-MM-DD",
+        "note": "TODO: hearing type, branch, time \u2014 from the Future court activity section"
+      },
+      "updates": [
+        {
+          "date": "TODO-filing-date",
+          "note": "Criminal complaint filed in Marathon County Circuit Court."
+        }
+      ],
+      "links": [],
+      "caseNo": "2026CM000231",
+      "countyNo": 37,
+      "caseType": "CM",
+      "caseTypeLabel": "Misdemeanor",
+      "isCriminal": true,
+      "observed": [
+        {
+          "guid": "37-2026CM000231-Some(2026-06-25T20:11:00.033Z)",
+          "updated": "2026-06-25T20:11:00+00:00",
+          "officialCaption": "State of Wisconsin vs. Robert Edward Dewayne Stevens Jr",
+          "observedAt": "2026-07-11T20:21:22.242175+00:00"
+        }
+      ],
+      "officialCaption": "State of Wisconsin vs. Robert Edward Dewayne Stevens Jr"
     }
   ]
 }

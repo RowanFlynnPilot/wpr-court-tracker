@@ -1,4 +1,13 @@
 {
-  "generatedAt": "2026-07-11T19:30:16.615720+00:00",
-  "changed": []
+  "generatedAt": "2026-07-11T20:21:22.242175+00:00",
+  "changed": [
+    {
+      "id": "wausau-2026cm000231",
+      "headline": "TODO: plain-English headline (newsroom)",
+      "caseNo": "2026CM000231",
+      "county": "Marathon",
+      "updated": "2026-06-25T20:11:00+00:00",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CM000231&countyNo=37"
+    }
+  ]
 }

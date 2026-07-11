@@ -60,6 +60,20 @@ jobs:
           npm ci
           npm run build
 
+      # Same pattern as wpr-brewers-tracker: email clients strip iframes,
+      # so pre-render the digest card to a PNG served from Pages root.
+      # Not committed - rebuilt fresh on every deploy.
+      - name: Render newsletter digest image
+        working-directory: widget
+        run: |
+          npx playwright install --with-deps chromium
+          npm run preview -- --port 4173 --host 127.0.0.1 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4173/mini-digest.html > /dev/null && break
+            sleep 1
+          done
+          node scripts/render-digest.mjs http://127.0.0.1:4173/mini-digest.html dist/digest.png
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3

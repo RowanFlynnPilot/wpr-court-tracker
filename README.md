@@ -88,8 +88,26 @@ If the page builder strips `<script>` tags, the plain iframe with
 `min-height:1100px` still works — the script is an enhancement, not a
 requirement.
 
+## Newsletter digest image
+
+Every deploy renders the digest card (new court activity in the past 7
+days + upcoming hearings) to a PNG at the Pages root — email clients
+strip iframes, so the newsletter embeds it as a linked image:
+
+```html
+<a href="https://wausaupilotandreview.com/">  <!-- link to the page that embeds the tracker -->
+  <img src="https://rowanflynnpilot.github.io/wpr-court-tracker/digest.png"
+       alt="Court tracker digest — new case activity and upcoming hearings"
+       width="600" style="width:100%;max-width:600px;height:auto;border:0;display:block" />
+</a>
+```
+
+Put a real text link ("See the full court tracker →") under the image —
+regions inside an image can't carry their own links. The live card is at
+`/mini-digest.html`; `widget/scripts/render-digest.mjs` screenshots it.
+
 ## Newsroom alerts
 
 Every data commit's message lists case numbers with new activity — watch
-the repo to get notified. `data/changes.json` is the structured version,
-consumed by the newsletter digest.
+the repo to get notified. `data/changes.json` is the structured
+per-run version (which cases changed in a given run).

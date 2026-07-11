@@ -13,11 +13,19 @@ React/Vite -> GitHub Pages -> WordPress iframe. Standard WPR pattern.
 config/cases.json      editorial watchlist (newsroom-owned, hand-curated)
 pipeline/policy.py     editorial display policy, enforced in code
 pipeline/fetch.py      polls official WCCA per-case RSS, diffs, writes data/
+pipeline/issue_case.py "Track a case" issue form -> validated config entry
 data/feed.json         everything the widget renders (committed)
-data/changes.json      cases with new activity this run (digest input)
+data/changes.json      cases with new activity this run (per-run alerts)
 widget/                React/Vite app; vite publicDir = ../data
+widget/src/MiniDigest.jsx + mini-digest.html   newsletter digest card
+widget/scripts/render-digest.mjs  Playwright -> dist/digest.png at deploy
 tests/                 parser + policy tests vs a REAL captured feed fixture
 ```
+
+Case intake: reporters file the "Track a case" issue form; the track-case
+workflow validates it through issue_case.py (same policy gate) and opens
+a PR — merging is the publisher sign-off. Issue bodies are untrusted
+input: env-passed, never shell-interpolated.
 
 ## Verified facts this repo is built on (2026-07-11)
 
@@ -85,8 +93,10 @@ cd widget ; npm install ; npm run dev
 
 Weekdays every 2 hours, 8 a.m.-6 p.m. Central. Commit messages list case
 numbers with new activity, so watching the repo is a newsroom alert
-channel. data/changes.json feeds the newsletter digest (Brewers-repo PNG
-port, pending).
+channel. Every deploy also re-renders the newsletter digest
+(/digest.png at the Pages root — activity last 7 days + upcoming
+hearings, derived from feed.json; Playwright element screenshot, same
+pattern as wpr-brewers-tracker, never committed).
 
 ## Operational notes (2026-07-11)
 
@@ -100,5 +110,9 @@ port, pending).
 - This repo is PUBLIC. Anything committed to config/cases.json is
   published within minutes. Editorial sign-off (Shereen) happens BEFORE
   the commit, never after.
-- Pending errands: the digest PNG port from wpr-brewers-tracker consuming
-  data/changes.json. (`.gitattributes` landed 2026-07-11.)
+- 2026-07-11 evening: site-brand reskin, auto-height embed, per-case
+  permalinks, closed-files drawer, track-a-case issue intake, and the
+  digest PNG all landed. The digest derives "last 7 days" from feed.json
+  (changes.json stays per-run). The track-a-case workflow's first LIVE
+  run is unproven — file a test issue and watch it before telling
+  reporters about it.

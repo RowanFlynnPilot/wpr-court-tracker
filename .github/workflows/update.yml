@@ -34,7 +34,12 @@ jobs:
       - name: Run pipeline tests
         run: python tests/test_pipeline.py
 
+      # continue-on-error so a WCCA outage can't block deploying widget
+      # changes - the site ships with the last committed (still-valid)
+      # data. The run is still marked failed at the end: loud, not silent.
       - name: Fetch court activity (official WCCA RSS)
+        id: fetch
+        continue-on-error: true
         run: python pipeline/fetch.py
 
       - name: Commit data changes
@@ -82,3 +87,9 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Propagate fetch failure (deploy happened; stay loud)
+        if: steps.fetch.outcome == 'failure'
+        run: |
+          echo "WCCA fetch failed this run; site deployed with last-good data." >&2
+          exit 1

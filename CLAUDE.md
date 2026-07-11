@@ -80,3 +80,18 @@ Weekdays every 2 hours, 8 a.m.-6 p.m. Central. Commit messages list case
 numbers with new activity, so watching the repo is a newsroom alert
 channel. data/changes.json feeds the newsletter digest (Brewers-repo PNG
 port, pending).
+
+## Operational notes (2026-07-11)
+
+- The workflow bot commits to `main` on every run with new data. ALWAYS
+  `git pull --rebase` before editing locally (pull.rebase=true is set on
+  Rowan's machine; set it on any new clone).
+- Repo history: branch renamed master -> main on day one. The
+  github-pages environment's deployment branch policy is pinned to
+  `main`. If deploys ever reject with "protection rules," check
+  Settings > Environments > github-pages first.
+- This repo is PUBLIC. Anything committed to config/cases.json is
+  published within minutes. Editorial sign-off (Shereen) happens BEFORE
+  the commit, never after.
+- Pending errands: `.gitattributes` (`* text=auto eol=lf`), then the
+  digest PNG port from wpr-brewers-tracker consuming data/changes.json.

@@ -1,0 +1,67 @@
+name: Track a case
+description: "Reporters: add a case to the public court tracker (no JSON editing)"
+title: "Track: <short headline>"
+labels: ["track-a-case"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Paste the case's WCCA link and the editorial fields. Automation
+        checks the request against editorial policy (`pipeline/policy.py`)
+        and opens a pull request — **merging that PR is the publisher
+        sign-off** and publishes within minutes. If anything is off, a
+        comment on this issue explains what to fix; edit the description
+        and it re-checks automatically.
+  - type: input
+    id: wcca_url
+    attributes:
+      label: WCCA case link
+      description: Open the case on wcca.wicourts.gov and copy the browser URL (it contains caseDetail.html?caseNo=...&countyNo=...)
+      placeholder: "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000123&countyNo=37"
+    validations:
+      required: true
+  - type: input
+    id: headline
+    attributes:
+      label: Headline
+      description: Plain-English headline for the case card (published verbatim)
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Why WPR is tracking this case (published verbatim; remember the presumption of innocence in your wording)
+    validations:
+      required: true
+  - type: input
+    id: topics
+    attributes:
+      label: Topics
+      description: "Comma-separated filter chips, e.g.: Public safety, Courts"
+      placeholder: "Courts"
+    validations:
+      required: true
+  - type: input
+    id: hearing_date
+    attributes:
+      label: Next hearing date (optional)
+      description: YYYY-MM-DD
+      placeholder: "2026-09-30"
+  - type: input
+    id: hearing_note
+    attributes:
+      label: Next hearing details (optional)
+      placeholder: "Judicial pretrial, Branch 3, 10:40 a.m., Judge LaMont Jacobson"
+  - type: textarea
+    id: updates
+    attributes:
+      label: Timeline entries (optional)
+      description: "One per line, date then note, separated by a pipe: YYYY-MM-DD | what happened"
+      placeholder: "2026-03-17 | Criminal complaint filed; not-guilty plea at initial appearance."
+  - type: textarea
+    id: links
+    attributes:
+      label: Related links (optional)
+      description: "One per line: Label | https://url"
+      placeholder: "WPR coverage | https://wausaupilotandreview.com/2026/..."

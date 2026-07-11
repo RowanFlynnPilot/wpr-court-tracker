@@ -11,6 +11,15 @@ architecture and hard boundaries.
 
 ## Adding a case (reporters)
 
+**Easiest way — no JSON:** open a ["Track a case" issue](../../issues/new?template=track-a-case.yml)
+and fill in the form. Automation validates it against editorial policy and
+opens a pull request; **merging that PR is the publisher sign-off** and
+publishes within minutes. If the form fails policy (blocked case type, bad
+date, already tracked), a comment on the issue says exactly what to fix —
+edit the issue description and it re-checks.
+
+**By hand**, if you prefer:
+
 1. Find the case on https://wcca.wicourts.gov and open its case detail page.
 2. Copy the browser URL (it contains `caseDetail.html?caseNo=...&countyNo=...`).
 3. Add an entry to `config/cases.json`:

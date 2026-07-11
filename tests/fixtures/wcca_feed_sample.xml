@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="feed_default.xslt" type="text/xsl"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+      <channel>
+        <title>WCCA - County: Marathon; Case number: 2026CF000100</title>
+        <link>http://wcca.wicourts.gov</link>
+        <pubDate>Sat, 11 Jul 2026 13:30:33 -0500</pubDate>
+        <description>
+          This website (WCCA) provides access to certain public records of the
+          circuit courts of Wisconsin. The information displayed is an exact
+          copy of the case information entered into the Consolidated Court
+          Automation Programs (CCAP) case management system by court staff in
+          the counties where the case files are located. The court record
+          summaries viewed here are all public records under Wisconsin open
+          records law.
+        </description>
+        <language>en-us</language>
+        <copyright>(c) 2016 Wisconsin Circuit Court Access.</copyright>
+        <item>
+      <dc:creator>Marathon County</dc:creator>
+      <title>2026CF000100 - State of Wisconsin vs. Sample D. Party</title>
+      <link>https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000100&amp;countyNo=37</link>
+      <pubDate>Fri, 10 Jul 2026 13:46:30 -0500</pubDate>
+      <description>
+          2026CF000100 - State of Wisconsin vs. Sample D. Party&lt;br/&gt;
+          Marathon County&lt;br/&gt;
+          Updated: Fri, 10 Jul 2026 13:46:30 -0500&lt;br/&gt;
+          &lt;a href=&quot;https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000100&amp;amp;countyNo=37&quot;&gt;Link&lt;/a&gt;
+        </description>
+      <guid isPermaLink="false">
+        37-2026CF000100-Some(2026-07-10T18:46:30.517Z)
+      </guid>
+    </item>
+      </channel>
+    </rss>  
+  

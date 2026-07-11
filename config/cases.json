@@ -1,0 +1,35 @@
+{
+  "requestEmail": "news@wausaupilotandreview.com",
+  "cases": [
+    {
+      "id": "sample-felony",
+      "placeholder": true,
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000001&countyNo=37",
+      "county": "Marathon",
+      "headline": "Downtown Wausau arson case",
+      "summary": "PLACEHOLDER - sample felony case showing how a criminal case renders, including the automatic presumption-of-innocence note. Replace with a real case by pasting its WCCA link into wccaUrl.",
+      "tags": ["Public safety"],
+      "nextHearing": { "date": "2026-08-03", "note": "Preliminary hearing, Branch 2, 10:30 a.m." },
+      "updates": [
+        { "date": "2026-07-01", "note": "Criminal complaint filed in Marathon County Circuit Court. WPR's initial story is linked below." },
+        { "date": "2026-07-08", "note": "Initial appearance held; cash bond set." }
+      ],
+      "links": [
+        { "label": "WPR coverage", "url": "https://wausaupilotandreview.com/" }
+      ]
+    },
+    {
+      "id": "sample-civil",
+      "placeholder": true,
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CV000002&countyNo=37",
+      "county": "Marathon",
+      "headline": "School district open records lawsuit",
+      "summary": "PLACEHOLDER - sample civil case. Civil cases carry no presumption note. The activity timeline below mixes WPR editorial updates with automatically observed court-record activity.",
+      "tags": ["Government", "Open records"],
+      "updates": [
+        { "date": "2026-06-15", "note": "Complaint filed seeking release of superintendent search records." }
+      ],
+      "links": []
+    }
+  ]
+}

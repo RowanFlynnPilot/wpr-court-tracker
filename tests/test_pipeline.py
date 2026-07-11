@@ -9,7 +9,21 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "pipeline"))
 
 import policy
-from fetch import parse_feed, parse_wcca_url, PipelineError
+from fetch import parse_feed, parse_wcca_url, validate_date, PipelineError
+
+
+def test_date_validation_blocks_todo_placeholders():
+    # Regression: 2026-07-11, a leftover "TODO-YYYY-MM-DD" in cases.json
+    # reached feed.json and crashed the public widget at render.
+    validate_date("2026-09-30", "ok")
+    for bad in ("TODO-YYYY-MM-DD", "TODO-filing-date", "2026-13-01",
+                "2026-02-30", "9/30/2026", "", None):
+        try:
+            validate_date(bad, "test")
+        except PipelineError:
+            pass
+        else:
+            raise AssertionError(f"{bad!r} must fail date validation")
 
 FIXTURE = (ROOT / "tests" / "fixtures" / "wcca_feed_sample.xml").read_bytes()
 

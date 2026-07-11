@@ -22,6 +22,7 @@ Stdlib only. Any failure exits nonzero and loudly.
 """
 
 import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -47,6 +48,24 @@ REQUIRED_CASE_FIELDS = ("id", "wccaUrl", "county", "headline", "summary", "tags"
 
 class PipelineError(Exception):
     pass
+
+
+_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def validate_date(value, where: str) -> None:
+    """Editorial dates must be real YYYY-MM-DD dates.
+
+    The widget trusts feed.json completely and formats dates for readers;
+    an invalid date here would crash the public page. This gate turns a
+    config mistake (e.g. a leftover TODO) into a red build instead.
+    """
+    if not isinstance(value, str) or not _DATE_RE.match(value):
+        raise PipelineError(f"{where} must be YYYY-MM-DD, got {value!r}")
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except ValueError as e:
+        raise PipelineError(f"{where} is not a real date: {value!r}") from e
 
 
 def parse_wcca_url(url: str) -> tuple[str, int]:
@@ -85,6 +104,11 @@ def load_config() -> dict:
         case["caseType"] = policy.case_type(case_no)
         case["caseTypeLabel"] = policy.case_type_label(case_no)
         case["isCriminal"] = policy.is_criminal(case_no)
+        if "nextHearing" in case:
+            validate_date(case["nextHearing"].get("date"),
+                          f"{case['id']}: nextHearing.date")
+        for i, update in enumerate(case.get("updates", [])):
+            validate_date(update.get("date"), f"{case['id']}: updates[{i}].date")
     return config
 
 

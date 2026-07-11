@@ -8,10 +8,12 @@ body:
       value: |
         Paste the case's WCCA link and the editorial fields. Automation
         checks the request against editorial policy (`pipeline/policy.py`)
-        and opens a pull request — **merging that PR is the publisher
-        sign-off** and publishes within minutes. If anything is off, a
-        comment on this issue explains what to fix; edit the description
-        and it re-checks automatically.
+        the moment you submit. **Newsroom submissions publish
+        automatically at the next sweep** (7:45 a.m. / 3:45 p.m. Central
+        — close the issue before then to cancel); outside submissions
+        become a pull request the newsroom must merge. If anything is
+        off, a comment explains what to fix; edit the description and it
+        re-checks automatically.
 
         **Tip:** the [Case Entry Desk](https://rowanflynnpilot.github.io/wpr-court-tracker/editor.html)
         prefills this whole form from a pasted case page or an uploaded

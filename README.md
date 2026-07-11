@@ -18,17 +18,24 @@ Open the case on WCCA in your browser, select-all-copy the page (or
 Print → Save as PDF and upload that file), and the desk prefills the
 form — case number, hearing dates, charge lines — for you to review and
 edit against a live preview of the published folder. Submitting opens a
-prefilled "Track a case" issue; automation validates it and opens a pull
-request; **merging that PR is the publisher sign-off**. The desk parses
+prefilled "Track a case" issue, validated on the spot. The desk parses
 everything in your browser — it never contacts the court system, and
 nothing you paste leaves the page until you submit the reviewed fields.
 
+**Publishing cadence:** submissions from the newsroom (repo
+owner/members/collaborators) publish **automatically at the next
+sweep — 7:45 a.m. and 3:45 p.m. Central, daily**. Close the issue
+before the sweep to cancel, or run the "Track-a-case intake" workflow
+from the Actions tab to publish immediately. Submissions from anyone
+else become a pull request the newsroom must merge — auto-publish never
+extends to the public.
+
 **Or the bare issue form:** open a
 ["Track a case" issue](../../issues/new?template=track-a-case.yml) and
-fill it in by hand. Same validation, same sign-off PR. If the form fails
-policy (blocked case type, bad date, already tracked), a comment on the
-issue says exactly what to fix — edit the issue description and it
-re-checks.
+fill it in by hand. Same validation, same publishing cadence. If the
+form fails policy (blocked case type, bad date, already tracked), a
+comment on the issue says exactly what to fix — edit the issue
+description and it re-checks.
 
 **By hand**, if you prefer:
 

@@ -402,10 +402,12 @@ export default function CaseDesk() {
           {copied ? 'Entry copied' : 'Copy JSON entry instead'}
         </button>
         <p className="desk-muted desk-flow">
-          Submitting opens a GitHub issue prefilled with these fields. The
-          tracker validates it against editorial policy and opens a pull
-          request &mdash; <b>merging that PR is the sign-off</b> and
-          publishes within minutes.
+          Submitting opens a GitHub issue prefilled with these fields and
+          checks it against editorial policy on the spot. Newsroom
+          submissions then <b>publish automatically at the next sweep</b>
+          &mdash; 7:45 a.m. and 3:45 p.m. Central &mdash; close the issue
+          before then to cancel. Outside submissions become a pull request
+          an editor must merge.
         </p>
       </section>
     </main>

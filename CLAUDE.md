@@ -24,10 +24,15 @@ widget/scripts/render-cards.mjs   Playwright -> digest.png + og-card.png
 tests/                 parser + policy tests vs a REAL captured feed fixture
 ```
 
-Case intake: reporters file the "Track a case" issue form; the track-case
-workflow validates it through issue_case.py (same policy gate) and opens
-a PR — merging is the publisher sign-off. Issue bodies are untrusted
-input: env-passed, never shell-interpolated.
+Case intake: the "Track a case" issue form is validated instantly through
+issue_case.py (same policy gate). Publishing is two-lane: issues from the
+NEWSROOM (author_association OWNER/MEMBER/COLLABORATOR) auto-publish on
+the twice-daily sweep in track-case.yml (12:45/20:45 UTC; closing the
+issue first cancels; workflow_dispatch publishes now) — filing the issue
+IS the sign-off when the publisher files it. Issues from anyone else
+become a sign-off PR a human must merge; auto-publish must NEVER be
+extended to outside authors on this public repo. Issue bodies are
+untrusted input: env/stdin-passed, never shell-interpolated.
 
 The Case Entry Desk (/editor.html) prefills that issue form: the editor
 pastes the case page text or uploads their own saved copy (print-to-PDF
@@ -124,11 +129,17 @@ pattern as wpr-brewers-tracker, never committed).
   published within minutes. Editorial sign-off (Shereen) happens BEFORE
   the commit, never after.
 - 2026-07-11 evening: site-brand reskin, auto-height embed, per-case
-  permalinks, closed-files drawer, track-a-case issue intake, and the
-  digest PNG all landed. The digest derives "last 7 days" from feed.json
-  (changes.json stays per-run). The track-a-case workflow's first LIVE
-  run is unproven — file a test issue and watch it before telling
-  reporters about it.
+  permalinks, closed-files drawer, track-a-case issue intake (+ Case
+  Entry Desk), and the digest PNG all landed. The digest derives "last
+  7 days" from feed.json (changes.json stays per-run).
+- CAUTION on intake testing: an owner/collaborator's track-a-case issue
+  AUTO-PUBLISHES at the next sweep. To test the intake end-to-end, use a
+  real case you actually want tracked, or close the issue before
+  12:45/20:45 UTC. The publish sweep itself can be proven harmlessly via
+  workflow_dispatch with no open track-a-case issues (clean no-op).
+- Shereen needs to be added as a repo collaborator (Settings >
+  Collaborators — Rowan does this) for her desk submissions to
+  auto-publish; until then her issues take the PR path.
 - Red-run semantics: a FAILED "Update court data and deploy" run has
   usually still DEPLOYED. The fetch step is continue-on-error; if WCCA
   is unreachable the site ships with last-good data and the final

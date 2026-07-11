@@ -1,14 +1,28 @@
 name: Track-a-case intake
 
-# Reporters file a "Track a case" issue form; this turns it into a
-# sign-off PR. The issue body is untrusted (public repo): it is passed to
-# the parser via env (never shell-interpolated) and validated by
-# pipeline/issue_case.py before anything is staged. Merging the PR is the
-# editorial sign-off and publishes within minutes.
+# Two lanes, one policy gate (pipeline/issue_case.py):
+#
+#   1. INSTANT FEEDBACK - every "track-a-case" issue is validated the
+#      moment it's opened or edited. Failures get a fix-it comment.
+#   2. PUBLISHING - depends on who filed it:
+#        - Newsroom (repo owner/members/collaborators): queued, then
+#          published automatically by the twice-daily sweep below.
+#          Closing the issue before the sweep cancels it.
+#        - Anyone else: a sign-off pull request a human must merge.
+#          Auto-publish is NEVER extended to outside submissions - this
+#          is a public repo and the issue form is open to the internet.
+#
+# Issue bodies are untrusted: passed via env/stdin, never
+# shell-interpolated, validated before anything is staged.
 
 on:
   issues:
     types: [opened, edited]
+  schedule:
+    # Publish sweeps at 7:45 a.m. and 3:45 p.m. Central (CDT = UTC-5),
+    # daily. The publish commit itself triggers the deploy workflow.
+    - cron: '45 12,20 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -16,12 +30,14 @@ permissions:
   issues: write
 
 concurrency:
-  group: track-case-${{ github.event.issue.number }}
-  cancel-in-progress: true
+  group: track-case-intake
+  cancel-in-progress: false
 
 jobs:
-  intake:
-    if: contains(github.event.issue.labels.*.name, 'track-a-case')
+  feedback:
+    if: >-
+      github.event_name == 'issues' &&
+      contains(github.event.issue.labels.*.name, 'track-a-case')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,8 +71,20 @@ jobs:
           gh issue comment "$ISSUE_NO" --body-file comment.md
           exit 1
 
-      - name: Open the sign-off PR
-        if: steps.parse.outcome == 'success'
+      - name: Queue a newsroom submission for the next publish sweep
+        if: >-
+          steps.parse.outcome == 'success' &&
+          contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NO: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$ISSUE_NO" --body "Passed the editorial policy check ✔ Queued as a newsroom submission — it publishes automatically at the next sweep (7:45 a.m. or 3:45 p.m. Central). Close this issue before then to cancel, or run the 'Track-a-case intake' workflow from the Actions tab to publish now."
+
+      - name: Open a sign-off PR for outside submissions
+        if: >-
+          steps.parse.outcome == 'success' &&
+          !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NO: ${{ github.event.issue.number }}
@@ -82,3 +110,63 @@ jobs:
               --title "Track $CASE_NO: $HEADLINE" --body-file pr-body.md)
           fi
           gh issue comment "$ISSUE_NO" --body "Passed the editorial policy check — sign-off PR: $PR_URL"
+
+  publish:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Publish queued newsroom cases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          git config user.name "wpr-court-tracker"
+          git config user.email "actions@github.com"
+          PUBLISHED=0
+          FAILED=0
+          for N in $(gh api "repos/$GITHUB_REPOSITORY/issues?labels=track-a-case&state=open&per_page=100" \
+                       --jq '.[] | select(.pull_request == null) | .number'); do
+            ASSOC=$(gh api "repos/$GITHUB_REPOSITORY/issues/$N" --jq .author_association)
+            case "$ASSOC" in
+              OWNER|MEMBER|COLLABORATOR) ;;
+              *) echo "skip #$N ($ASSOC) - stays on the PR review path"; continue ;;
+            esac
+            if [ -n "$(gh pr list --head "case/issue-$N" --json number --jq '.[0].number')" ]; then
+              echo "skip #$N - a sign-off PR already exists"
+              continue
+            fi
+            gh issue view "$N" --json body --jq .body > body.txt
+            if python pipeline/issue_case.py < body.txt 2> err.txt; then
+              CASE_NO=$(python -c "import json; print(json.load(open('out/new_case.json'))['caseNo'])")
+              HEADLINE=$(python -c "import json; print(json.load(open('out/new_case.json'))['headline'])")
+              CASE_ID=$(python -c "import json; print(json.load(open('out/new_case.json'))['id'])")
+              git add config/cases.json
+              git commit -m "Track $CASE_NO: $HEADLINE" -m "Published from track-a-case issue #$N (newsroom submission)."
+              gh issue comment "$N" --body "Published — live with the next deploy (minutes): https://rowanflynnpilot.github.io/wpr-court-tracker/#$CASE_ID"
+              gh issue close "$N"
+              PUBLISHED=$((PUBLISHED+1))
+            else
+              FAILED=$((FAILED+1))
+              {
+                echo "The publish sweep couldn't add this case:"
+                echo
+                echo '```'
+                cat err.txt
+                echo '```'
+                echo
+                echo "Edit the issue description to fix it — the next sweep retries automatically."
+              } > comment.md
+              gh issue comment "$N" --body-file comment.md
+            fi
+          done
+          if [ "$PUBLISHED" -gt 0 ]; then
+            git pull --rebase origin main
+            git push
+          fi
+          echo "published $PUBLISHED case(s), $FAILED needing fixes"

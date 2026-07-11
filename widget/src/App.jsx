@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import CaseFile from './CaseFile.jsx';
 import RequestForm from './RequestForm.jsx';
+import badge from './assets/wpr-badge.png';
 
 const DAY_MS = 86400000;
 
@@ -78,13 +79,16 @@ export default function App() {
   return (
     <main className="shell">
       <header className="masthead">
-        <p className="eyebrow">Wausau Pilot &amp; Review</p>
-        <h1>Marathon County Court Tracker</h1>
-        <p className="dek">
-          Cases of public interest our newsroom is following, with activity
-          checked against the official court record.
-        </p>
-        <p className="updated">Checked {updatedLabel}</p>
+        <img className="badge" src={badge} alt="" width="104" height="104" />
+        <div>
+          <p className="eyebrow">Wausau Pilot &amp; Review</p>
+          <h1>Marathon County Court Tracker</h1>
+          <p className="dek">
+            Cases of public interest our newsroom is following, with activity
+            checked against the official court record.
+          </p>
+          <p className="updated">Checked {updatedLabel}</p>
+        </div>
       </header>
 
       <nav className="filters" aria-label="Filter cases by topic">
@@ -124,7 +128,7 @@ export default function App() {
       <footer className="colophon">
         <p>{feed.disclaimer}</p>
         <p>
-          Source: <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>, via the court system&rsquo;s official per-case RSS feeds. Built by Wausau Pilot &amp; Review.
+          Source: <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>, via the court system&rsquo;s official per-case RSS feeds. Built by <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &mdash; <span className="tagline">More News. Less Fluff. All Local.</span>
         </p>
       </footer>
     </main>

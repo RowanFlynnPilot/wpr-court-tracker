@@ -60,12 +60,19 @@ tests/                 parser + policy tests vs a REAL captured feed fixture
 
 ## Design
 
-WPR system: teal #3A867C, cream #F6F2E9, Fraunces display, Public Sans
-body, JetBrains Mono for case numbers/dates. Signature: manila case-file
-cards with die-cut folder tabs (case type label) and a red rubber-stamp
-"NEW ACTIVITY" mark when the record changed within 7 days — kin to the
-Community Board's stamp aesthetic. Ledger rows: teal bar = WPR editorial
-entry, red bar = observed court-record update linking to WCCA.
+Matched to wausaupilotandreview.com (WordPress Newspack theme) as of
+2026-07-11: white shell with newspaper-black #111 chrome, Oswald display
+(the wordmark face), Merriweather body, Courier Prime for case
+numbers/dates/stamps (kin to the typewriter badge). Teal #3A867C is the
+typewriter in WPR's circular badge logo — masthead asset at
+widget/src/assets/wpr-badge.png, sourced from the site's
+wp-content/uploads/2024/04/cropped-Wausau-Pilot-Transparent.png. Masthead:
+badge + Oswald title over a thick-thin newspaper rule; footer carries the
+"More News. Less Fluff. All Local." tagline. Signature (unchanged): manila
+case-file cards with die-cut folder tabs (typed Courier labels) and a red
+rubber-stamp "NEW ACTIVITY" mark when the record changed within 7 days —
+kin to the Community Board's stamp aesthetic. Ledger rows: teal bar = WPR
+editorial entry, red bar = observed court-record update linking to WCCA.
 
 ## Commands (local, PowerShell)
 
@@ -93,5 +100,5 @@ port, pending).
 - This repo is PUBLIC. Anything committed to config/cases.json is
   published within minutes. Editorial sign-off (Shereen) happens BEFORE
   the commit, never after.
-- Pending errands: `.gitattributes` (`* text=auto eol=lf`), then the
-  digest PNG port from wpr-brewers-tracker consuming data/changes.json.
+- Pending errands: the digest PNG port from wpr-brewers-tracker consuming
+  data/changes.json. (`.gitattributes` landed 2026-07-11.)

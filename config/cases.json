@@ -30,6 +30,19 @@
         { "date": "2026-06-15", "note": "Complaint filed seeking release of superintendent search records." }
       ],
       "links": []
-    }
+    },
+    {
+  "id": "wausau-2026cm000231",
+  "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CM000231&countyNo=37",
+  "county": "Marathon",
+  "headline": "TODO: plain-English headline (newsroom)",
+  "summary": "TODO: one or two sentences on what this case is and why WPR is tracking it.",
+  "tags": ["Public safety"],
+  "nextHearing": { "date": "TODO-YYYY-MM-DD", "note": "TODO: hearing type, branch, time — from the Future court activity section" },
+  "updates": [
+    { "date": "TODO-filing-date", "note": "Criminal complaint filed in Marathon County Circuit Court." }
+  ],
+  "links": []
+}
   ]
 }

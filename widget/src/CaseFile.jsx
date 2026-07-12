@@ -94,7 +94,7 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
           <div>
             <h2 className="case-headline">{c.headline}</h2>
             <p className="case-meta">
-              <span className="mono">{c.caseNo}</span> &middot; {c.county} County
+              {c.county} County
               {c.officialCaption && <> &middot; {c.officialCaption}</>}
             </p>
           </div>
@@ -139,7 +139,10 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
 
         <div id={detailId} className="detail" hidden={!open}>
           {c.isCriminal && <p className="presumption">{presumptionNote}</p>}
-          <h3 className="ledger-title">Activity</h3>
+          <div className="ledger-head">
+            <h3 className="ledger-title">Activity</h3>
+            <span className="case-no mono">Case no. {c.caseNo}</span>
+          </div>
           {ledger.length === 0 ? (
             <p className="ledger-empty">No activity logged yet. We&rsquo;re watching this file.</p>
           ) : (

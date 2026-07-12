@@ -80,7 +80,6 @@ export default function MiniDigest() {
             <div key={c.id} className="digest-row">
               <span className="digest-when">
                 {dayFmt.format(Date.parse(c.observed[0].updated))}
-                <span className="digest-caseno">{c.caseNo}</span>
               </span>
               <span className="digest-what">
                 <b>{c.headline}</b>
@@ -100,7 +99,6 @@ export default function MiniDigest() {
             <div key={c.id} className="digest-row">
               <span className="digest-when digest-when-hearing">
                 {dayFmt.format(datePartsToMs(c.nextHearing.date))}
-                <span className="digest-caseno">{c.caseNo}</span>
               </span>
               <span className="digest-what">
                 <b>{c.headline}</b>

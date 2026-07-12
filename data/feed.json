@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-11T23:54:03.157335+00:00",
+  "generatedAt": "2026-07-12T00:05:16.896447+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
@@ -11,7 +11,7 @@
       "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000001&countyNo=37",
       "county": "Marathon",
       "headline": "Downtown Wausau arson case",
-      "summary": "PLACEHOLDER - sample felony case showing how a criminal case renders, including the automatic presumption-of-innocence note. Replace with a real case by pasting its WCCA link into wccaUrl.",
+      "summary": "A sample case file, for demonstration. Criminal cases automatically carry the presumption-of-innocence note; the teal bar shows the next court date, and opening the file shows the full activity ledger.",
       "tags": [
         "Public safety"
       ],
@@ -49,7 +49,7 @@
       "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CV000002&countyNo=37",
       "county": "Marathon",
       "headline": "School district open records lawsuit",
-      "summary": "PLACEHOLDER - sample civil case. Civil cases carry no presumption note. The activity timeline below mixes WPR editorial updates with automatically observed court-record activity.",
+      "summary": "A sample case file, for demonstration. Civil cases carry no presumption note. Inside the file, teal entries are newsroom updates and red entries are observed changes to the official court record.",
       "tags": [
         "Government",
         "Open records"

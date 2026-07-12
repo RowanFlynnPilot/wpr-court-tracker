@@ -110,7 +110,6 @@ export default function App() {
             Cases of public interest our newsroom is following, with activity
             checked against the official court record.
           </p>
-          <p className="updated">Checked {updatedLabel}</p>
         </div>
       </header>
 
@@ -118,7 +117,9 @@ export default function App() {
         <span>
           <span className="mono statnum">{watchedCount}</span> case{watchedCount === 1 ? '' : 's'} watched
         </span>
-        <span>Checked every 2 hours, weekdays</span>
+        <span>
+          Checked <span className="mono">{updatedLabel}</span>
+        </span>
         <span>Official court record</span>
       </p>
 

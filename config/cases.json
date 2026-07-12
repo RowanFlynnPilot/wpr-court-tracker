@@ -7,7 +7,7 @@
       "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000001&countyNo=37",
       "county": "Marathon",
       "headline": "Downtown Wausau arson case",
-      "summary": "PLACEHOLDER - sample felony case showing how a criminal case renders, including the automatic presumption-of-innocence note. Replace with a real case by pasting its WCCA link into wccaUrl.",
+      "summary": "A sample case file, for demonstration. Criminal cases automatically carry the presumption-of-innocence note; the teal bar shows the next court date, and opening the file shows the full activity ledger.",
       "tags": ["Public safety"],
       "nextHearing": { "date": "2026-08-03", "note": "Preliminary hearing, Branch 2, 10:30 a.m." },
       "updates": [
@@ -24,7 +24,7 @@
       "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CV000002&countyNo=37",
       "county": "Marathon",
       "headline": "School district open records lawsuit",
-      "summary": "PLACEHOLDER - sample civil case. Civil cases carry no presumption note. The activity timeline below mixes WPR editorial updates with automatically observed court-record activity.",
+      "summary": "A sample case file, for demonstration. Civil cases carry no presumption note. Inside the file, teal entries are newsroom updates and red entries are observed changes to the official court record.",
       "tags": ["Government", "Open records"],
       "updates": [
         { "date": "2026-06-15", "note": "Complaint filed seeking release of superintendent search records." }

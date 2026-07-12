@@ -33,7 +33,11 @@ const EMPTY = {
   hearingNote: '',
   updates: [],
   links: [],
+  status: 'watching',
+  updateMode: false,
 };
+
+const DRAFT_KEY = 'wpr-case-desk-draft';
 
 export default function CaseDesk() {
   const [f, setF] = useState(EMPTY);
@@ -42,13 +46,86 @@ export default function CaseDesk() {
   const [fileStatus, setFileStatus] = useState('');
   const [presumptionNote, setPresumptionNote] = useState(FALLBACK_PRESUMPTION);
   const [copied, setCopied] = useState(false);
+  const [tracked, setTracked] = useState([]);
+  const [baseId, setBaseId] = useState('');
+  const [restored, setRestored] = useState(false);
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}feed.json`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((feed) => feed?.presumptionNote && setPresumptionNote(feed.presumptionNote))
+      .then((feed) => {
+        if (!feed) return;
+        if (feed.presumptionNote) setPresumptionNote(feed.presumptionNote);
+        setTracked(feed.cases.filter((c) => !c.placeholder));
+      })
       .catch(() => {});
   }, []);
+
+  // Restore an unfinished draft (declared BEFORE the save effect so the
+  // read happens before the first write).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d.f && (d.f.wccaUrl || d.f.headline || d.f.summary)) {
+        setF({ ...EMPTY, ...d.f });
+        setSourceText(d.sourceText || '');
+        setBaseId(d.baseId || '');
+        setRestored(true);
+      }
+    } catch {
+      /* a bad draft is just discarded */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ f, sourceText, baseId }));
+    } catch {
+      /* storage full/blocked - the desk still works, just without drafts */
+    }
+  }, [f, sourceText, baseId]);
+
+  const startFresh = () => {
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* ignore */
+    }
+    setF({ ...EMPTY, updates: [], links: [] });
+    setSourceText('');
+    setParsed(null);
+    setBaseId('');
+    setRestored(false);
+    setFileStatus('');
+  };
+
+  // Update mode: load a tracked case's editorial fields into the form.
+  const chooseWork = (id) => {
+    setBaseId(id);
+    setParsed(null);
+    setSourceText('');
+    if (!id) {
+      setF({ ...EMPTY, updates: [], links: [] });
+      return;
+    }
+    const c = tracked.find((x) => x.id === id);
+    if (!c) return;
+    setF({
+      wccaUrl: c.wccaUrl,
+      county: c.county,
+      headline: c.headline,
+      summary: c.summary,
+      topics: (c.tags || []).join(', '),
+      hearingDate: c.nextHearing?.date || '',
+      hearingNote: c.nextHearing?.note || '',
+      updates: (c.updates || []).map((u) => ({ ...u })),
+      links: (c.links || []).map((l) => ({ ...l })),
+      status: c.status === 'closed' ? 'closed' : 'watching',
+      updateMode: true,
+    });
+  };
 
   const set = (key) => (e) => setF((v) => ({ ...v, [key]: e.target.value }));
 
@@ -66,12 +143,29 @@ export default function CaseDesk() {
     urlInfo.state === 'ok' && !(urlInfo.type in ALLOWED_CASE_TYPES);
   const mismatch =
     urlInfo.state === 'ok' && parsed?.caseNo && parsed.caseNo !== urlInfo.caseNo;
+  const baseCase = f.updateMode ? tracked.find((x) => x.id === baseId) : null;
+  const driftedFromBase =
+    baseCase && urlInfo.state === 'ok' && urlInfo.caseNo !== baseCase.caseNo;
   const ready =
     urlInfo.state === 'ok' &&
     !blocked &&
     f.headline.trim() &&
     f.summary.trim() &&
     f.topics.trim();
+  const issueUrl = ready ? buildIssueUrl(f) : '';
+  // GitHub caps URLs around 8K; past that the prefill silently truncates.
+  const tooLong = issueUrl.length > 7500;
+  const submittable = ready && !tooLong;
+  const missing = [
+    urlInfo.state !== 'ok' ? 'the WCCA link' : null,
+    blocked ? 'an allowed case type' : null,
+    !f.headline.trim() ? 'a headline' : null,
+    !f.summary.trim() ? 'a summary' : null,
+    !f.topics.trim() ? 'topics' : null,
+  ].filter(Boolean);
+  const n = new Date();
+  const todayIso = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+  const hearingPast = f.hearingDate && f.hearingDate < todayIso;
 
   // Prefill only fields the editor hasn't already typed in.
   const applyParse = (text) => {
@@ -184,9 +278,46 @@ export default function CaseDesk() {
         </div>
       </header>
 
+      {restored && (
+        <p className="desk-draft" role="status">
+          Restored your unfinished draft.{' '}
+          <button className="linkbtn" onClick={startFresh}>
+            Start fresh instead
+          </button>
+        </p>
+      )}
+
       <div className="desk-grid">
         <section className="desk-source" aria-labelledby="source-title">
           <h2 id="source-title" className="desk-h">1 &middot; The record</h2>
+          <label className="desk-label">
+            Working on
+            <select
+              value={f.updateMode ? baseId : ''}
+              onChange={(e) => chooseWork(e.target.value)}
+            >
+              <option value="">A new case</option>
+              {tracked.map((c) => (
+                <option key={c.id} value={c.id}>
+                  Update: {c.headline}
+                </option>
+              ))}
+            </select>
+          </label>
+          {f.updateMode && (
+            <p className="desk-muted desk-updatenote">
+              Editing the tracked case &mdash; submitting replaces its
+              editorial fields. The observed court-record history stays.
+            </p>
+          )}
+          {driftedFromBase && (
+            <p className="desk-warn" role="alert">
+              The link now points at{' '}
+              <span className="mono">{urlInfo.caseNo}</span>, but you&rsquo;re
+              updating <span className="mono">{baseCase.caseNo}</span>. Keep
+              the original link for an update.
+            </p>
+          )}
           <label className="desk-label">
             WCCA case link (paste from your browser)
             <input
@@ -239,7 +370,7 @@ export default function CaseDesk() {
           {fileStatus && <p className="desk-filestatus" aria-live="polite">{fileStatus}</p>}
 
           {parsed && (
-            <div className="desk-spotted">
+            <div className="desk-spotted" aria-live="polite">
               <h3>What the desk spotted</h3>
               {parsed.spotted.length === 0 && (
                 <p className="desk-muted">
@@ -310,6 +441,13 @@ export default function CaseDesk() {
               </button>
             ))}
           </p>
+          <label className="desk-label">
+            Case status
+            <select value={f.status} onChange={set('status')}>
+              <option value="watching">Watching &mdash; open on the tracker</option>
+              <option value="closed">Closed &mdash; move to the Closed Files drawer</option>
+            </select>
+          </label>
           <div className="desk-two">
             <label className="desk-label">
               Next hearing date
@@ -325,6 +463,12 @@ export default function CaseDesk() {
               />
             </label>
           </div>
+          {hearingPast && (
+            <p className="desk-warn">
+              That hearing date is in the past &mdash; double-check it. (Past
+              dates simply don&rsquo;t show on the card.)
+            </p>
+          )}
 
           <h3 className="desk-subhead">Timeline entries</h3>
           {f.updates.map((u, i) => (
@@ -373,6 +517,12 @@ export default function CaseDesk() {
 
       <section className="desk-preview" aria-labelledby="preview-title">
         <h2 id="preview-title" className="desk-h">3 &middot; Preview &mdash; exactly as it will publish</h2>
+        {f.status === 'closed' && previewCase && (
+          <p className="desk-muted desk-updatenote">
+            This case will file under the collapsed &ldquo;Closed
+            files&rdquo; drawer rather than the main list.
+          </p>
+        )}
         {previewCase ? (
           <CaseFile
             c={previewCase}
@@ -389,26 +539,48 @@ export default function CaseDesk() {
       </section>
 
       <section className="desk-actions">
-        {ready ? (
-          <a className="send" href={buildIssueUrl(f)} target="_blank" rel="noreferrer">
-            Review &amp; submit on GitHub
+        {submittable ? (
+          <a className="send" href={issueUrl} target="_blank" rel="noreferrer">
+            {f.updateMode ? 'Review & submit the update on GitHub' : 'Review & submit on GitHub'}
           </a>
         ) : (
           <button className="send" disabled>
-            Review &amp; submit on GitHub
+            {f.updateMode ? 'Review & submit the update on GitHub' : 'Review & submit on GitHub'}
           </button>
         )}
         <button className="send-alt" aria-live="polite" onClick={copyJson} disabled={!ready}>
           {copied ? 'Entry copied' : 'Copy JSON entry instead'}
         </button>
-        <p className="desk-muted desk-flow">
-          Submitting opens a GitHub issue prefilled with these fields and
-          checks it against editorial policy on the spot. Newsroom
-          submissions then <b>publish automatically at the next sweep</b>
-          &mdash; 7:45 a.m. and 3:45 p.m. Central &mdash; close the issue
-          before then to cancel. Outside submissions become a pull request
-          an editor must merge.
-        </p>
+        <button className="linkbtn" onClick={startFresh}>
+          Clear the desk
+        </button>
+        {!ready && missing.length > 0 && (
+          <p className="desk-missing mono" aria-live="polite">
+            Still needs: {missing.join(' · ')}
+          </p>
+        )}
+        {ready && tooLong && (
+          <p className="desk-warn" role="alert">
+            This entry is too long for GitHub&rsquo;s form &mdash; trim the
+            summary or timeline notes a little.
+          </p>
+        )}
+        <ol className="desk-steps">
+          <li>
+            A GitHub page opens with everything filled in &mdash; sign in if
+            asked, scroll down, and click <b>Create</b>.
+          </li>
+          <li>
+            The tracker checks it against editorial policy and comments back
+            on the page within a minute.
+          </li>
+          <li>
+            Newsroom submissions publish automatically at the next sweep
+            &mdash; <b>7:45 a.m. and 3:45 p.m. Central</b>. Close the issue
+            before then to cancel. Outside submissions become a pull request
+            an editor must merge.
+          </li>
+        </ol>
       </section>
     </main>
   );

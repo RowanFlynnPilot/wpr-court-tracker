@@ -22,6 +22,13 @@ prefilled "Track a case" issue, validated on the spot. The desk parses
 everything in your browser — it never contacts the court system, and
 nothing you paste leaves the page until you submit the reviewed fields.
 
+The desk also handles the ongoing work: pick a tracked case under
+**"Working on"** to update its fields, add timeline entries, move the
+hearing date, or set its status to **Closed** (which files it under the
+widget's Closed Files drawer — the observed court-record history always
+survives an update). Drafts auto-save in the browser, so a closed tab
+loses nothing.
+
 **Publishing cadence:** submissions from the newsroom (repo
 owner/members/collaborators) publish **automatically at the next
 sweep — 7:45 a.m. and 3:45 p.m. Central, daily**. Close the issue

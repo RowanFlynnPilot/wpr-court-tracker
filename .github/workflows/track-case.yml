@@ -91,23 +91,25 @@ jobs:
         run: |
           CASE_NO=$(python -c "import json; print(json.load(open('out/new_case.json'))['caseNo'])")
           HEADLINE=$(python -c "import json; print(json.load(open('out/new_case.json'))['headline'])")
+          MODE=$(python -c "import json; print(json.load(open('out/new_case.json')).get('intakeMode','new'))")
+          [ "$MODE" = "update" ] && VERB="Update" || VERB="Track"
           BRANCH="case/issue-$ISSUE_NO"
           git config user.name "wpr-court-tracker"
           git config user.email "actions@github.com"
           git checkout -b "$BRANCH"
           git add config/cases.json
-          git commit -m "Track $CASE_NO: $HEADLINE" -m "From track-a-case issue #$ISSUE_NO."
+          git commit -m "$VERB $CASE_NO: $HEADLINE" -m "From track-a-case issue #$ISSUE_NO."
           git push -f origin "HEAD:$BRANCH"
           printf '%s\n' \
-            "Adds this case to the public watchlist from issue #$ISSUE_NO." \
+            "Watchlist change from issue #$ISSUE_NO ($MODE)." \
             "" \
-            "Passed the editorial policy gate (case type allowed, dates valid, not already tracked). **Merging is the publisher sign-off** — the case publishes within minutes." \
+            "Passed the editorial policy gate. **Merging is the publisher sign-off** — it publishes within minutes." \
             "" \
             "Closes #$ISSUE_NO" > pr-body.md
           PR_URL=$(gh pr list --head "$BRANCH" --json url --jq '.[0].url')
           if [ -z "$PR_URL" ]; then
             PR_URL=$(gh pr create --head "$BRANCH" \
-              --title "Track $CASE_NO: $HEADLINE" --body-file pr-body.md)
+              --title "$VERB $CASE_NO: $HEADLINE" --body-file pr-body.md)
           fi
           gh issue comment "$ISSUE_NO" --body "Passed the editorial policy check — sign-off PR: $PR_URL"
 
@@ -146,8 +148,10 @@ jobs:
               CASE_NO=$(python -c "import json; print(json.load(open('out/new_case.json'))['caseNo'])")
               HEADLINE=$(python -c "import json; print(json.load(open('out/new_case.json'))['headline'])")
               CASE_ID=$(python -c "import json; print(json.load(open('out/new_case.json'))['id'])")
+              MODE=$(python -c "import json; print(json.load(open('out/new_case.json')).get('intakeMode','new'))")
+              [ "$MODE" = "update" ] && VERB="Update" || VERB="Track"
               git add config/cases.json
-              git commit -m "Track $CASE_NO: $HEADLINE" -m "Published from track-a-case issue #$N (newsroom submission)."
+              git commit -m "$VERB $CASE_NO: $HEADLINE" -m "Published from track-a-case issue #$N (newsroom submission)."
               gh issue comment "$N" --body "Published — live with the next deploy (minutes): https://rowanflynnpilot.github.io/wpr-court-tracker/#$CASE_ID"
               gh issue close "$N"
               PUBLISHED=$((PUBLISHED+1))

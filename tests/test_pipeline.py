@@ -136,6 +136,67 @@ def test_issue_form_rejects_unknown_county():
         raise AssertionError("unknown county must be rejected")
 
 
+def test_issue_update_mode_replaces_entry_and_keeps_id():
+    import json
+    import shutil
+    import tempfile
+
+    import fetch
+    import issue_case
+    from issue_case import is_update
+
+    update_body = (
+        ISSUE_BODY.replace(
+            "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000456&countyNo=37",
+            "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CM000231&countyNo=37",
+        ).replace("Test headline", "Updated headline")
+        + "\n### New case or update?\n\nUpdate an already-tracked case\n"
+        + "\n### Case status\n\nClosed\n"
+    )
+    assert is_update(update_body) and not is_update(ISSUE_BODY)
+
+    with tempfile.TemporaryDirectory() as td:
+        cfg = Path(td) / "cases.json"
+        shutil.copy(ROOT / "config" / "cases.json", cfg)
+        saved = (fetch.CONFIG_PATH, issue_case.CONFIG_PATH, issue_case.OUT_PATH)
+        fetch.CONFIG_PATH = issue_case.CONFIG_PATH = cfg
+        issue_case.OUT_PATH = Path(td) / "new_case.json"
+        try:
+            before = json.loads(cfg.read_text(encoding="utf-8"))
+            old = next(c for c in before["cases"]
+                       if "2026CM000231" in c["wccaUrl"])
+            issue_case.add_to_config(build_case(update_body), update=True)
+            after = json.loads(cfg.read_text(encoding="utf-8"))
+            new = next(c for c in after["cases"]
+                       if "2026CM000231" in c["wccaUrl"])
+            assert new["headline"] == "Updated headline"
+            assert new["id"] == old["id"], "id must survive an update"
+            assert new["status"] == "closed"
+            assert len(after["cases"]) == len(before["cases"])
+            derived = json.loads(issue_case.OUT_PATH.read_text(encoding="utf-8"))
+            assert derived["intakeMode"] == "update"
+
+            # Updating an untracked case fails cleanly.
+            try:
+                issue_case.add_to_config(build_case(
+                    update_body.replace("2026CM000231", "2026CM000999")
+                ), update=True)
+            except PipelineError as e:
+                assert "isn't on the watchlist" in str(e)
+            else:
+                raise AssertionError("update of untracked case must fail")
+
+            # A duplicate NEW submission points at update mode.
+            try:
+                issue_case.add_to_config(build_case(update_body), update=False)
+            except PipelineError as e:
+                assert "submit as an update" in str(e)
+            else:
+                raise AssertionError("duplicate new case must fail")
+        finally:
+            fetch.CONFIG_PATH, issue_case.CONFIG_PATH, issue_case.OUT_PATH = saved
+
+
 def test_issue_intake_end_to_end_with_rollback():
     import json
     import shutil

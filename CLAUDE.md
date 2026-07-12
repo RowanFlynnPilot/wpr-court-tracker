@@ -36,6 +36,12 @@ become a sign-off PR a human must merge; auto-publish must NEVER be
 extended to outside authors on this public repo. Issue bodies are
 untrusted input: env/stdin-passed, never shell-interpolated.
 
+The intake handles updates too: the form's mode dropdown ("Update an
+already-tracked case") makes issue_case.py REPLACE the matching entry
+(matched by caseNo; the original id is preserved so observed history and
+permalinks survive), and the status dropdown closes cases. The desk's
+"Working on" selector drives this; drafts persist in localStorage.
+
 The Case Entry Desk (/editor.html) prefills that issue form: the editor
 pastes the case page text or uploads their own saved copy (print-to-PDF
 via pdf.js, .html, .txt) and everything parses IN THE BROWSER —

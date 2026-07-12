@@ -130,6 +130,24 @@ test('buildIssueUrl prefills the track-a-case form fields', () => {
   assert(p.get('topics') === 'Courts, Public safety');
   assert(p.get('updates') === '2026-07-01 | Complaint filed.');
   assert(p.get('hearing_date') === '2026-08-03');
+  assert(p.get('mode') === 'New case');
+  assert(p.get('status') === 'Watching');
+  assert(p.get('title').startsWith('Track:'));
+});
+
+test('buildIssueUrl carries update mode and closed status', () => {
+  const p = new URL(
+    buildIssueUrl({ ...FORM, updateMode: true, status: 'closed' })
+  ).searchParams;
+  assert(p.get('mode') === 'Update an already-tracked case');
+  assert(p.get('status') === 'Closed');
+  assert(p.get('title').startsWith('Update:'));
+});
+
+test('buildCaseEntry records closed status, omits watching', () => {
+  const closed = buildCaseEntry({ ...FORM, status: 'closed' });
+  assert(closed.status === 'closed');
+  assert(!('status' in buildCaseEntry(FORM)));
 });
 
 process.exit(failures ? 1 : 0);

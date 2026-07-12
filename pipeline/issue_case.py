@@ -38,6 +38,8 @@ OUT_PATH = Path(__file__).resolve().parent.parent / "out" / "new_case.json"
 COUNTY_NAMES = {37: "Marathon"}
 
 # Issue-form section headings (must match .github/ISSUE_TEMPLATE/track-a-case.yml labels).
+F_MODE = "New case or update?"
+F_STATUS = "Case status"
 F_URL = "WCCA case link"
 F_HEADLINE = "Headline"
 F_SUMMARY = "Summary"
@@ -117,6 +119,8 @@ def build_case(body: str) -> dict:
         "summary": form[F_SUMMARY],
         "tags": [t.strip() for t in form[F_TOPICS].split(",") if t.strip()],
     }
+    if form.get(F_STATUS, "").lower().startswith("closed"):
+        case["status"] = "closed"
     if form.get(F_HEARING_DATE):
         case["nextHearing"] = {
             "date": form[F_HEARING_DATE],
@@ -131,14 +135,37 @@ def build_case(body: str) -> dict:
     return case
 
 
-def add_to_config(case: dict) -> None:
+def is_update(body: str) -> bool:
+    return parse_form(body).get(F_MODE, "").lower().startswith("update")
+
+
+def add_to_config(case: dict, update: bool = False) -> None:
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
-    tracked = {c["caseNo"] for c in load_config()["cases"]}
-    if case_no_of(case) in tracked:
-        raise PipelineError(
-            f"Case {case_no_of(case)} is already on the watchlist."
-        )
-    config["cases"].append(case)
+    original = CONFIG_PATH.read_text(encoding="utf-8")
+    case_no = case_no_of(case)
+    # Match the tracked entry by caseNo (ids may be hand-written slugs).
+    idx = next(
+        (i for i, c in enumerate(config["cases"])
+         if not c.get("placeholder") and case_no_of(c) == case_no),
+        None,
+    )
+    if update:
+        if idx is None:
+            raise PipelineError(
+                f"Case {case_no} isn't on the watchlist yet - submit it as "
+                "a new case instead."
+            )
+        # Keep the original id: observed history in feed.json and reader
+        # permalinks are keyed on it.
+        case["id"] = config["cases"][idx]["id"]
+        config["cases"][idx] = case
+    else:
+        if idx is not None:
+            raise PipelineError(
+                f"Case {case_no} is already on the watchlist. To change its "
+                "fields (or close it), submit as an update instead."
+            )
+        config["cases"].append(case)
     CONFIG_PATH.write_text(
         json.dumps(config, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
@@ -147,15 +174,15 @@ def add_to_config(case: dict) -> None:
     try:
         validated = load_config()
     except Exception:
-        CONFIG_PATH.write_text(
-            json.dumps({**config, "cases": config["cases"][:-1]}, indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+        CONFIG_PATH.write_text(original, encoding="utf-8")
         raise
-    # Persist the derived fields for the PR text.
+    # Persist the derived fields (+ intake mode) for the PR/commit text.
     new = next(c for c in validated["cases"] if c["id"] == case["id"])
     OUT_PATH.parent.mkdir(exist_ok=True)
-    OUT_PATH.write_text(json.dumps(new, indent=2) + "\n", encoding="utf-8")
+    OUT_PATH.write_text(
+        json.dumps({**new, "intakeMode": "update" if update else "new"}, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 def case_no_of(case: dict) -> str:
@@ -166,7 +193,7 @@ def main() -> None:
     body = os.environ.get("ISSUE_BODY") or sys.stdin.read()
     try:
         case = build_case(body)
-        add_to_config(case)
+        add_to_config(case, update=is_update(body))
     except (PipelineError, policy.PolicyError) as e:
         print(str(e), file=sys.stderr)
         sys.exit(1)

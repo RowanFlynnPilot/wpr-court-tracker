@@ -18,6 +18,28 @@ body:
         **Tip:** the [Case Entry Desk](https://rowanflynnpilot.github.io/wpr-court-tracker/editor.html)
         prefills this whole form from a pasted case page or an uploaded
         print-to-PDF — with a live preview of the published folder.
+  - type: dropdown
+    id: mode
+    attributes:
+      label: New case or update?
+      description: Updates replace the tracked case's editorial fields (the observed court-record history is kept)
+      options:
+        - New case
+        - Update an already-tracked case
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Case status
+      description: "Closed moves the case to the widget's Closed Files drawer (it stays on the record and is still checked)"
+      options:
+        - Watching
+        - Closed
+      default: 0
+    validations:
+      required: true
   - type: input
     id: wcca_url
     attributes:

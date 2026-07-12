@@ -178,6 +178,7 @@ export function buildCaseEntry(f) {
       .map((t) => t.trim())
       .filter(Boolean),
   };
+  if (f.status === 'closed') entry.status = 'closed';
   if (f.hearingDate) {
     entry.nextHearing = { date: f.hearingDate, note: f.hearingNote.trim() };
   }
@@ -196,7 +197,9 @@ export function buildCaseEntry(f) {
 export function buildIssueUrl(f) {
   const params = new URLSearchParams({
     template: 'track-a-case.yml',
-    title: `Track: ${f.headline.trim() || 'case'}`,
+    title: `${f.updateMode ? 'Update' : 'Track'}: ${f.headline.trim() || 'case'}`,
+    mode: f.updateMode ? 'Update an already-tracked case' : 'New case',
+    status: f.status === 'closed' ? 'Closed' : 'Watching',
     wcca_url: f.wccaUrl.trim(),
     headline: f.headline.trim(),
     summary: f.summary.trim(),

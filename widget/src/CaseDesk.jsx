@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import CaseFile from './CaseFile.jsx';
+import CasePicker from './CasePicker.jsx';
 import badge from './assets/wpr-badge.png';
 import {
   ALLOWED_CASE_TYPES,
@@ -290,20 +291,15 @@ export default function CaseDesk() {
       <div className="desk-grid">
         <section className="desk-source" aria-labelledby="source-title">
           <h2 id="source-title" className="desk-h">1 &middot; The record</h2>
-          <label className="desk-label">
+          <div className="desk-label">
             Working on
-            <select
-              value={f.updateMode ? baseId : ''}
-              onChange={(e) => chooseWork(e.target.value)}
-            >
-              <option value="">A new case</option>
-              {tracked.map((c) => (
-                <option key={c.id} value={c.id}>
-                  Update: {c.headline}
-                </option>
-              ))}
-            </select>
-          </label>
+            <CasePicker
+              tracked={tracked}
+              baseId={baseId}
+              updateMode={f.updateMode}
+              onChoose={chooseWork}
+            />
+          </div>
           {f.updateMode && (
             <p className="desk-muted desk-updatenote">
               Editing the tracked case &mdash; submitting replaces its

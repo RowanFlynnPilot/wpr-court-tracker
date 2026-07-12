@@ -168,6 +168,86 @@
 .desk-actions .send { text-decoration: none; display: inline-block; }
 .desk-flow { flex-basis: 100%; margin: 6px 0 0; max-width: 72ch; }
 
+/* Searchable "Working on" case picker */
+.picker { position: relative; }
+.picker-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  font: 400 14.5px var(--font-body);
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.picker-btn:hover { border-color: var(--teal); }
+.picker-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.picker-caret { color: var(--muted-deep); font-size: 12px; }
+.picker-pop {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--ink);
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 6px 18px rgba(17, 17, 17, 0.18);
+  padding: 10px;
+  /* the popover lives inside the uppercase .desk-label - undo that */
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+.picker-search {
+  width: 100%;
+  box-sizing: border-box;
+  font: 400 14.5px var(--font-body);
+  border: 1.5px solid var(--teal-deep);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+.picker-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.picker-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--line);
+}
+.picker-item:last-child { border-bottom: none; }
+.picker-active { background: var(--paper-warm); outline: 2px solid var(--teal); outline-offset: -2px; }
+.picker-new {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+}
+.picker-headline {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14.5px;
+  line-height: 1.25;
+}
+.picker-meta { display: block; margin-top: 2px; font-size: 12px; color: var(--muted-deep); }
+.picker-meta .mono { font-size: 11.5px; }
+.picker-empty { padding: 10px; font-size: 13px; font-style: italic; color: var(--muted-deep); }
+
 .desk-draft {
   margin: 14px 0 0;
   background: var(--paper-warm);

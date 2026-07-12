@@ -16,6 +16,8 @@ pipeline/fetch.py      polls official WCCA per-case RSS, diffs, writes data/
 pipeline/issue_case.py "Track a case" issue form -> validated config entry
 data/feed.json         everything the widget renders (committed)
 data/changes.json      cases with new activity this run (per-run alerts)
+data/tracker.xml       reader-facing RSS of case activity (stable guids)
+data/hearings.ics      subscribable hearing calendar (all-day by design)
 widget/                React/Vite app; vite publicDir = ../data
 widget/src/MiniDigest.jsx + mini-digest.html   newsletter digest card
 widget/src/CaseDesk.jsx + editor.html          Case Entry Desk (newsroom)

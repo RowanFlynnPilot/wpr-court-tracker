@@ -10,6 +10,8 @@ sys.path.insert(0, str(ROOT / "pipeline"))
 
 import policy
 from fetch import (
+    build_hearings_ics,
+    build_tracker_rss,
     parse_feed,
     parse_wcca_url,
     validate_date,
@@ -182,6 +184,79 @@ def test_parse_empty_feed_is_no_activity_not_error():
     empty = b"""<?xml version="1.0" encoding="UTF-8"?>
     <rss version="2.0"><channel><title>WCCA</title></channel></rss>"""
     assert parse_feed(empty) == []
+
+
+SAMPLE_FEED = {
+    "generatedAt": "2026-07-11T22:00:00+00:00",
+    "cases": [
+        {
+            "id": "marathon-2026cm000231",
+            "headline": "Real case",
+            "county": "Marathon",
+            "caseNo": "2026CM000231",
+            "status": "watching",
+            "officialCaption": "State of Wisconsin vs. Sample D. Party",
+            "nextHearing": {"date": "2026-09-30", "note": "Judicial pretrial, Branch 3"},
+            "updates": [{"date": "2026-06-25", "note": "Pretrial conference held; next up Sept. 30."}],
+            "observed": [
+                {"guid": "37-2026CM000231-Some(2026-06-25T20:11:00.033Z)",
+                 "updated": "2026-06-25T20:11:00+00:00"}
+            ],
+        },
+        {
+            "id": "sample-felony",
+            "placeholder": True,
+            "headline": "Sample",
+            "county": "Marathon",
+            "caseNo": "2026CF000001",
+            "status": "watching",
+            "nextHearing": {"date": "2026-08-03", "note": "Ignored, placeholder"},
+            "updates": [{"date": "2026-07-01", "note": "Ignored too"}],
+            "observed": [],
+        },
+        {
+            "id": "marathon-closed",
+            "headline": "Closed case",
+            "county": "Marathon",
+            "caseNo": "2026CV000009",
+            "status": "closed",
+            "nextHearing": {"date": "2026-10-15", "note": "Should not appear, closed"},
+            "updates": [],
+            "observed": [],
+        },
+    ],
+}
+
+
+def test_tracker_rss_is_valid_stable_and_skips_placeholders():
+    import xml.etree.ElementTree as ET
+
+    xml_bytes = build_tracker_rss(SAMPLE_FEED)
+    root = ET.fromstring(xml_bytes)
+    assert root.tag == "rss"
+    items = root.findall("./channel/item")
+    # 1 observed + 1 editorial from the real case; placeholder skipped.
+    assert len(items) == 2, len(items)
+    guids = [i.findtext("guid") for i in items]
+    assert "37-2026CM000231-Some(2026-06-25T20:11:00.033Z)" in guids
+    assert any(g.startswith("wpr-marathon-2026cm000231-2026-06-25-") for g in guids)
+    # Stable across rebuilds - feed readers must never see repeats.
+    assert guids == [i.findtext("guid") for i in
+                     ET.fromstring(build_tracker_rss(SAMPLE_FEED)).findall("./channel/item")]
+    assert all("#marathon-2026cm000231" in i.findtext("link") for i in items)
+
+
+def test_hearings_ics_includes_watching_only_and_escapes():
+    ics = build_hearings_ics(SAMPLE_FEED)
+    assert "BEGIN:VCALENDAR" in ics and ics.endswith("END:VCALENDAR\r\n")
+    assert ics.count("BEGIN:VEVENT") == 1  # real watching case only
+    assert "DTSTART;VALUE=DATE:20260930" in ics
+    assert "DTEND;VALUE=DATE:20261001" in ics
+    assert "UID:2026CM000231-20260930@wpr-court-tracker" in ics
+    # RFC 5545: commas in text values must be escaped.
+    assert "Judicial pretrial\\, Branch 3" in ics
+    assert "closed" not in ics and "20261015" not in ics
+    assert "20260803" not in ics  # placeholder skipped
 
 
 class _FakeResp:

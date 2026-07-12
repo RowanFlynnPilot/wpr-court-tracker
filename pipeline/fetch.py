@@ -21,13 +21,14 @@ Facts this design rests on (verified 2026-07-11):
 Stdlib only. Any failure exits nonzero and loudly.
 """
 
+import hashlib
 import json
 import re
 import sys
 import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
-from email.utils import parsedate_to_datetime
+from email.utils import format_datetime, parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 from urllib.request import Request, urlopen
@@ -39,6 +40,12 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config" / "cases.json"
 FEED_PATH = ROOT / "data" / "feed.json"
 CHANGES_PATH = ROOT / "data" / "changes.json"
+RSS_PATH = ROOT / "data" / "tracker.xml"
+ICS_PATH = ROOT / "data" / "hearings.ics"
+
+# Public tracker URL - reader-facing links in the RSS/ics outputs.
+SITE_URL = "https://rowanflynnpilot.github.io/wpr-court-tracker/"
+RSS_MAX_ITEMS = 50
 
 RSS_URL = "https://wcca.wicourts.gov/caseSearchResults.do?rss=1&countyNo={county_no}&caseNo={case_no}"
 USER_AGENT = "WPR-CourtTracker/1.0 (Wausau Pilot & Review; news@wausaupilotandreview.com)"
@@ -189,6 +196,108 @@ def load_prior_observations() -> dict[str, list[dict]]:
     return {c["id"]: c.get("observed", []) for c in prior.get("cases", [])}
 
 
+def _editorial_dt(date_str: str) -> datetime:
+    """Editorial YYYY-MM-DD as a UTC instant (noonish Central)."""
+    d = datetime.strptime(date_str, "%Y-%m-%d")
+    return d.replace(hour=17, tzinfo=timezone.utc)
+
+
+def build_tracker_rss(feed: dict) -> bytes:
+    """Readers' RSS: every observed record change + editorial update.
+
+    Guids are stable across runs (WCCA's own guid for observed activity; a
+    content hash for editorial notes) so feed readers never see repeats.
+    """
+    entries = []
+    for case in feed["cases"]:
+        if case.get("placeholder"):
+            continue
+        link = f"{SITE_URL}#{case['id']}"
+        for obs in case.get("observed", []):
+            entries.append({
+                "title": f"Court record updated: {case['headline']}",
+                "link": link,
+                "guid": obs["guid"],
+                "date": datetime.fromisoformat(obs["updated"]),
+                "desc": f"{case.get('officialCaption', case['headline'])} - the "
+                        "official court record changed. Open the case file for "
+                        "the reporting.",
+            })
+        for u in case.get("updates", []):
+            digest = hashlib.sha256(u["note"].encode("utf-8")).hexdigest()[:12]
+            entries.append({
+                "title": f"{case['headline']}",
+                "link": link,
+                "guid": f"wpr-{case['id']}-{u['date']}-{digest}",
+                "date": _editorial_dt(u["date"]),
+                "desc": u["note"],
+            })
+    entries.sort(key=lambda e: e["date"], reverse=True)
+
+    rss = ET.Element("rss", version="2.0")
+    channel = ET.SubElement(rss, "channel")
+    ET.SubElement(channel, "title").text = "WPR Court Tracker - case activity"
+    ET.SubElement(channel, "link").text = SITE_URL
+    ET.SubElement(channel, "description").text = (
+        "New activity on Marathon County court cases tracked by the "
+        "Wausau Pilot & Review newsroom."
+    )
+    ET.SubElement(channel, "lastBuildDate").text = format_datetime(
+        datetime.fromisoformat(feed["generatedAt"]))
+    for e in entries[:RSS_MAX_ITEMS]:
+        item = ET.SubElement(channel, "item")
+        ET.SubElement(item, "title").text = e["title"]
+        ET.SubElement(item, "link").text = e["link"]
+        guid = ET.SubElement(item, "guid", isPermaLink="false")
+        guid.text = e["guid"]
+        ET.SubElement(item, "pubDate").text = format_datetime(e["date"])
+        ET.SubElement(item, "description").text = e["desc"]
+    return ET.tostring(rss, encoding="utf-8", xml_declaration=True)
+
+
+def _ics_escape(text: str) -> str:
+    return (
+        text.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,")
+    )
+
+
+def build_hearings_ics(feed: dict) -> str:
+    """Subscribable calendar of upcoming hearings (watching cases only).
+
+    All-day events on purpose: hearing times live in free-text editorial
+    notes, and a wrong parsed time on a subscriber's calendar is worse
+    than no time.
+    """
+    lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Wausau Pilot & Review//Court Tracker//EN",
+        "X-WR-CALNAME:WPR Court Tracker - hearings",
+        "X-WR-TIMEZONE:America/Chicago",
+    ]
+    for case in feed["cases"]:
+        if case.get("placeholder") or case.get("status") == "closed":
+            continue
+        hearing = case.get("nextHearing")
+        if not hearing:
+            continue
+        start = hearing["date"].replace("-", "")
+        d = datetime.strptime(hearing["date"], "%Y-%m-%d")
+        end = datetime.fromordinal(d.toordinal() + 1).strftime("%Y%m%d")
+        lines += [
+            "BEGIN:VEVENT",
+            f"UID:{case['caseNo']}-{start}@wpr-court-tracker",
+            f"DTSTART;VALUE=DATE:{start}",
+            f"DTEND;VALUE=DATE:{end}",
+            f"SUMMARY:{_ics_escape('Hearing: ' + case['headline'])}",
+            f"DESCRIPTION:{_ics_escape(hearing.get('note', '') + ' (Case ' + case['caseNo'] + ', ' + case['county'] + ' County)')}",
+            f"URL:{SITE_URL}#{case['id']}",
+            "END:VEVENT",
+        ]
+    lines.append("END:VCALENDAR")
+    return "\r\n".join(lines) + "\r\n"
+
+
 def run() -> None:
     config = load_config()
     prior = load_prior_observations()
@@ -238,8 +347,10 @@ def run() -> None:
         json.dumps({"generatedAt": now, "changed": changed}, indent=2) + "\n",
         encoding="utf-8",
     )
+    RSS_PATH.write_bytes(build_tracker_rss(feed))
+    ICS_PATH.write_text(build_hearings_ics(feed), encoding="utf-8", newline="")
     print(f"wrote {FEED_PATH.relative_to(ROOT)} ({len(config['cases'])} cases, "
-          f"{len(changed)} with new activity)")
+          f"{len(changed)} with new activity), tracker.xml, hearings.ics")
 
 
 if __name__ == "__main__":

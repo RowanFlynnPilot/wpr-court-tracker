@@ -125,6 +125,19 @@ Put a real text link ("See the full court tracker →") under the image —
 regions inside an image can't carry their own links. The live card is at
 `/mini-digest.html`; `widget/scripts/render-digest.mjs` screenshots it.
 
+## Reader subscriptions
+
+Two machine-readable outputs regenerate with every pipeline run and are
+linked from the widget footer:
+
+- `https://rowanflynnpilot.github.io/wpr-court-tracker/tracker.xml` —
+  RSS of case activity (observed record changes + newsroom updates,
+  stable guids so readers never see repeats).
+- `https://rowanflynnpilot.github.io/wpr-court-tracker/hearings.ics` —
+  subscribable hearing calendar (all-day events on purpose: hearing
+  times live in free-text notes, and a wrong parsed time on someone's
+  calendar is worse than none).
+
 ## Newsroom alerts
 
 Every data commit's message lists case numbers with new activity — watch

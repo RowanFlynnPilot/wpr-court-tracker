@@ -1,0 +1,14 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Wausau Pilot & Review//Court Tracker//EN
+X-WR-CALNAME:WPR Court Tracker - hearings
+X-WR-TIMEZONE:America/Chicago
+BEGIN:VEVENT
+UID:2026CM000231-20260930@wpr-court-tracker
+DTSTART;VALUE=DATE:20260930
+DTEND;VALUE=DATE:20261001
+SUMMARY:Hearing: Wausau man pleads not guilty to bail jumping\, disorderly conduct charges
+DESCRIPTION:Judicial pretrial\, Branch 3\, 10:40 a.m.\, Judge LaMont Jacobson (Case 2026CM000231\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#wausau-2026cm000231
+END:VEVENT
+END:VCALENDAR

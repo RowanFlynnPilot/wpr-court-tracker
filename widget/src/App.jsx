@@ -5,6 +5,11 @@ import badge from './assets/wpr-badge.png';
 
 const DAY_MS = 86400000;
 
+const docketFmt = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+});
+
 export function latestActivity(c) {
   const stamps = [];
   if (c.observed?.length) stamps.push(Date.parse(c.observed[0].updated));
@@ -22,6 +27,7 @@ export default function App() {
   const [feed, setFeed] = useState(null);
   const [error, setError] = useState(null);
   const [activeTag, setActiveTag] = useState('All');
+  const [query, setQuery] = useState('');
 
   // Deep link: /#case-id opens that folder and scrolls to it.
   const focusId = useMemo(
@@ -53,15 +59,40 @@ export default function App() {
 
   const cases = useMemo(() => {
     if (!feed) return [];
-    const list =
+    let list =
       activeTag === 'All'
         ? feed.cases
         : feed.cases.filter((c) => c.tags.includes(activeTag));
+    const q = query.trim().toLowerCase();
+    if (q) {
+      list = list.filter((c) =>
+        [c.headline, c.summary, c.officialCaption, c.caseNo, ...c.tags]
+          .filter(Boolean)
+          .some((field) => field.toLowerCase().includes(q))
+      );
+    }
     return [...list].sort((a, b) => latestActivity(b) - latestActivity(a));
-  }, [feed, activeTag]);
+  }, [feed, activeTag, query]);
 
   const watching = cases.filter((c) => c.status !== 'closed');
   const closed = cases.filter((c) => c.status === 'closed');
+
+  // Soonest upcoming hearings across the watchlist, for the docket strip.
+  const docket = useMemo(() => {
+    if (!feed) return [];
+    const n = new Date();
+    const today = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+    return feed.cases
+      .filter(
+        (c) =>
+          !c.placeholder &&
+          c.status !== 'closed' &&
+          c.nextHearing &&
+          datePartsToMs(c.nextHearing.date) >= today
+      )
+      .sort((a, b) => datePartsToMs(a.nextHearing.date) - datePartsToMs(b.nextHearing.date))
+      .slice(0, 2);
+  }, [feed]);
 
   if (error) {
     return (
@@ -165,10 +196,41 @@ export default function App() {
             {t}
           </button>
         ))}
+        <input
+          type="search"
+          className="search"
+          placeholder="Search cases or names&hellip;"
+          aria-label="Search cases"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
       </nav>
 
+      {docket.length > 0 && (
+        <p className="docket">
+          <span className="docket-label">Next on the docket</span>
+          {docket.map((c) => (
+            <a
+              key={c.id}
+              href={`#${c.id}`}
+              className="docket-item"
+              onClick={() =>
+                window.dispatchEvent(
+                  new CustomEvent('wpr-open-case', { detail: c.id })
+                )
+              }
+            >
+              <span className="mono docket-date">
+                {docketFmt.format(datePartsToMs(c.nextHearing.date))}
+              </span>
+              {c.headline}
+            </a>
+          ))}
+        </p>
+      )}
+
       {cases.length === 0 ? (
-        <p className="empty">No tracked cases match this topic yet. Choose another topic, or ask us to track a case below.</p>
+        <p className="empty">No tracked cases match. Clear the search or pick another topic &mdash; or ask us to track a case below.</p>
       ) : (
         <>
           <section className="stack" aria-label="Tracked cases">
@@ -215,6 +277,9 @@ export default function App() {
         <p>{feed.disclaimer}</p>
         <p>
           Source: <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>, via the court system&rsquo;s official per-case RSS feeds. Built by <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &mdash; <span className="tagline">More News. Less Fluff. All Local.</span>
+        </p>
+        <p>
+          Follow along: <a href={`${import.meta.env.BASE_URL}tracker.xml`}>case-activity feed (RSS)</a> &middot; <a href={`${import.meta.env.BASE_URL}hearings.ics`}>hearing calendar (.ics)</a> &mdash; both update automatically.
         </p>
       </footer>
     </main>

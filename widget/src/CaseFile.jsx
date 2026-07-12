@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { datePartsToMs } from './App.jsx';
 
 const dateFmt = new Intl.DateTimeFormat('en-US', {
@@ -21,6 +21,14 @@ function startOfToday() {
 export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
   const [copied, setCopied] = useState(false);
+
+  // The docket strip opens a case remotely (hash navigation handles the
+  // scroll; this handles the folder).
+  useEffect(() => {
+    const onOpen = (e) => e.detail === c.id && setOpen(true);
+    window.addEventListener('wpr-open-case', onOpen);
+    return () => window.removeEventListener('wpr-open-case', onOpen);
+  }, [c.id]);
 
   const copyLink = async () => {
     // Canonical standalone URL: works from the article embed and the

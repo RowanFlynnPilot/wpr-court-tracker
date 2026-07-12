@@ -145,6 +145,41 @@ body {
 }
 .chip-on { background: var(--teal); border-color: var(--teal); color: #fff; }
 .chip:hover:not(.chip-on) { background: rgba(58, 134, 124, 0.1); }
+.search {
+  margin-left: auto;
+  font: 400 13.5px var(--font-body);
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 14px;
+  min-width: 200px;
+}
+.search:focus { border-color: var(--teal); }
+
+/* ---------- docket strip ---------- */
+.docket {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  margin: 0 0 18px;
+  background: var(--paper-warm);
+  border-left: 4px solid var(--teal);
+  border-radius: 0 6px 6px 0;
+  padding: 8px 12px;
+  font-size: 13.5px;
+}
+.docket-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+}
+.docket-item { font-weight: 700; text-decoration-thickness: 1px; }
+.docket-date { font-weight: 700; margin-right: 6px; }
 
 /* ---------- case folders (signature element) ---------- */
 .stack { display: flex; flex-direction: column; gap: 26px; }
@@ -427,6 +462,7 @@ a:hover { color: var(--teal); }
   .last-activity { margin-left: 0; }
   .hearing { flex-wrap: wrap; }
   .hearing-ics { margin-left: 0; flex-basis: 100%; }
+  .search { margin-left: 0; min-width: 100%; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

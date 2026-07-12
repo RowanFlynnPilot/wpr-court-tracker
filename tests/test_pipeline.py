@@ -184,6 +184,71 @@ def test_parse_empty_feed_is_no_activity_not_error():
     assert parse_feed(empty) == []
 
 
+class _FakeResp:
+    status = 200
+
+    def read(self):
+        return FIXTURE
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return False
+
+
+def _patched_fetch(fail_times):
+    """Run fetch_case_feed with a fake network failing `fail_times` first.
+
+    Returns (result_or_error, attempts, sleeps).
+    """
+    import types
+
+    import fetch as fetch_mod
+
+    calls = {"n": 0}
+    sleeps = []
+
+    def fake_urlopen(req, timeout):
+        assert timeout == fetch_mod.TIMEOUT_S
+        calls["n"] += 1
+        if calls["n"] <= fail_times:
+            raise OSError("timed out")
+        return _FakeResp()
+
+    orig_urlopen, orig_time = fetch_mod.urlopen, fetch_mod.time
+    fetch_mod.urlopen = fake_urlopen
+    fetch_mod.time = types.SimpleNamespace(sleep=sleeps.append)
+    try:
+        try:
+            result = fetch_mod.fetch_case_feed("2026CF000100", 37)
+        except PipelineError as e:
+            result = e
+        return result, calls["n"], sleeps
+    finally:
+        fetch_mod.urlopen, fetch_mod.time = orig_urlopen, orig_time
+
+
+def test_fetch_survives_two_transient_failures():
+    import fetch as fetch_mod
+
+    result, attempts, sleeps = _patched_fetch(fail_times=2)
+    assert not isinstance(result, PipelineError), result
+    assert len(result) == 1 and result[0]["guid"].startswith("37-2026CF000100-")
+    assert attempts == 3, attempts
+    assert sleeps == list(fetch_mod.RETRY_WAITS_S), sleeps
+
+
+def test_fetch_fails_loud_after_all_retries():
+    import fetch as fetch_mod
+
+    result, attempts, sleeps = _patched_fetch(fail_times=99)
+    assert isinstance(result, PipelineError), result
+    assert "timed out" in str(result)
+    assert attempts == len(fetch_mod.RETRY_WAITS_S) + 1, attempts
+    assert sleeps == list(fetch_mod.RETRY_WAITS_S), sleeps
+
+
 def test_parse_wcca_url():
     case_no, county_no = parse_wcca_url(
         "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000100&countyNo=37"

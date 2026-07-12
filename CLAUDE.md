@@ -143,7 +143,10 @@ pattern as wpr-brewers-tracker, never committed).
 - Red-run semantics: a FAILED "Update court data and deploy" run has
   usually still DEPLOYED. The fetch step is continue-on-error; if WCCA
   is unreachable the site ships with last-good data and the final
-  "Propagate fetch failure" step marks the run red on purpose. WCCA
-  timed out from Actions runners twice on launch evening (fine from
-  local); if red runs persist for days, consider a longer TIMEOUT_S or
-  a second retry — never a fallback beyond the RSS endpoint.
+  "Propagate fetch failure" step marks the run red on purpose.
+- WCCA throttles/slows for Actions runners some evenings (3 of 5 runs
+  on launch night; always instant from local). Hardened same night:
+  TIMEOUT_S 30->60, two retries with 5s/25s escalating backoff
+  (unit-tested with a faked network). If reds STILL persist, the answer
+  is more patience or fewer polls — never a fallback beyond the RSS
+  endpoint.

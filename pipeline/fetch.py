@@ -42,8 +42,11 @@ CHANGES_PATH = ROOT / "data" / "changes.json"
 
 RSS_URL = "https://wcca.wicourts.gov/caseSearchResults.do?rss=1&countyNo={county_no}&caseNo={case_no}"
 USER_AGENT = "WPR-CourtTracker/1.0 (Wausau Pilot & Review; news@wausaupilotandreview.com)"
-TIMEOUT_S = 30
-RETRY_WAIT_S = 5
+# WCCA throttles/slows for cloud IPs some evenings (3 of 5 Actions runs
+# timed out on 2026-07-11 while local fetches were instant). Be patient,
+# then still fail loudly: 60s per attempt, two retries, escalating waits.
+TIMEOUT_S = 60
+RETRY_WAITS_S = (5, 25)
 
 REQUIRED_CASE_FIELDS = ("id", "wccaUrl", "county", "headline", "summary", "tags")
 
@@ -154,15 +157,16 @@ def parse_feed(xml_bytes: bytes) -> list[dict]:
 
 
 def fetch_case_feed(case_no: str, county_no: int) -> list[dict]:
-    """Fetch one case's RSS feed, retrying once on a transient failure.
+    """Fetch one case's RSS feed, retrying on transient failures.
 
-    One retry only: a WCCA hiccup shouldn't redden the run, but anything
-    persistent must still fail loudly rather than quietly skip a case.
+    Escalating patience (RETRY_WAITS_S between attempts): a slow WCCA
+    evening shouldn't redden the run, but anything persistent must still
+    fail loudly rather than quietly skip a case.
     """
     url = RSS_URL.format(county_no=county_no, case_no=case_no)
     req = Request(url, headers={"User-Agent": USER_AGENT})
     last_err = None
-    for attempt in (1, 2):
+    for attempt in range(len(RETRY_WAITS_S) + 1):
         try:
             with urlopen(req, timeout=TIMEOUT_S) as resp:
                 if resp.status != 200:
@@ -170,9 +174,10 @@ def fetch_case_feed(case_no: str, county_no: int) -> list[dict]:
                 return parse_feed(resp.read())
         except (OSError, ET.ParseError, PipelineError) as e:
             last_err = e
-            if attempt == 1:
-                print(f"retrying {case_no} in {RETRY_WAIT_S}s after: {e}")
-                time.sleep(RETRY_WAIT_S)
+            if attempt < len(RETRY_WAITS_S):
+                wait = RETRY_WAITS_S[attempt]
+                print(f"retrying {case_no} in {wait}s after: {e}")
+                time.sleep(wait)
     raise PipelineError(f"fetch failed for {url}: {last_err}")
 
 

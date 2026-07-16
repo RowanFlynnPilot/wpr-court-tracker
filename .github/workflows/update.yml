@@ -8,11 +8,18 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      attempt:
+        description: 'WCCA fetch attempt (the workflow hands itself off to a fresh runner on failure; max 3)'
+        required: false
+        default: '1'
 
 permissions:
   contents: write
   pages: write
   id-token: write
+  actions: write
+  issues: write
 
 concurrency:
   group: court-tracker
@@ -24,6 +31,9 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      # '1' for schedule/push; self-handoff dispatches 2 then 3.
+      ATTEMPT: ${{ inputs.attempt || '1' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -34,13 +44,52 @@ jobs:
       - name: Run pipeline tests
         run: python tests/test_pipeline.py
 
-      # continue-on-error so a WCCA outage can't block deploying widget
-      # changes - the site ships with the last committed (still-valid)
-      # data. The run is still marked failed at the end: loud, not silent.
+      # continue-on-error so a WCCA stall can't block deploying - the site
+      # ships with the last committed (still-valid) data. WCCA slows for
+      # datacenter IPs in predictable windows (~1 p.m. and ~7 p.m. Central,
+      # observed daily); a fresh runner minutes later usually gets through,
+      # so failures hand off to a new runner (new IP) up to 3 attempts,
+      # and only a 3-runner miss raises the wcca-outage issue. Runs stay
+      # green: red is reserved for real bugs (tests, build, deploy).
       - name: Fetch court activity (official WCCA RSS)
         id: fetch
         continue-on-error: true
         run: python pipeline/fetch.py
+
+      - name: Hand off to a fresh runner (WCCA stalled on this one)
+        if: steps.fetch.outcome == 'failure' && (env.ATTEMPT == '1' || env.ATTEMPT == '2')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NEXT=$((ATTEMPT + 1))
+          echo "::warning::WCCA fetch stalled (runner attempt $ATTEMPT of 3). Dispatching attempt $NEXT on a fresh runner; this run still deploys last-good data."
+          gh workflow run "Update court data and deploy" -f attempt="$NEXT"
+
+      - name: Raise the outage flag (three runners couldn't reach WCCA)
+        if: steps.fetch.outcome == 'failure' && env.ATTEMPT == '3'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "::warning::WCCA unreachable after 3 fresh-runner attempts. Site serves last-good data; the widget's checked-at time stays honest."
+          gh label create wcca-outage --color B60205 --description "WCCA unreachable from Actions runners" 2>/dev/null || true
+          N=$(gh issue list --label wcca-outage --state open --json number --jq '.[0].number')
+          if [ -z "$N" ]; then
+            gh issue create --label wcca-outage \
+              --title "WCCA unreachable from Actions runners" \
+              --body "Court-record checks are timing out from GitHub's runners (three fresh runners tried per tick). The site keeps deploying with last-good data and the widget shows the honest checked-at time. This issue closes automatically on the first successful check. Playbook: CLAUDE.md operational notes."
+          else
+            gh issue comment "$N" --body "Still unreachable at $(date -u '+%F %T') UTC (3 fresh-runner attempts)."
+          fi
+
+      - name: Clear the outage flag
+        if: steps.fetch.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          N=$(gh issue list --label wcca-outage --state open --json number --jq '.[0].number')
+          if [ -n "$N" ]; then
+            gh issue close "$N" --comment "Recovered - court-record checks are succeeding again."
+          fi
 
       - name: Commit data changes
         run: |
@@ -89,9 +138,3 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Propagate fetch failure (deploy happened; stay loud)
-        if: steps.fetch.outcome == 'failure'
-        run: |
-          echo "WCCA fetch failed this run; site deployed with last-good data." >&2
-          exit 1

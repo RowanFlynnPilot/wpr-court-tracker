@@ -148,13 +148,18 @@ pattern as wpr-brewers-tracker, never committed).
 - Shereen needs to be added as a repo collaborator (Settings >
   Collaborators — Rowan does this) for her desk submissions to
   auto-publish; until then her issues take the PR path.
-- Red-run semantics: a FAILED "Update court data and deploy" run has
-  usually still DEPLOYED. The fetch step is continue-on-error; if WCCA
-  is unreachable the site ships with last-good data and the final
-  "Propagate fetch failure" step marks the run red on purpose.
-- WCCA throttles/slows for Actions runners some evenings (3 of 5 runs
-  on launch night; always instant from local). Hardened same night:
-  TIMEOUT_S 30->60, two retries with 5s/25s escalating backoff
-  (unit-tested with a faked network). If reds STILL persist, the answer
-  is more patience or fewer polls — never a fallback beyond the RSS
-  endpoint.
+- WCCA availability playbook (rewritten 2026-07-15). Observed pattern:
+  WCCA stalls for DATACENTER IPs in two daily windows — the runs landing
+  ~1 p.m. and ~6:50 p.m. Central failed on Jul 14 AND Jul 15 while the
+  other four ticks passed, and local fetches are instant even inside the
+  windows. In-process patience (TIMEOUT_S=60, two retries, 5s/25s,
+  unit-tested vs a faked network) plus RUN-LEVEL handoff: on fetch
+  failure the workflow dispatches ITSELF on a fresh runner (new IP;
+  attempt input, max 3). Fetch trouble never reddens a run — the site
+  deploys last-good data, the widget's checked-at stays honest, and a
+  warning annotation records it. Only a 3-runner miss opens the
+  auto-managed `wcca-outage` issue (auto-closes on first success) — THAT
+  issue is the real alert; red runs mean code/build/deploy bugs now.
+  If outages persist across days: fewer polls, nudged cron times, or
+  CCAP outreach (they sanction the feed; ask about runner IPs) — never
+  a fallback beyond the RSS endpoint.

@@ -15,9 +15,9 @@ import {
 // Case Entry Desk: newsroom-facing intake form. Paste the case page text
 // (or upload a saved file / print-to-PDF); it's parsed ON THIS MACHINE to
 // prefill the form; the editor reviews every field against a live preview
-// and submits via the prefilled "Track a case" GitHub issue, which the
-// validation workflow turns into a sign-off PR. This page never contacts
-// the court system.
+// and submits via the prefilled "Track a case" GitHub issue. Newsroom
+// submissions auto-publish at the twice-daily sweep; outside submissions
+// become a sign-off PR. This page never contacts the court system.
 
 const FALLBACK_PRESUMPTION =
   'A criminal charge is an accusation. Every defendant is presumed ' +
@@ -273,8 +273,9 @@ export default function CaseDesk() {
           <h1>Case Entry Desk</h1>
           <p className="dek">
             Paste a case page (or upload a saved copy), check what the desk
-            found, and publish through the sign-off pull request. Nothing
-            you paste leaves this page until you submit the reviewed fields.
+            found, and publish &mdash; newsroom submissions go live at the
+            next sweep, 7:45 a.m. or 3:45 p.m. Central. Nothing you paste
+            leaves this page until you submit the reviewed fields.
           </p>
         </div>
       </header>

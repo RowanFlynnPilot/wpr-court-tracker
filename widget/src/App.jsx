@@ -71,7 +71,13 @@ export default function App() {
           .some((field) => field.toLowerCase().includes(q))
       );
     }
-    return [...list].sort((a, b) => latestActivity(b) - latestActivity(a));
+    // Placeholders (SAMPLE cards) always sort below real cases - activity
+    // dates on demo content must never outrank the real record.
+    return [...list].sort(
+      (a, b) =>
+        (a.placeholder ? 1 : 0) - (b.placeholder ? 1 : 0) ||
+        latestActivity(b) - latestActivity(a)
+    );
   }, [feed, activeTag, query]);
 
   const watching = cases.filter((c) => c.status !== 'closed');

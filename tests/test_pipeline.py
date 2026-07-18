@@ -46,6 +46,24 @@ def test_status_defaults_to_watching_and_rejects_unknown():
             raise AssertionError(f"{bad!r} must fail status validation")
 
 
+def test_first_tracked_at_prefers_prior_then_backfills():
+    from fetch import first_tracked_at
+
+    now = "2026-07-18T19:00:00+00:00"
+    obs = [
+        {"guid": "g1", "updated": "2026-04-28T14:08:18+00:00",
+         "observedAt": "2026-07-18T18:58:01+00:00"},
+        {"guid": "g0", "updated": "2026-03-01T10:00:00+00:00",
+         "observedAt": "2026-07-11T20:21:22+00:00"},
+    ]
+    # The prior feed's stamp is stable across runs, whatever observed says.
+    assert first_tracked_at("2026-07-01T00:00:00+00:00", obs, now) == "2026-07-01T00:00:00+00:00"
+    # No prior stamp: backfill from the EARLIEST observation.
+    assert first_tracked_at(None, obs, now) == "2026-07-11T20:21:22+00:00"
+    # Brand-new case with an empty feed: stamped now.
+    assert first_tracked_at(None, [], now) == now
+
+
 FIXTURE = (ROOT / "tests" / "fixtures" / "wcca_feed_sample.xml").read_bytes()
 
 # --- track-a-case issue intake ------------------------------------------

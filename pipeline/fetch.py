@@ -196,6 +196,32 @@ def load_prior_observations() -> dict[str, list[dict]]:
     return {c["id"]: c.get("observed", []) for c in prior.get("cases", [])}
 
 
+def load_prior_first_tracked() -> dict[str, str]:
+    """Prior firstTrackedAt stamps, keyed by case id, from the last feed.json."""
+    if not FEED_PATH.exists():
+        return {}
+    prior = json.loads(FEED_PATH.read_text(encoding="utf-8"))
+    return {
+        c["id"]: c["firstTrackedAt"]
+        for c in prior.get("cases", [])
+        if c.get("firstTrackedAt")
+    }
+
+
+def first_tracked_at(prior_value, observed: list[dict], now: str) -> str:
+    """When did this case join the watchlist?
+
+    The prior feed's stamp wins (stable across runs). Cases tracked before
+    the stamp existed backfill from their earliest observation - accurate,
+    since the first fetch happens minutes after a case is added. Brand-new
+    cases with an empty feed stamp as now.
+    """
+    if prior_value:
+        return prior_value
+    stamps = [o["observedAt"] for o in observed if o.get("observedAt")]
+    return min(stamps) if stamps else now
+
+
 def _editorial_dt(date_str: str) -> datetime:
     """Editorial YYYY-MM-DD as a UTC instant (noonish Central)."""
     d = datetime.strptime(date_str, "%Y-%m-%d")
@@ -301,6 +327,7 @@ def build_hearings_ics(feed: dict) -> str:
 def run() -> None:
     config = load_config()
     prior = load_prior_observations()
+    prior_first = load_prior_first_tracked()
     now = datetime.now(timezone.utc).isoformat()
     changed = []
 
@@ -332,6 +359,9 @@ def run() -> None:
         case["observed"] = sorted(observed, key=lambda o: o["updated"], reverse=True)
         if case["observed"]:
             case["officialCaption"] = case["observed"][0]["officialCaption"]
+        case["firstTrackedAt"] = first_tracked_at(
+            prior_first.get(case["id"]), case["observed"], now
+        )
 
     feed = {
         "generatedAt": now,

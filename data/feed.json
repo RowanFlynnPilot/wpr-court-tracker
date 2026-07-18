@@ -1,74 +1,10 @@
 {
-  "generatedAt": "2026-07-18T18:58:01.008065+00:00",
+  "generatedAt": "2026-07-18T19:30:46.922706+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
   "presumptionNote": "A criminal charge is an accusation. Every defendant is presumed innocent unless and until proven guilty.",
   "cases": [
-    {
-      "id": "sample-felony",
-      "placeholder": true,
-      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000001&countyNo=37",
-      "county": "Marathon",
-      "headline": "Downtown Wausau arson case",
-      "summary": "A sample case file, for demonstration. Criminal cases automatically carry the presumption-of-innocence note; the teal bar shows the next court date, and opening the file shows the full activity ledger.",
-      "tags": [
-        "Public safety"
-      ],
-      "nextHearing": {
-        "date": "2026-08-03",
-        "note": "Preliminary hearing, Branch 2, 10:30 a.m."
-      },
-      "updates": [
-        {
-          "date": "2026-07-01",
-          "note": "Criminal complaint filed in Marathon County Circuit Court. WPR's initial story is linked below."
-        },
-        {
-          "date": "2026-07-08",
-          "note": "Initial appearance held; cash bond set."
-        }
-      ],
-      "links": [
-        {
-          "label": "WPR coverage",
-          "url": "https://wausaupilotandreview.com/"
-        }
-      ],
-      "caseNo": "2026CF000001",
-      "countyNo": 37,
-      "caseType": "CF",
-      "caseTypeLabel": "Felony",
-      "isCriminal": true,
-      "status": "watching",
-      "observed": []
-    },
-    {
-      "id": "sample-civil",
-      "placeholder": true,
-      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CV000002&countyNo=37",
-      "county": "Marathon",
-      "headline": "School district open records lawsuit",
-      "summary": "A sample case file, for demonstration. Civil cases carry no presumption note. Inside the file, teal entries are newsroom updates and red entries are observed changes to the official court record.",
-      "tags": [
-        "Government",
-        "Open records"
-      ],
-      "updates": [
-        {
-          "date": "2026-06-15",
-          "note": "Complaint filed seeking release of superintendent search records."
-        }
-      ],
-      "links": [],
-      "caseNo": "2026CV000002",
-      "countyNo": 37,
-      "caseType": "CV",
-      "caseTypeLabel": "Civil",
-      "isCriminal": false,
-      "status": "watching",
-      "observed": []
-    },
     {
       "id": "wausau-2026cm000231",
       "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CM000231&countyNo=37",
@@ -113,7 +49,8 @@
           "observedAt": "2026-07-11T20:21:22.242175+00:00"
         }
       ],
-      "officialCaption": "State of Wisconsin vs. Robert Edward Dewayne Stevens Jr"
+      "officialCaption": "State of Wisconsin vs. Robert Edward Dewayne Stevens Jr",
+      "firstTrackedAt": "2026-07-11T20:21:22.242175+00:00"
     },
     {
       "id": "marathon-2025cm000682",
@@ -152,7 +89,8 @@
           "observedAt": "2026-07-18T18:58:01.008065+00:00"
         }
       ],
-      "officialCaption": "State of Wisconsin vs. Nicholas Michael Endres"
+      "officialCaption": "State of Wisconsin vs. Nicholas Michael Endres",
+      "firstTrackedAt": "2026-07-18T18:58:01.008065+00:00"
     }
   ]
 }

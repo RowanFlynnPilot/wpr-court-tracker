@@ -64,12 +64,40 @@ export default function MiniDigest() {
 
   const watched = real.filter((c) => c.status !== 'closed').length;
 
+  // Cases in their first week on the watchlist - the "why is this here"
+  // section. Rendered only when there's something to announce.
+  const newlyTracked = real
+    .filter(
+      (c) =>
+        c.firstTrackedAt &&
+        generatedMs - Date.parse(c.firstTrackedAt) < RECENT_DAYS * DAY_MS
+    )
+    .sort((a, b) => Date.parse(b.firstTrackedAt) - Date.parse(a.firstTrackedAt))
+    .slice(0, MAX_ROWS);
+
   return (
     <div className="mini-card digest-ready">
       <div className="mini-head">
         <span className="mini-title">Court Tracker Digest</span>
         <span className="mini-date">{stampFmt.format(generatedMs)}</span>
       </div>
+
+      {newlyTracked.length > 0 && (
+        <div className="mini-section">
+          <h2 className="mini-h mini-h-tracked">Newly tracked</h2>
+          {newlyTracked.map((c) => (
+            <div key={c.id} className="digest-row">
+              <span className="digest-when digest-when-tracked">
+                {dayFmt.format(Date.parse(c.firstTrackedAt))}
+              </span>
+              <span className="digest-what">
+                <b>{c.headline}</b>
+                Added to the WPR watchlist.
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="mini-section">
         <h2 className="mini-h mini-h-activity">New court activity &mdash; past {RECENT_DAYS} days</h2>

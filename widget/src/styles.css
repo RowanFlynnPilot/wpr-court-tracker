@@ -222,6 +222,13 @@ body {
     radial-gradient(2.5px 2px at 90% 22%, transparent 50%, #000 57%),
     radial-gradient(2px 2px at 6% 80%, transparent 45%, #000 52%);
 }
+/* First week on the watchlist. Red stamp (record changed) wins if both
+   apply; this one explains why a quiet case just appeared. */
+.stamp-teal {
+  color: var(--teal-deep);
+  border-color: var(--teal-deep);
+  transform: rotate(-1.2deg);
+}
 .sample-flag {
   align-self: center;
   font-family: var(--font-mono);
@@ -512,6 +519,8 @@ a:hover { color: var(--teal); }
 }
 .mini-h-activity { color: var(--stamp); }
 .mini-h-hearings { color: var(--teal-deep); }
+.mini-h-tracked { color: var(--ink); }
+.digest-when-tracked { color: var(--ink); }
 .digest-row {
   display: grid;
   grid-template-columns: 64px 1fr;

@@ -22,6 +22,11 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
   const [open, setOpen] = useState(defaultOpen);
   const [copied, setCopied] = useState(false);
 
+  // A case's first week on the watchlist gets its own (teal) stamp -
+  // otherwise a just-added case with an old docket looks dormant on debut.
+  const newlyTracked =
+    c.firstTrackedAt && generatedMs - Date.parse(c.firstTrackedAt) < 7 * 86400000;
+
   // The docket strip opens a case remotely (hash navigation handles the
   // scroll; this handles the folder).
   useEffect(() => {
@@ -45,9 +50,9 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
 
   const ledger = useMemo(() => {
     const rows = [];
-    for (const u of c.updates ?? []) {
-      rows.push({ ms: datePartsToMs(u.date), kind: 'wpr', note: u.note, key: `w${u.date}${u.note.length}` });
-    }
+    (c.updates ?? []).forEach((u, i) => {
+      rows.push({ ms: datePartsToMs(u.date), kind: 'wpr', note: u.note, key: `w${i}-${u.date}` });
+    });
     for (const o of c.observed ?? []) {
       rows.push({ ms: Date.parse(o.updated), kind: 'court', key: o.guid });
     }
@@ -95,6 +100,7 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
       <div className="folder-tabrow">
         <span className="folder-tab">{c.caseTypeLabel}</span>
         {isNew && <span className="stamp">New activity</span>}
+        {newlyTracked && !isNew && <span className="stamp stamp-teal">Newly tracked</span>}
         {c.placeholder && <span className="sample-flag">Sample</span>}
       </div>
       <div className="folder-body">
@@ -149,7 +155,12 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
           {c.isCriminal && <p className="presumption">{presumptionNote}</p>}
           <div className="ledger-head">
             <h3 className="ledger-title">Activity</h3>
-            <span className="case-no mono">Case no. {c.caseNo}</span>
+            <span className="case-no mono">
+              Case no. {c.caseNo}
+              {c.firstTrackedAt && (
+                <> &middot; tracked since {tsFmt.format(Date.parse(c.firstTrackedAt))}</>
+              )}
+            </span>
           </div>
           {ledger.length === 0 ? (
             <p className="ledger-empty">No activity logged yet. We&rsquo;re watching this file.</p>

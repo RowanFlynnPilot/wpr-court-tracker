@@ -20,7 +20,8 @@ on:
     types: [opened, edited]
   schedule:
     # Publish sweeps at 7:45 a.m. and 3:45 p.m. Central (CDT = UTC-5),
-    # daily. The publish commit itself triggers the deploy workflow.
+    # daily. GITHUB_TOKEN pushes never trigger on:push workflows
+    # (GitHub anti-recursion), so the sweep dispatches the deploy itself.
     - cron: '45 12,20 * * *'
   workflow_dispatch:
 
@@ -28,6 +29,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  actions: write
 
 concurrency:
   group: track-case-intake
@@ -172,5 +174,8 @@ jobs:
           if [ "$PUBLISHED" -gt 0 ]; then
             git pull --rebase origin main
             git push
+            # The token push above can't trigger on:push - deploy explicitly
+            # so "live in minutes" (the issue comment's promise) stays true.
+            gh workflow run "Update court data and deploy"
           fi
           echo "published $PUBLISHED case(s), $FAILED needing fixes"

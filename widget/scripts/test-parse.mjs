@@ -150,4 +150,25 @@ test('buildCaseEntry records closed status, omits watching', () => {
   assert(!('status' in buildCaseEntry(FORM)));
 });
 
+test('label-less links get a derived label instead of being dropped', () => {
+  const form = {
+    ...FORM,
+    links: [
+      { label: '', url: 'https://www.wausaupilotandreview.com/2026/story/' },
+      { label: '', url: 'https://wpt.org/coverage' },
+      { label: '', url: 'not a url' },
+    ],
+  };
+  const e = buildCaseEntry(form);
+  assert(e.links.length === 2, 'unparseable URL row must be dropped');
+  assert(e.links[0].label === 'WPR coverage', e.links[0].label);
+  assert(e.links[1].label === 'wpt.org', e.links[1].label);
+  const p = new URL(buildIssueUrl(form)).searchParams;
+  assert(
+    p.get('links') ===
+      'WPR coverage | https://www.wausaupilotandreview.com/2026/story/\nwpt.org | https://wpt.org/coverage',
+    p.get('links')
+  );
+});
+
 process.exit(failures ? 1 : 0);

@@ -126,6 +126,31 @@ def test_issue_form_rejects_missing_pipe():
         raise AssertionError("pipeless timeline line must be rejected")
 
 
+def test_issue_links_accept_bare_urls():
+    # Reporters paste plain links (issue #1 did). A bare URL gets a label
+    # derived from the site; WPR's own domain reads "WPR coverage".
+    body = ISSUE_BODY.replace(
+        "_No response_",
+        "https://www.wausaupilotandreview.com/2026/06/21/some-story/\n"
+        "https://wpt.org/coverage\n"
+        "Court calendar | https://example.org/cal",
+        1,
+    )
+    case = build_case(body)
+    assert case["links"] == [
+        {"label": "WPR coverage", "url": "https://www.wausaupilotandreview.com/2026/06/21/some-story/"},
+        {"label": "wpt.org", "url": "https://wpt.org/coverage"},
+        {"label": "Court calendar", "url": "https://example.org/cal"},
+    ]
+    # Pipe-less text that isn't a URL is still rejected, with the format hint.
+    try:
+        build_case(ISSUE_BODY.replace("_No response_", "see our story", 1))
+    except PipelineError as e:
+        assert "Label | https://url" in str(e)
+    else:
+        raise AssertionError("non-URL pipeless link line must be rejected")
+
+
 def test_issue_form_rejects_unknown_county():
     body = ISSUE_BODY.replace("countyNo=37", "countyNo=13")
     try:

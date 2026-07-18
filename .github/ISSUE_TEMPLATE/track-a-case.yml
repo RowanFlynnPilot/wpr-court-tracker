@@ -91,5 +91,5 @@ body:
     id: links
     attributes:
       label: Related links (optional)
-      description: "One per line: Label | https://url"
+      description: "One per line: Label | https://url (or just the URL - we'll label it by site)"
       placeholder: "WPR coverage | https://wausaupilotandreview.com/2026/..."

@@ -164,6 +164,27 @@ function titleCaseEvent(line, eventMatch) {
   return phrase.charAt(0).toUpperCase() + phrase.slice(1);
 }
 
+/** Mirror of pipeline parse_link_lines: a link pasted without a label
+ *  gets one derived from the site name instead of being dropped. */
+export function linkLabel(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    if (!host) return '';
+    return host === 'wausaupilotandreview.com' ? 'WPR coverage' : host;
+  } catch {
+    return '';
+  }
+}
+
+function cleanLinks(links) {
+  return (links || [])
+    .map((l) => ({
+      label: l.label.trim() || linkLabel(l.url.trim()),
+      url: l.url.trim(),
+    }))
+    .filter((l) => l.label && l.url);
+}
+
 /** Build the config/cases.json entry (same shape the intake workflow makes). */
 export function buildCaseEntry(f) {
   const { caseNo } = parseWccaUrl(f.wccaUrl);
@@ -186,10 +207,8 @@ export function buildCaseEntry(f) {
   if (updates.length) {
     entry.updates = updates.map((u) => ({ date: u.date, note: u.note.trim() }));
   }
-  const links = (f.links || []).filter((l) => l.label.trim() && l.url.trim());
-  if (links.length) {
-    entry.links = links.map((l) => ({ label: l.label.trim(), url: l.url.trim() }));
-  }
+  const links = cleanLinks(f.links);
+  if (links.length) entry.links = links;
   return entry;
 }
 
@@ -214,9 +233,8 @@ export function buildIssueUrl(f) {
     .map((u) => `${u.date} | ${u.note.trim()}`)
     .join('\n');
   if (updates) params.set('updates', updates);
-  const links = (f.links || [])
-    .filter((l) => l.label.trim() && l.url.trim())
-    .map((l) => `${l.label.trim()} | ${l.url.trim()}`)
+  const links = cleanLinks(f.links)
+    .map((l) => `${l.label} | ${l.url}`)
     .join('\n');
   if (links) params.set('links', links);
   return `https://github.com/RowanFlynnPilot/wpr-court-tracker/issues/new?${params}`;

@@ -21,6 +21,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).parent))
 import policy  # noqa: E402
@@ -90,6 +91,38 @@ def parse_piped_lines(raw: str, what: str, keys: tuple[str, str]) -> list[dict]:
     return rows
 
 
+def parse_link_lines(raw: str) -> list[dict]:
+    """'Label | https://url' lines, or bare URLs (label derived from the
+    host). Reporters paste plain links; don't bounce a submission over
+    punctuation - issue #1 sat unpublished for days on exactly this."""
+    rows = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if "|" in line:
+            label, url = (part.strip() for part in line.split("|", 1))
+            if not label or not url:
+                raise PipelineError(
+                    f"Related links: both sides of the pipe are required, got {line!r}"
+                )
+        elif line.startswith(("http://", "https://")):
+            url = line
+            host = (urlsplit(line).hostname or "").removeprefix("www.")
+            if not host:
+                raise PipelineError(
+                    f"Related links: couldn't read a site name from {line!r}"
+                )
+            label = "WPR coverage" if host == "wausaupilotandreview.com" else host
+        else:
+            raise PipelineError(
+                "Related links: each line is 'Label | https://url' "
+                f"(or just the URL), got {line!r}"
+            )
+        rows.append({"label": label, "url": url})
+    return rows
+
+
 def build_case(body: str) -> dict:
     form = parse_form(body)
     missing = [f for f in (F_URL, F_HEADLINE, F_SUMMARY, F_TOPICS) if not form.get(f)]
@@ -129,7 +162,7 @@ def build_case(body: str) -> dict:
     updates = parse_piped_lines(form.get(F_UPDATES, ""), "Timeline entries", ("date", "note"))
     if updates:
         case["updates"] = updates
-    links = parse_piped_lines(form.get(F_LINKS, ""), "Related links", ("label", "url"))
+    links = parse_link_lines(form.get(F_LINKS, ""))
     if links:
         case["links"] = links
     return case

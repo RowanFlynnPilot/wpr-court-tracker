@@ -145,9 +145,16 @@ pattern as wpr-brewers-tracker, never committed).
   real case you actually want tracked, or close the issue before
   12:45/20:45 UTC. The publish sweep itself can be proven harmlessly via
   workflow_dispatch with no open track-a-case issues (clean no-op).
-- Shereen needs to be added as a repo collaborator (Settings >
-  Collaborators — Rowan does this) for her desk submissions to
-  auto-publish; until then her issues take the PR path.
+- Shereen is a repo collaborator as `wausau-pilot` (confirmed
+  2026-07-18) — her desk submissions take the auto-publish lane.
+- GitHub SILENTLY DROPS issue-template labels that don't exist in the
+  repo. The `track-a-case` label wasn't created until 2026-07-18, so
+  issue #1 (Shereen's first real submission, Jul 13) was invisible to
+  both intake jobs for five days — no feedback comment, never swept.
+  If intake ever looks dead: check the label exists AND is on the
+  issue before debugging anything else. Related: the links field
+  accepts bare URLs (label derived from hostname) as of 2026-07-18;
+  timeline entries still require `date | note`.
 - WCCA availability playbook (rewritten 2026-07-15). Observed pattern:
   WCCA stalls for DATACENTER IPs in two daily windows — the runs landing
   ~1 p.m. and ~6:50 p.m. Central failed on Jul 14 AND Jul 15 while the

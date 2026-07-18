@@ -520,7 +520,8 @@ a:hover { color: var(--teal); }
 .mini-h-activity { color: var(--stamp); }
 .mini-h-hearings { color: var(--teal-deep); }
 .mini-h-tracked { color: var(--ink); }
-.digest-when-tracked { color: var(--ink); }
+/* Doubled class: must outrank .digest-when's red, declared later. */
+.digest-when.digest-when-tracked { color: var(--ink); }
 .digest-row {
   display: grid;
   grid-template-columns: 64px 1fr;

@@ -8,14 +8,28 @@
       "county": "Marathon",
       "headline": "Downtown Wausau arson case",
       "summary": "A sample case file, for demonstration. Criminal cases automatically carry the presumption-of-innocence note; the teal bar shows the next court date, and opening the file shows the full activity ledger.",
-      "tags": ["Public safety"],
-      "nextHearing": { "date": "2026-08-03", "note": "Preliminary hearing, Branch 2, 10:30 a.m." },
+      "tags": [
+        "Public safety"
+      ],
+      "nextHearing": {
+        "date": "2026-08-03",
+        "note": "Preliminary hearing, Branch 2, 10:30 a.m."
+      },
       "updates": [
-        { "date": "2026-07-01", "note": "Criminal complaint filed in Marathon County Circuit Court. WPR's initial story is linked below." },
-        { "date": "2026-07-08", "note": "Initial appearance held; cash bond set." }
+        {
+          "date": "2026-07-01",
+          "note": "Criminal complaint filed in Marathon County Circuit Court. WPR's initial story is linked below."
+        },
+        {
+          "date": "2026-07-08",
+          "note": "Initial appearance held; cash bond set."
+        }
       ],
       "links": [
-        { "label": "WPR coverage", "url": "https://wausaupilotandreview.com/" }
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/"
+        }
       ]
     },
     {
@@ -25,25 +39,66 @@
       "county": "Marathon",
       "headline": "School district open records lawsuit",
       "summary": "A sample case file, for demonstration. Civil cases carry no presumption note. Inside the file, teal entries are newsroom updates and red entries are observed changes to the official court record.",
-      "tags": ["Government", "Open records"],
+      "tags": [
+        "Government",
+        "Open records"
+      ],
       "updates": [
-        { "date": "2026-06-15", "note": "Complaint filed seeking release of superintendent search records." }
+        {
+          "date": "2026-06-15",
+          "note": "Complaint filed seeking release of superintendent search records."
+        }
       ],
       "links": []
     },
     {
-  "id": "wausau-2026cm000231",
-  "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CM000231&countyNo=37",
-  "county": "Marathon",
-  "headline": "Wausau man pleads not guilty to bail jumping, disorderly conduct charges",
-  "summary": "Robert Edward Dewayne Stevens Jr., 46, of Wausau, is charged with two misdemeanor counts of bail jumping and one count of disorderly conduct with a domestic abuse modifier, filed March 17. He pleaded not guilty and was released on a $150 cash bond with sobriety and pretrial monitoring conditions.",
-  "tags": ["Courts"],
-  "nextHearing": { "date": "2026-09-30", "note": "Judicial pretrial, Branch 3, 10:40 a.m., Judge LaMont Jacobson" },
-  "updates": [
-    { "date": "2026-03-17", "note": "Criminal complaint filed; Stevens pleaded not guilty at his initial appearance and cash bond was set at $150 with sobriety and pretrial monitoring conditions." },
-    { "date": "2026-06-25", "note": "Pretrial conference held; judicial pretrial scheduled for Sept. 30." }
-  ],
-  "links": []
-}
+      "id": "wausau-2026cm000231",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CM000231&countyNo=37",
+      "county": "Marathon",
+      "headline": "Wausau man pleads not guilty to bail jumping, disorderly conduct charges",
+      "summary": "Robert Edward Dewayne Stevens Jr., 46, of Wausau, is charged with two misdemeanor counts of bail jumping and one count of disorderly conduct with a domestic abuse modifier, filed March 17. He pleaded not guilty and was released on a $150 cash bond with sobriety and pretrial monitoring conditions.",
+      "tags": [
+        "Courts"
+      ],
+      "nextHearing": {
+        "date": "2026-09-30",
+        "note": "Judicial pretrial, Branch 3, 10:40 a.m., Judge LaMont Jacobson"
+      },
+      "updates": [
+        {
+          "date": "2026-03-17",
+          "note": "Criminal complaint filed; Stevens pleaded not guilty at his initial appearance and cash bond was set at $150 with sobriety and pretrial monitoring conditions."
+        },
+        {
+          "date": "2026-06-25",
+          "note": "Pretrial conference held; judicial pretrial scheduled for Sept. 30."
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "marathon-2025cm000682",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CM000682&countyNo=37&index=0&mode=details",
+      "county": "Marathon",
+      "headline": "Battery charge dismissed, disorderly conduct sentence deferred for Marathon County supervisor",
+      "summary": "A Marathon County supervisor was censured after his arrest on domestic abuse charges was brought forward.",
+      "tags": [
+        "Courts",
+        "Public safety",
+        "Government"
+      ],
+      "updates": [
+        {
+          "date": "2025-08-27",
+          "note": "Case filed in circuit court."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/06/21/marathon-county-board-to-consider-censuring-supervisor-charged-in-domestic-abuse-case/"
+        }
+      ]
+    }
   ]
 }

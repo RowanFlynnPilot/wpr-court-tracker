@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-18T06:27:12.024082+00:00",
+  "generatedAt": "2026-07-18T18:58:01.008065+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
@@ -114,6 +114,45 @@
         }
       ],
       "officialCaption": "State of Wisconsin vs. Robert Edward Dewayne Stevens Jr"
+    },
+    {
+      "id": "marathon-2025cm000682",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CM000682&countyNo=37&index=0&mode=details",
+      "county": "Marathon",
+      "headline": "Battery charge dismissed, disorderly conduct sentence deferred for Marathon County supervisor",
+      "summary": "A Marathon County supervisor was censured after his arrest on domestic abuse charges was brought forward.",
+      "tags": [
+        "Courts",
+        "Public safety",
+        "Government"
+      ],
+      "updates": [
+        {
+          "date": "2025-08-27",
+          "note": "Case filed in circuit court."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/06/21/marathon-county-board-to-consider-censuring-supervisor-charged-in-domestic-abuse-case/"
+        }
+      ],
+      "caseNo": "2025CM000682",
+      "countyNo": 37,
+      "caseType": "CM",
+      "caseTypeLabel": "Misdemeanor",
+      "isCriminal": true,
+      "status": "watching",
+      "observed": [
+        {
+          "guid": "37-2025CM000682-Some(2026-04-28T14:08:18.483Z)",
+          "updated": "2026-04-28T14:08:18+00:00",
+          "officialCaption": "State of Wisconsin vs. Nicholas Michael Endres",
+          "observedAt": "2026-07-18T18:58:01.008065+00:00"
+        }
+      ],
+      "officialCaption": "State of Wisconsin vs. Nicholas Michael Endres"
     }
   ]
 }

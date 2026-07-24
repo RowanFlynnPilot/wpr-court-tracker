@@ -148,5 +148,6 @@ linked from the widget footer:
 ## Newsroom alerts
 
 Every data commit's message lists case numbers with new activity — watch
-the repo to get notified. `data/changes.json` is the structured
-per-run version (which cases changed in a given run).
+the repo to get notified. Quiet runs don't commit at all, so every data
+commit is a real alert. `data/changes.json` is the structured per-run
+version (which cases changed in a given run).

@@ -119,7 +119,10 @@ cd widget ; npm install ; npm run dev
 
 Weekdays every 2 hours, 8 a.m.-6 p.m. Central. Commit messages list case
 numbers with new activity, so watching the repo is a newsroom alert
-channel. Every deploy also re-renders the newsletter digest
+channel — and since 2026-07-24 timestamp-only refreshes are NOT
+committed (git diff -I gate on generatedAt/lastBuildDate; tracker.xml
+is pretty-printed so the gate works line-wise). Every data commit is
+real activity; the deployed site still ships each run's fresh files. Every deploy also re-renders the newsletter digest
 (/digest.png at the Pages root — activity last 7 days + upcoming
 hearings, derived from feed.json; Playwright element screenshot, same
 pattern as wpr-brewers-tracker, never committed).
@@ -147,6 +150,13 @@ pattern as wpr-brewers-tracker, never committed).
   workflow_dispatch with no open track-a-case issues (clean no-op).
 - Shereen is a repo collaborator as `wausau-pilot` (confirmed
   2026-07-18) — her desk submissions take the auto-publish lane.
+- Intake rejection lane live-tested 2026-07-24 (issue #2, policy-blocked
+  FA case): fix-it comment landed within a minute; a rejected submission
+  reddens the INTAKE workflow run by design — that's its signal, separate
+  from the deploy workflow's red-means-code-bug rule. pr-check.yml runs
+  tests + pure-local config validation + build on every PR (deliberately
+  NO WCCA fetch on PRs, fork or otherwise). Roadmap artifact refreshed
+  2026-07-24 with the production-proof story.
 - GitHub SILENTLY DROPS issue-template labels that don't exist in the
   repo. The `track-a-case` label wasn't created until 2026-07-18, so
   issue #1 (Shereen's first real submission, Jul 13) was invisible to

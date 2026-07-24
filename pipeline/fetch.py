@@ -278,6 +278,9 @@ def build_tracker_rss(feed: dict) -> bytes:
         guid.text = e["guid"]
         ET.SubElement(item, "pubDate").text = format_datetime(e["date"])
         ET.SubElement(item, "description").text = e["desc"]
+    # One element per line: the workflow's commit gate ignores the volatile
+    # <lastBuildDate> line with git diff -I, which only works line-wise.
+    ET.indent(rss)
     return ET.tostring(rss, encoding="utf-8", xml_declaration=True)
 
 

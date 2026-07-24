@@ -1,0 +1,50 @@
+# Verification for pull requests - sign-off case PRs from outside
+# authors and any future dependency PRs merge with proof they build.
+#
+# Deliberately NO WCCA fetch here: pull requests (including ones from
+# forks) must never trigger court-system traffic. Validation of
+# config/cases.json is pure-local (policy gate, URL parse, dates).
+
+name: PR checks
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Pipeline tests
+        run: python tests/test_pipeline.py
+
+      - name: Validate the watchlist config (no network)
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, 'pipeline')
+          from fetch import load_config
+          config = load_config()
+          print(f\"config valid: {len(config['cases'])} case(s)\")
+          "
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: widget/package-lock.json
+
+      - name: Widget tests + build
+        working-directory: widget
+        run: |
+          npm ci
+          node scripts/test-parse.mjs
+          npm run build

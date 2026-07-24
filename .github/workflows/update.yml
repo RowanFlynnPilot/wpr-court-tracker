@@ -91,9 +91,13 @@ jobs:
             gh issue close "$N" --comment "Recovered - court-record checks are succeeding again."
           fi
 
+      # Commit only real record changes. Timestamp lines (generatedAt,
+      # lastBuildDate) move every run; skipping them keeps "watch the repo"
+      # a pure newsroom alert channel - every data commit names its cases.
+      # The deployed site still ships the fresh files from this workspace.
       - name: Commit data changes
         run: |
-          if ! git diff --quiet data/; then
+          if ! git diff --quiet -I '"generatedAt":' -I '<lastBuildDate>' -- data/; then
             git config user.name "wpr-court-tracker"
             git config user.email "actions@github.com"
             git add data/

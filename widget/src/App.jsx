@@ -157,6 +157,7 @@ export default function App() {
         <span>
           Checked <span className="mono">{updatedLabel}</span>
         </span>
+        <span>Checks weekdays 8 a.m.&ndash;6 p.m.</span>
         <span>Official court record</span>
       </p>
 

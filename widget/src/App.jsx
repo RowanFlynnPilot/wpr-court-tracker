@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import CaseFile from './CaseFile.jsx';
 import RequestForm from './RequestForm.jsx';
+import { GLOSSARY } from './glossary.js';
 import badge from './assets/wpr-badge.png';
 
 const DAY_MS = 86400000;
@@ -188,6 +189,25 @@ export default function App() {
             <b>See something wrong?</b> Email{' '}
             <a href={`mailto:${feed.requestEmail}`}>{feed.requestEmail}</a>{' '}
             and we&rsquo;ll correct the file.
+          </p>
+        </div>
+      </details>
+
+      <details className="about">
+        <summary>Court terms, plain English</summary>
+        <div className="about-body">
+          <div className="gloss">
+            {GLOSSARY.map((g) => (
+              <p key={g.term}>
+                <b>{g.term}</b> &mdash; {g.def}
+              </p>
+            ))}
+          </div>
+          <p className="gloss-note">
+            General plain-language definitions for Wisconsin circuit courts
+            &mdash; not legal advice. Confused by something in a case file?{' '}
+            <a href={`mailto:${feed.requestEmail}`}>Tell us</a> and
+            we&rsquo;ll explain it here.
           </p>
         </div>
       </details>

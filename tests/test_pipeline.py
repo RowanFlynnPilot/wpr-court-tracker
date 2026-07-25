@@ -46,6 +46,41 @@ def test_status_defaults_to_watching_and_rejects_unknown():
             raise AssertionError(f"{bad!r} must fail status validation")
 
 
+def test_stale_hearings_flags_only_unanswered_past_hearings():
+    from followups import markdown_body, stale_hearings
+
+    def case(id_, hearing=None, updates=(), **kw):
+        c = {
+            "id": id_,
+            "headline": f"Case {id_}",
+            "caseNo": "2026CM000999",
+            "updates": [{"date": d, "note": "n"} for d in updates],
+            **kw,
+        }
+        if hearing:
+            c["nextHearing"] = {"date": hearing, "note": "Branch 1"}
+        return c
+
+    today = "2026-10-02"
+    cases = [
+        # Hearing two days ago, no note since -> stale.
+        case("stale1", hearing="2026-09-30", updates=["2026-09-01"]),
+        # Note dated the hearing day itself -> answered.
+        case("ok-answered", hearing="2026-09-30", updates=["2026-09-30"]),
+        # Hearing only yesterday -> still inside the grace window.
+        case("ok-grace", hearing="2026-10-01"),
+        # Future hearing, closed case, placeholder, no hearing -> ignored.
+        case("ok-future", hearing="2026-12-01"),
+        case("ok-closed", hearing="2026-09-01", status="closed"),
+        case("ok-sample", hearing="2026-09-01", placeholder=True),
+        case("ok-nohearing"),
+    ]
+    stale = stale_hearings(cases, today)
+    assert [c["id"] for c in stale] == ["stale1"]
+    body = markdown_body(stale)
+    assert "Case stale1" in body and "2026-09-30" in body and "editor.html" in body
+
+
 def test_first_tracked_at_prefers_prior_then_backfills():
     from fetch import first_tracked_at
 

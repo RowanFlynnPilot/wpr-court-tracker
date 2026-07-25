@@ -179,3 +179,27 @@ jobs:
             gh workflow run "Update court data and deploy"
           fi
           echo "published $PUBLISHED case(s), $FAILED needing fixes"
+
+      # The machine can't write the follow-up, but it can notice the
+      # promise went unkept: one auto-managed issue lists watched cases
+      # whose hearing passed with no newsroom note since. Runs after
+      # publishing so a just-swept update clears its own nudge.
+      - name: Nudge stale hearing follow-ups
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python pipeline/followups.py --markdown > followups.md
+          N=$(gh issue list --label hearing-followup --state open --json number --jq '.[0].number')
+          if [ -s followups.md ]; then
+            gh label create hearing-followup --color C4A000 \
+              --description "Tracked hearings awaiting a reporter note" 2>/dev/null || true
+            if [ -z "$N" ]; then
+              gh issue create --label hearing-followup \
+                --title "Hearings needing a reporter follow-up" \
+                --body-file followups.md
+            else
+              gh issue edit "$N" --body-file followups.md
+            fi
+          elif [ -n "$N" ]; then
+            gh issue close "$N" --comment "Every tracked hearing now has a newsroom note - nothing stale."
+          fi

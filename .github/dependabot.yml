@@ -1,0 +1,23 @@
+# Monthly, grouped, and CI-checked: pr-check.yml runs tests + build on
+# every PR, so these arrive pre-verified. Minor/patch bumps land as one
+# grouped PR; majors (React, Vite, pdf.js) come solo so they can be
+# taken deliberately.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /widget
+    schedule:
+      interval: monthly
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+        patterns: ["*"]
+    open-pull-requests-limit: 4
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]

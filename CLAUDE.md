@@ -14,6 +14,9 @@ config/cases.json      editorial watchlist (newsroom-owned, hand-curated)
 pipeline/policy.py     editorial display policy, enforced in code
 pipeline/fetch.py      polls official WCCA per-case RSS, diffs, writes data/
 pipeline/issue_case.py "Track a case" issue form -> validated config entry
+pipeline/followups.py  hearings passed with no newsroom note since -> the
+                       publish sweep manages ONE auto hearing-followup
+                       issue (2-day grace; closes when files are current)
 data/feed.json         everything the widget renders (committed)
 data/changes.json      cases with new activity this run (per-run alerts)
 data/tracker.xml       reader-facing RSS of case activity (stable guids)
@@ -157,6 +160,11 @@ pattern as wpr-brewers-tracker, never committed).
   tests + pure-local config validation + build on every PR (deliberately
   NO WCCA fetch on PRs, fork or otherwise). Roadmap artifact refreshed
   2026-07-24 with the production-proof story.
+- 2026-07-24 evening: hearing-followup nudge (followups.py + sweep step,
+  no-op path live-tested), reader glossary (widget/src/glossary.js -
+  reader-facing editorial copy, Shereen may wordsmith), and grouped
+  monthly Dependabot (PRs pre-verified by pr-check.yml; majors arrive
+  solo - take React 19/Vite 8 deliberately, never auto-merge).
 - GitHub SILENTLY DROPS issue-template labels that don't exist in the
   repo. The `track-a-case` label wasn't created until 2026-07-18, so
   issue #1 (Shereen's first real submission, Jul 13) was invisible to

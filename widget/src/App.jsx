@@ -195,7 +195,7 @@ export default function App() {
 
       <details className="about">
         <summary>Court terms, plain English</summary>
-        <div className="about-body">
+        <div className="about-body gloss-body">
           <div className="gloss">
             {GLOSSARY.map((g) => (
               <p key={g.term}>

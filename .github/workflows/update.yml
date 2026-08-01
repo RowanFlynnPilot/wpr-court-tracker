@@ -35,9 +35,9 @@ jobs:
       # '1' for schedule/push; self-handoff dispatches 2 then 3.
       ATTEMPT: ${{ inputs.attempt || '1' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -106,7 +106,7 @@ jobs:
             git push
           fi
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -134,11 +134,11 @@ jobs:
           done
           node scripts/render-cards.mjs http://127.0.0.1:4173 dist
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: widget/dist
 
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

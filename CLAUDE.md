@@ -163,6 +163,17 @@ pattern as wpr-brewers-tracker, never committed).
   tests + pure-local config validation + build on every PR (deliberately
   NO WCCA fetch on PRs, fork or otherwise). Roadmap artifact refreshed
   2026-07-24 with the production-proof story.
+- 2026-09-01: public methodology page (widget/about.html - plain HTML in
+  the brand system; its service-record tiles are hand-dated and get
+  refreshed alongside the roadmap artifact), MIT LICENSE, README preface.
+  Toolchain is React 19 / Vite 8 / plugin-react 6 (coordinated upgrade;
+  Dependabot's solo majors fail CI by design). pdfjs-dist is HELD at 4.x
+  deliberately: no advisory, and its worker API changed across majors -
+  the desk's dynamic import + worker URL must be re-verified before any
+  bump. Custom domain (courts.wausaupilotandreview.com or similar) is
+  ready to wire once a subdomain + DNS access exist: CNAME file,
+  SITE_URL in fetch.py, og:url/og:image in index.html + about.html,
+  README links, issue-comment URLs in track-case.yml.
 - 2026-07-24 evening: needs-newsroom-note nudge (followups.py + sweep step,
   no-op path live-tested), reader glossary (widget/src/glossary.js -
   reader-facing editorial copy, Shereen may wordsmith), and grouped

@@ -1,13 +1,25 @@
 # WPR Court Tracker
 
-Marathon County court cases of public interest, tracked by the Wausau
-Pilot & Review newsroom. Live widget on GitHub Pages, embedded in
-WordPress via iframe.
+**Live:** https://rowanflynnpilot.github.io/wpr-court-tracker/ ·
+**How it works:** https://rowanflynnpilot.github.io/wpr-court-tracker/about.html ·
+**License:** MIT
 
-Data comes from the Wisconsin court system's **official per-case RSS
-feeds** — the sanctioned automated channel. The feed signals *that* a case
-record changed; WPR reporters supply *what* changed. See CLAUDE.md for
-architecture and hard boundaries.
+A hand-curated watchlist of Marathon County court cases of public
+interest, followed by the Wausau Pilot & Review newsroom. Each case is
+checked automatically against the Wisconsin court system's **official
+per-case RSS feeds** — the court system's sanctioned automated channel,
+and the only one this project touches; it never scrapes the court
+website. The feed signals *that* a record changed; WPR reporters supply
+*what* changed. Editorial policy — which case types may appear, the
+presumption-of-innocence note on every criminal case — is enforced in
+code, not by convention.
+
+Service record since the July 2026 reliability rework: zero failed runs
+in the last hundred, court-system outages flagged and self-healed
+without intervention, and every change to the data published as a
+commit that names its case. The live widget runs on GitHub Pages and is
+embedded in WordPress via iframe. See CLAUDE.md for architecture and
+hard boundaries.
 
 ## Adding a case (reporters & editors)
 
@@ -151,3 +163,13 @@ Every data commit's message lists case numbers with new activity — watch
 the repo to get notified. Quiet runs don't commit at all, so every data
 commit is a real alert. `data/changes.json` is the structured per-run
 version (which cases changed in a given run).
+
+The publish sweep also maintains one `needs-newsroom-note` issue listing
+case files that owe readers a reporter's note — a hearing that passed,
+or a court record that moved, with no note since. It rewrites itself
+each sweep and closes once every file is current.
+
+## License
+
+[MIT](LICENSE) — copyright Wausau Pilot & Review. Use it, fork it for
+your own county, credit the newsroom.

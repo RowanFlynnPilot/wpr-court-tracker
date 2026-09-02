@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How the Court Tracker works — Wausau Pilot &amp; Review</title>
+    <meta name="description" content="Methodology, editorial rules, and the guardrails built into the Wausau Pilot & Review Marathon County Court Tracker — in plain English." />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Wausau Pilot &amp; Review" />
+    <meta property="og:title" content="How the Court Tracker works" />
+    <meta property="og:description" content="Where the information comes from, what the newsroom decides, and the guardrails written into the software." />
+    <meta property="og:image" content="https://rowanflynnpilot.github.io/wpr-court-tracker/og-card.png" />
+    <link rel="icon" href="https://wausaupilotandreview.com/wp-content/uploads/2024/04/cropped-Wausau-Pilot-Transparent-32x32.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <style>
+      /* Page-specific: long-form prose in the widget's brand system. */
+      .about-page section { margin-top: 30px; max-width: 70ch; }
+      .about-page section + section { border-top: 1px dashed var(--line); padding-top: 24px; }
+      .about-page h2 {
+        margin: 0 0 8px;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 22px;
+        line-height: 1.2;
+        letter-spacing: 0.01em;
+        text-wrap: balance;
+      }
+      .about-page p { margin: 0 0 12px; }
+      .about-page ul { margin: 0 0 12px; padding-left: 22px; }
+      .about-page li { margin-bottom: 6px; }
+      .about-page .lede { font-size: 16px; }
+      .about-nav { margin: 12px 0 0; }
+      .record {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin: 6px 0 14px;
+        max-width: 70ch;
+      }
+      .record div {
+        background: var(--paper-warm);
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--teal);
+        border-radius: 6px;
+        padding: 10px 14px 9px;
+      }
+      .record b {
+        display: block;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 26px;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+      }
+      .record span {
+        display: block;
+        margin-top: 4px;
+        font-family: var(--font-display);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--muted-deep);
+      }
+      .record-asof { font-family: var(--font-mono); font-size: 12px; color: var(--muted-deep); }
+      .rails {
+        border-left: 4px solid var(--stamp);
+        background: var(--paper-warm);
+        border-radius: 0 6px 6px 0;
+        padding: 12px 16px 4px;
+        max-width: 70ch;
+      }
+      .rails p b { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em; }
+      .ledger-key { list-style: none; padding: 0; }
+      .ledger-key li { padding-left: 12px; border-left: 3px solid var(--teal); margin-bottom: 8px; }
+      .ledger-key li.court { border-left-color: var(--stamp); }
+    </style>
+  </head>
+  <body>
+    <main class="shell about-page">
+      <header class="masthead">
+        <img class="badge" src="/src/assets/wpr-badge.png" alt="" width="104" height="104" />
+        <div>
+          <p class="eyebrow">Wausau Pilot &amp; Review</p>
+          <h1>How the Court Tracker works</h1>
+          <p class="dek">Where the information comes from, what the newsroom decides, and the guardrails written into the software &mdash; in plain English.</p>
+        </div>
+      </header>
+
+      <p class="statline about-nav">
+        <span><a href="./">Back to the tracker</a></span>
+        <span>Updated <span class="mono">Sep 2026</span></span>
+        <span><a href="https://github.com/RowanFlynnPilot/wpr-court-tracker" target="_blank" rel="noreferrer">Source code</a></span>
+      </p>
+
+      <section>
+        <h2>What this is</h2>
+        <p class="lede">The Marathon County Court Tracker is a hand-picked list of court cases of public interest, followed by the Wausau Pilot &amp; Review newsroom. Each case file pairs what our reporters know with an automatic check of the official court record, so readers can see when a case moves &mdash; and what it means &mdash; without navigating the court system themselves.</p>
+        <p>It lives inside stories on wausaupilotandreview.com and as a standalone page. Every case file has its own shareable link.</p>
+      </section>
+
+      <section>
+        <h2>Where the information comes from</h2>
+        <p>Wisconsin Circuit Court Access (WCCA) is the state court system&rsquo;s public case-lookup site. For each case, WCCA publishes an official feed that signals when that case&rsquo;s record was last updated. The court system offers that feed as its sanctioned option for automated access, and it is the <em>only</em> automated source this tracker uses.</p>
+        <p>The feed tells us <em>that</em> a record changed and <em>when</em>. It does not carry the docket text, the charges, or the hearing schedule &mdash; those are still read and written up by people. We never scrape the WCCA website, and the tracker is not the official court record: the Clerk of Circuit Court in the county where a case was filed is the custodian of that record, and every case file links to it.</p>
+      </section>
+
+      <section>
+        <h2>What the newsroom decides</h2>
+        <p>Editors choose which cases to follow: matters involving public officials, public safety, government, and open records, among others. The list is curated by hand and reviewed by the publisher before anything appears.</p>
+        <p>Some cases are never tracked, whatever their news value: family, juvenile, guardianship, and mental-health cases. That is editorial policy, and it is written into the software itself &mdash; the pipeline recognizes a case&rsquo;s type from its official number and will not publish one outside the allowed types.</p>
+      </section>
+
+      <section>
+        <h2>Fairness</h2>
+        <div class="rails">
+          <p><b>Presumption of innocence.</b> Every criminal case carries the note that a charge is an accusation and that every defendant is presumed innocent unless and until proven guilty. The software adds it automatically; it cannot be left off.</p>
+          <p><b>How cases end stays on the record.</b> Resolved cases move to a &ldquo;Closed files&rdquo; drawer rather than disappearing, so readers can see outcomes, not only accusations.</p>
+          <p><b>Corrections.</b> If something in a case file is wrong, email <a href="mailto:news@wausaupilotandreview.com">news@wausaupilotandreview.com</a> and we will correct the file.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Machines observe; reporters explain</h2>
+        <p>Open any case file and you will see an activity ledger with two kinds of entries:</p>
+        <ul class="ledger-key">
+          <li class="court"><b>Red:</b> the official court record changed on this date. The entry links to the docket on WCCA. The software wrote it.</li>
+          <li><b>Teal:</b> what happened, in plain English. A reporter wrote it.</li>
+        </ul>
+        <p>Hearing dates and case summaries are editorial work, typed by reporters from the record. The software keeps the newsroom honest about that division of labor: when a hearing date passes, or the record moves, and no reporter&rsquo;s note follows, it flags the file for follow-up until one does.</p>
+      </section>
+
+      <section>
+        <h2>How a case gets added</h2>
+        <p>Reporters use a newsroom entry desk that reads a copy of the case page they saved themselves, prefills a form, and checks the request against editorial policy on the spot. Submissions the publisher signs off on publish at twice-daily sweeps. Nothing is pasted into the tracker by hand, and no part of the process touches the court website automatically.</p>
+        <p>Readers can ask us to track a case, or ask for help navigating court records, through the &ldquo;Ask the newsroom&rdquo; form at the bottom of the tracker.</p>
+      </section>
+
+      <section>
+        <h2>Reliability and transparency</h2>
+        <p>The record is checked every two hours on weekdays, 8 a.m. to 6 p.m. Central. When the court system is slow to respond &mdash; which it sometimes is for automated checks &mdash; the check retries on a fresh machine and the tracker keeps serving its last good data, with the &ldquo;checked&rdquo; time shown honestly on the page.</p>
+        <div class="record" role="list" aria-label="Service record">
+          <div role="listitem"><b>100%</b><span>Green runs &middot; last 100 checks</span></div>
+          <div role="listitem"><b>5</b><span>Court-system outages self-healed</span></div>
+          <div role="listitem"><b>6&times;</b><span>Checks per weekday</span></div>
+          <div role="listitem"><b>MIT</b><span>Open-source license</span></div>
+        </div>
+        <p class="record-asof">Service record as of September 1, 2026.</p>
+        <p>The software, the watchlist, and every change to the data are public on <a href="https://github.com/RowanFlynnPilot/wpr-court-tracker" target="_blank" rel="noreferrer">GitHub</a>, released under the MIT license. Anyone can audit what the tracker does and how it decides.</p>
+      </section>
+
+      <section>
+        <h2>What comes next</h2>
+        <p>Today the tracker knows <em>that</em> a case moved; reporters supply <em>what</em> moved. Subscription access to the court system&rsquo;s data service &mdash; which the newsroom is seeking grant support for &mdash; would add official docket entries, charges, and hearing dates automatically. The watchlist, the editorial rules, and the presumption note would stay exactly as they are; only the data layer changes.</p>
+      </section>
+
+      <section>
+        <h2>Follow along</h2>
+        <p>Subscribe to the <a href="./tracker.xml">case-activity feed (RSS)</a> or the <a href="./hearings.ics">hearing calendar (.ics)</a> &mdash; both update automatically. Questions about the tracker: <a href="mailto:news@wausaupilotandreview.com">news@wausaupilotandreview.com</a>.</p>
+        <p><a href="./">&larr; Back to the tracker</a></p>
+      </section>
+
+      <footer class="colophon">
+        <p>Source: Wisconsin Circuit Court Access, via the court system&rsquo;s official per-case RSS feeds. Built by <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &mdash; <span class="tagline">More News. Less Fluff. All Local.</span></p>
+      </footer>
+    </main>
+  </body>
+</html>

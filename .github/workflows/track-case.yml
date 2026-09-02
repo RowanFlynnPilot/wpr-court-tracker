@@ -190,12 +190,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python pipeline/followups.py --markdown > followups.md
-          N=$(gh issue list --label hearing-followup --state open --json number --jq '.[0].number')
+          N=$(gh issue list --label needs-newsroom-note --state open --json number --jq '.[0].number')
           if [ -s followups.md ]; then
-            gh label create hearing-followup --color C4A000 \
-              --description "Tracked hearings awaiting a reporter note" 2>/dev/null || true
+            gh label create needs-newsroom-note --color C4A000 \
+              --description "Case files owing readers a reporter's note" 2>/dev/null || true
             if [ -z "$N" ]; then
-              gh issue create --label hearing-followup \
+              gh issue create --label needs-newsroom-note \
                 --title "Case files needing a reporter follow-up" \
                 --body-file followups.md
             else

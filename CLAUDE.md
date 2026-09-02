@@ -17,7 +17,7 @@ pipeline/issue_case.py "Track a case" issue form -> validated config entry
 pipeline/followups.py  files owing a newsroom note (hearing passed with
                        no note since, 2-day grace; or record moved with
                        no note for 7+ days, watching only) -> the sweep
-                       manages ONE auto hearing-followup issue
+                       manages ONE auto needs-newsroom-note issue
 data/feed.json         everything the widget renders (committed)
 data/changes.json      cases with new activity this run (per-run alerts)
 data/tracker.xml       reader-facing RSS of case activity (stable guids)
@@ -163,7 +163,7 @@ pattern as wpr-brewers-tracker, never committed).
   tests + pure-local config validation + build on every PR (deliberately
   NO WCCA fetch on PRs, fork or otherwise). Roadmap artifact refreshed
   2026-07-24 with the production-proof story.
-- 2026-07-24 evening: hearing-followup nudge (followups.py + sweep step,
+- 2026-07-24 evening: needs-newsroom-note nudge (followups.py + sweep step,
   no-op path live-tested), reader glossary (widget/src/glossary.js -
   reader-facing editorial copy, Shereen may wordsmith), and grouped
   monthly Dependabot (PRs pre-verified by pr-check.yml; majors arrive

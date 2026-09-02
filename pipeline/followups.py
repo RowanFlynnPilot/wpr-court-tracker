@@ -14,7 +14,7 @@ the follow-up (editorial fields are reporters' work - CLAUDE.md boundary
      explains. Watching cases only: closed files are collapsed and
      their record churn is administrative more often than newsworthy.
 
-The publish sweep turns the combined list into one `hearing-followup`
+The publish sweep turns the combined list into one `needs-newsroom-note`
 issue that rewrites itself each sweep and closes once files are current.
 
 Editorial fields (updates/hearings/status) come from config/cases.json

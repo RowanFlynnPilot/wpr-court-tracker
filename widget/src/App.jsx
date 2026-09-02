@@ -190,6 +190,9 @@ export default function App() {
             <a href={`mailto:${feed.requestEmail}`}>{feed.requestEmail}</a>{' '}
             and we&rsquo;ll correct the file.
           </p>
+          <p>
+            <a href={`${import.meta.env.BASE_URL}about.html`}>Read the full methodology &rarr;</a>
+          </p>
         </div>
       </details>
 
@@ -306,7 +309,7 @@ export default function App() {
           Source: <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>, via the court system&rsquo;s official per-case RSS feeds. Built by <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &mdash; <span className="tagline">More News. Less Fluff. All Local.</span>
         </p>
         <p>
-          Follow along: <a href={`${import.meta.env.BASE_URL}tracker.xml`}>case-activity feed (RSS)</a> &middot; <a href={`${import.meta.env.BASE_URL}hearings.ics`}>hearing calendar (.ics)</a> &mdash; both update automatically.
+          Follow along: <a href={`${import.meta.env.BASE_URL}tracker.xml`}>case-activity feed (RSS)</a> &middot; <a href={`${import.meta.env.BASE_URL}hearings.ics`}>hearing calendar (.ics)</a> &mdash; both update automatically. <a href={`${import.meta.env.BASE_URL}about.html`}>Methodology &amp; editorial rules</a>.
         </p>
       </footer>
     </main>

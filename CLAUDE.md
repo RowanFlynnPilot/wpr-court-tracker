@@ -14,9 +14,10 @@ config/cases.json      editorial watchlist (newsroom-owned, hand-curated)
 pipeline/policy.py     editorial display policy, enforced in code
 pipeline/fetch.py      polls official WCCA per-case RSS, diffs, writes data/
 pipeline/issue_case.py "Track a case" issue form -> validated config entry
-pipeline/followups.py  hearings passed with no newsroom note since -> the
-                       publish sweep manages ONE auto hearing-followup
-                       issue (2-day grace; closes when files are current)
+pipeline/followups.py  files owing a newsroom note (hearing passed with
+                       no note since, 2-day grace; or record moved with
+                       no note for 7+ days, watching only) -> the sweep
+                       manages ONE auto hearing-followup issue
 data/feed.json         everything the widget renders (committed)
 data/changes.json      cases with new activity this run (per-run alerts)
 data/tracker.xml       reader-facing RSS of case activity (stable guids)
@@ -124,8 +125,10 @@ Weekdays every 2 hours, 8 a.m.-6 p.m. Central. Commit messages list case
 numbers with new activity, so watching the repo is a newsroom alert
 channel — and since 2026-07-24 timestamp-only refreshes are NOT
 committed (git diff -I gate on generatedAt/lastBuildDate; tracker.xml
-is pretty-printed so the gate works line-wise). Every data commit is
-real activity; the deployed site still ships each run's fresh files. Every deploy also re-renders the newsletter digest
+is pretty-printed so the gate works line-wise; since 2026-09-01
+changes.json rides along but doesn't gate — its self-emptying used to
+echo every alert with a "refresh" commit). Every data commit is real
+activity; the deployed site still ships each run's fresh files. Every deploy also re-renders the newsletter digest
 (/digest.png at the Pages root — activity last 7 days + upcoming
 hearings, derived from feed.json; Playwright element screenshot, same
 pattern as wpr-brewers-tracker, never committed).

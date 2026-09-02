@@ -94,10 +94,14 @@ jobs:
       # Commit only real record changes. Timestamp lines (generatedAt,
       # lastBuildDate) move every run; skipping them keeps "watch the repo"
       # a pure newsroom alert channel - every data commit names its cases.
-      # The deployed site still ships the fresh files from this workspace.
+      # changes.json is deliberately NOT part of the gate: it empties
+      # itself one run after each alert, which made every real commit
+      # echo a "refresh" commit. It still rides along (git add data/)
+      # whenever the gate opens. The deployed site always ships the
+      # fresh files from this workspace either way.
       - name: Commit data changes
         run: |
-          if ! git diff --quiet -I '"generatedAt":' -I '<lastBuildDate>' -- data/; then
+          if ! git diff --quiet -I '"generatedAt":' -I '<lastBuildDate>' -- data/feed.json data/tracker.xml data/hearings.ics; then
             git config user.name "wpr-court-tracker"
             git config user.email "actions@github.com"
             git add data/

@@ -180,11 +180,12 @@ jobs:
           fi
           echo "published $PUBLISHED case(s), $FAILED needing fixes"
 
-      # The machine can't write the follow-up, but it can notice the
+      # The machine can't write the follow-up, but it can notice a
       # promise went unkept: one auto-managed issue lists watched cases
-      # whose hearing passed with no newsroom note since. Runs after
-      # publishing so a just-swept update clears its own nudge.
-      - name: Nudge stale hearing follow-ups
+      # whose hearing passed - or whose record moved - with no newsroom
+      # note since. Runs after publishing so a just-swept update clears
+      # its own nudge.
+      - name: Nudge stale case-file follow-ups
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -195,7 +196,7 @@ jobs:
               --description "Tracked hearings awaiting a reporter note" 2>/dev/null || true
             if [ -z "$N" ]; then
               gh issue create --label hearing-followup \
-                --title "Hearings needing a reporter follow-up" \
+                --title "Case files needing a reporter follow-up" \
                 --body-file followups.md
             else
               gh issue edit "$N" --body-file followups.md

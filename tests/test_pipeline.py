@@ -77,8 +77,44 @@ def test_stale_hearings_flags_only_unanswered_past_hearings():
     ]
     stale = stale_hearings(cases, today)
     assert [c["id"] for c in stale] == ["stale1"]
-    body = markdown_body(stale)
+    body = markdown_body(stale, [])
     assert "Case stale1" in body and "2026-09-30" in body and "editor.html" in body
+    assert "record moved" not in body  # empty section is omitted
+
+
+def test_unnarrated_activity_flags_silent_files():
+    from followups import markdown_body, unnarrated_activity
+
+    def case(id_, obs_dates=(), updates=(), **kw):
+        return {
+            "id": id_,
+            "headline": f"Case {id_}",
+            "caseNo": "2026CM000999",
+            "observed": [{"guid": d, "updated": f"{d}T12:00:00+00:00"} for d in obs_dates],
+            "updates": [{"date": d, "note": "n"} for d in updates],
+            **kw,
+        }
+
+    today = "2026-09-01"
+    cases = [
+        # Record moved Apr 28, newest note predates it -> silent file.
+        case("silent", obs_dates=["2026-03-01", "2026-04-28"], updates=["2025-08-27"]),
+        # Note dated after the latest change -> narrated.
+        case("ok-narrated", obs_dates=["2026-04-28"], updates=["2026-05-01"]),
+        # Latest change is 6 days old -> inside the 7-day grace.
+        case("ok-fresh", obs_dates=["2026-08-27"]),
+        # No observations, closed, placeholder -> ignored.
+        case("ok-noobs"),
+        case("ok-closed", obs_dates=["2026-01-01"], status="closed"),
+        case("ok-sample", obs_dates=["2026-01-01"], placeholder=True),
+    ]
+    flagged = unnarrated_activity(cases, today)
+    assert [c["id"] for c in flagged] == ["silent"]
+    assert flagged[0]["recordDate"] == "2026-04-28"
+    assert flagged[0]["lastNote"] == "2025-08-27"
+    body = markdown_body([], flagged)
+    assert "record moved" in body and "2026-04-28" in body
+    assert "hearing passed" not in body.lower() or "### A hearing" not in body
 
 
 def test_first_tracked_at_prefers_prior_then_backfills():

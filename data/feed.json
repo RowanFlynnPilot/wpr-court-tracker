@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T19:41:06.580404+00:00",
+  "generatedAt": "2026-09-30T18:15:23.266101+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
@@ -36,6 +36,12 @@
       "isCriminal": true,
       "status": "watching",
       "observed": [
+        {
+          "guid": "37-2026CM000231-Some(2026-09-30T16:35:54.824Z)",
+          "updated": "2026-09-30T16:35:54+00:00",
+          "officialCaption": "State of Wisconsin vs. Robert Edward Dewayne Stevens Jr",
+          "observedAt": "2026-09-30T18:15:23.266101+00:00"
+        },
         {
           "guid": "37-2026CM000231-Some(2026-09-09T18:07:57.866Z)",
           "updated": "2026-09-09T18:07:57+00:00",

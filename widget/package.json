@@ -10,7 +10,7 @@
     "render:cards": "node scripts/render-cards.mjs"
   },
   "dependencies": {
-    "pdfjs-dist": "^4.10.38",
+    "pdfjs-dist": "^6.3.289",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

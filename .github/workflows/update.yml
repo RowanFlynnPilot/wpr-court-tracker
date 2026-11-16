@@ -47,7 +47,13 @@ jobs:
               '0 13,15,17,19,21,23 * * 1-5') WANT=CDT ;;
               *) WANT=CST ;;
             esac
-            [ "$ZONE" = "$WANT" ] || RUN=false
+            # Fail safe: only skip when the zone is positively the OTHER
+            # one. A runner without tz data reports UTC - then both sets
+            # run (extra checks) rather than none (a silent outage).
+            case "$ZONE" in
+              CDT|CST) [ "$ZONE" = "$WANT" ] || RUN=false ;;
+              *) echo "::warning::Could not resolve America/Chicago (got '$ZONE'); running every scheduled tick." ;;
+            esac
             echo "cron '$CRON' is the $WANT schedule; Chicago is on $ZONE -> run=$RUN"
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"

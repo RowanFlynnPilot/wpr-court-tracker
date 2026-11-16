@@ -53,7 +53,11 @@ jobs:
               '45 12,20 * * *') WANT=CDT ;;
               *) WANT=CST ;;
             esac
-            [ "$ZONE" = "$WANT" ] || RUN=false
+            # Fail safe: skip only when the zone is positively the OTHER one.
+            case "$ZONE" in
+              CDT|CST) [ "$ZONE" = "$WANT" ] || RUN=false ;;
+              *) echo "::warning::Could not resolve America/Chicago (got '$ZONE'); running every scheduled sweep." ;;
+            esac
             echo "cron '$CRON' is the $WANT schedule; Chicago is on $ZONE -> run=$RUN"
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"

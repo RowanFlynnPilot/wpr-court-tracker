@@ -51,7 +51,8 @@ jobs:
             ZONE=$(TZ=America/Chicago date +%Z)
             case "$CRON" in
               '45 12,20 * * *') WANT=CDT ;;
-              *) WANT=CST ;;
+              '45 13,21 * * *') WANT=CST ;;
+              *) WANT=unknown; ZONE=unknown ;;   # unrecognized cron: run
             esac
             # Fail safe: skip only when the zone is positively the OTHER one.
             case "$ZONE" in

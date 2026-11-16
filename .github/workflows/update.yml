@@ -45,7 +45,8 @@ jobs:
             ZONE=$(TZ=America/Chicago date +%Z)
             case "$CRON" in
               '0 13,15,17,19,21,23 * * 1-5') WANT=CDT ;;
-              *) WANT=CST ;;
+              '0 14,16,18,20,22 * * 1-5'|'0 0 * * 2-6') WANT=CST ;;
+              *) WANT=unknown; ZONE=unknown ;;   # unrecognized cron: run
             esac
             # Fail safe: only skip when the zone is positively the OTHER
             # one. A runner without tz data reports UTC - then both sets

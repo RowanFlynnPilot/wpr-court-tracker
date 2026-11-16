@@ -163,6 +163,25 @@ pattern as wpr-brewers-tracker, never committed).
   tests + pure-local config validation + build on every PR (deliberately
   NO WCCA fetch on PRs, fork or otherwise). Roadmap artifact refreshed
   2026-07-24 with the production-proof story.
+- 2026-11-16 (pre-funder-demo pass): case files fold runs of 3+ court
+  pings (CaseFile.jsx); fetch.py build_stats() -> data/stats.json feeds
+  the methodology page's live tiles (never hand-date numbers again);
+  widget/preview.html is the grant illustration (ONE fictional,
+  SAMPLE-flagged, noindex case - never put real names in it).
+  Schedules are Central-true year-round via a `gate` job in both
+  workflows: both UTC offsets are cron'd and the gate passes the set
+  matching Chicago's offset, keyed on github.event.schedule (cron
+  strings in `on:` and in the gate's case must match exactly; unknown
+  zone fails OPEN). Concurrency is job-level because of the gate.
+  RELIABILITY FACTS (verified from run history, do not round up): 4
+  failed deploy runs after the Jul 15 rework - Aug 6, Aug 17 x2, Sep 8 -
+  all GitHub-side steps (API calls in handoff/flag steps, Pages
+  upload), none lost data; 455 of 459 green from Jul 16 to Nov 16, 174
+  straight since Sep 9. Earlier "zero failures" claims were read off
+  last-100 windows and were wrong for the full period. Detection time:
+  median 90 min, slowest 4.5 h (NOT "all within two hours").
+  Brand: tagline is "Where Locals Look First For News" per the
+  wpr-brand skill; flag links home; footer carries 715-301-5539.
 - 2026-09-01: public methodology page (widget/about.html - plain HTML in
   the brand system; its service-record tiles are hand-dated and get
   refreshed alongside the roadmap artifact), MIT LICENSE, README preface.

@@ -102,9 +102,15 @@ jobs:
         run: |
           NEXT=$((ATTEMPT + 1))
           echo "::warning::WCCA fetch stalled (runner attempt $ATTEMPT of 3). Dispatching attempt $NEXT on a fresh runner; this run still deploys last-good data."
-          gh workflow run "Update court data and deploy" -f attempt="$NEXT"
+          # A GitHub API blip here once reddened a run (2026-08-17). Retry
+          # once, then warn: the next tick is the fallback, not a red run.
+          gh workflow run "Update court data and deploy" -f attempt="$NEXT" \
+            || { sleep 15; gh workflow run "Update court data and deploy" -f attempt="$NEXT"; } \
+            || echo "::warning::Could not dispatch the fresh-runner handoff; the next scheduled tick will retry."
 
+      # Issue bookkeeping must never redden a deploy (it did on 2026-08-17).
       - name: Raise the outage flag (three runners couldn't reach WCCA)
+        continue-on-error: true
         if: steps.fetch.outcome == 'failure' && env.ATTEMPT == '3'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -121,6 +127,7 @@ jobs:
           fi
 
       - name: Clear the outage flag
+        continue-on-error: true
         if: steps.fetch.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}

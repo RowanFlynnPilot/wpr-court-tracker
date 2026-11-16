@@ -75,6 +75,9 @@ body {
   text-transform: uppercase;
   color: var(--ink);
 }
+/* The flag links home (brand invariant) without looking like body-copy link. */
+.eyebrow a { color: inherit; text-decoration: none; }
+.eyebrow a:hover { color: var(--teal-deep); }
 .masthead h1 {
   margin: 0;
   font-family: var(--font-display);
@@ -361,6 +364,11 @@ body {
 .ledger-note { font-size: 14px; }
 .ledger-court .ledger-note { color: var(--muted-deep); }
 .ledger-empty { font-size: 14px; color: var(--muted-deep); }
+/* A folded run of court-record pings: one row, heavier bar, count in ink. */
+.ledger-run .ledger-date { border-left-width: 5px; padding-left: 6px; }
+.ledger-run .ledger-note b { color: var(--ink); font-weight: 700; }
+.ledger-more { display: block; margin-top: 3px; font-size: 12.5px; }
+.ledger-fold { padding: 4px 0 8px; font-size: 12.5px; }
 
 .detail-links { display: flex; flex-wrap: wrap; gap: 16px; margin: 14px 0 0; font-size: 13.5px; font-weight: 700; }
 .linkbtn {
@@ -462,7 +470,14 @@ a:hover { color: var(--teal); }
 /* ---------- footer, states ---------- */
 .colophon { margin-top: 34px; border-top: 1px solid var(--ink); padding-top: 14px; font-size: 12.5px; color: var(--muted); }
 .colophon p { margin: 0 0 8px; max-width: 78ch; }
-.tagline { font-style: italic; }
+.tagline {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .loading, .empty { color: var(--muted); font-style: italic; }
 .load-error { color: var(--stamp); font-weight: 700; }
 

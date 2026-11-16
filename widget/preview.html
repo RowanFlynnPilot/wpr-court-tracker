@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What court-data access would add — Wausau Pilot &amp; Review Court Tracker</title>
+    <meta name="description" content="A side-by-side illustration of one fictional case file: what the Court Tracker shows today, and what it would show with access to the court system's data service." />
+    <!-- An illustration built around a fictional case: keep it out of search. -->
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="https://wausaupilotandreview.com/wp-content/uploads/2024/04/cropped-Wausau-Pilot-Transparent-32x32.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <style>
+      /* Page-specific layout; the case files themselves use the tracker's
+         own classes so the preview can't drift from the real thing. */
+      .preview-page { max-width: 1180px; }
+      .notice {
+        margin: 18px 0 0;
+        border: 2px dashed var(--stamp);
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 14px;
+        max-width: 86ch;
+      }
+      .notice b {
+        font-family: var(--font-mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--stamp);
+      }
+      .compare {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-top: 28px;
+        align-items: start;
+      }
+      @media (max-width: 940px) { .compare { grid-template-columns: 1fr; } }
+      .col-head { margin: 0 0 16px; border-top: 3px solid var(--ink); padding-top: 10px; }
+      .col-head h2 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 22px;
+        line-height: 1.15;
+      }
+      .col-head p { margin: 4px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+      .col-after .col-head { border-top-color: var(--teal); }
+      .takeaway {
+        margin: 14px 0 0;
+        background: var(--paper-warm);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 13.5px;
+      }
+      .takeaway b { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em; }
+      .charges { margin: 12px 0 0; }
+      .charges h3 {
+        margin: 0 0 6px;
+        font-family: var(--font-display);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .charges table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+      .charges td { padding: 6px 8px 6px 0; border-bottom: 1px dashed var(--line); vertical-align: top; }
+      .charges tr:last-child td { border-bottom: none; }
+      .charges td:first-child { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; }
+      .charges td:last-child { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; text-align: right; }
+      .src {
+        display: inline-block;
+        margin-left: 6px;
+        font-family: var(--font-display);
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted-deep);
+        white-space: nowrap;
+      }
+      .col-after .ledger-court .ledger-note { color: var(--ink); }
+      .same { margin-top: 36px; max-width: 86ch; }
+      .same h2 { margin: 0 0 8px; font-family: var(--font-display); font-weight: 600; font-size: 22px; }
+      .same ul { margin: 0; padding-left: 22px; }
+      .same li { margin-bottom: 6px; }
+      .same .fine { font-size: 13px; color: var(--muted-deep); margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <main class="shell preview-page">
+      <header class="masthead">
+        <img class="badge" src="/src/assets/wpr-badge.png" alt="" width="104" height="104" />
+        <div>
+          <p class="eyebrow"><a href="https://wausaupilotandreview.com/">Wausau Pilot &amp; Review</a></p>
+          <h1>What court-data access would add</h1>
+          <p class="dek">One case file, shown two ways: what the Court Tracker can tell readers today, and what it could tell them with a subscription to the court system&rsquo;s data service.</p>
+        </div>
+      </header>
+
+      <p class="statline">
+        <span><a href="./">Back to the tracker</a></span>
+        <span><a href="./about.html">How the tracker works</a></span>
+      </p>
+
+      <p class="notice"><b>Illustration.</b> The case below is fictional. No real person, case, or court record is shown, and the exact fields will depend on the court system&rsquo;s data service. Everything on the <a href="./">live tracker</a> is real.</p>
+
+      <div class="compare">
+        <section class="col-before" aria-labelledby="before-h">
+          <div class="col-head">
+            <h2 id="before-h">Today: the free official feed</h2>
+            <p>It signals <em>that</em> a record changed, and when.</p>
+          </div>
+
+          <article class="folder">
+            <div class="folder-tabrow">
+              <span class="folder-tab">Felony</span>
+              <span class="sample-flag">Sample</span>
+            </div>
+            <div class="folder-body">
+              <h3 class="case-headline">Sample case: former parks contractor charged with theft</h3>
+              <p class="case-meta">Marathon County &middot; State of Wisconsin vs. Pat Example (fictional)</p>
+              <p class="case-summary">Prosecutors allege a contractor billed the city for playground equipment that was never delivered. Example has pleaded not guilty.</p>
+              <p class="hearing">
+                <span class="hearing-date mono">Dec 09, 2026</span>
+                <span>Motion hearing, Branch 2, 9 a.m. <span class="src">typed in by a reporter</span></span>
+              </p>
+              <div class="detail">
+                <p class="presumption">A criminal charge is an accusation. Every defendant is presumed innocent unless and until proven guilty.</p>
+                <div class="ledger-head">
+                  <h3 class="ledger-title">Activity</h3>
+                  <span class="case-no mono">Case no. 2026CF000000 (sample)</span>
+                </div>
+                <ol class="ledger">
+                  <li class="ledger-row ledger-court">
+                    <span class="ledger-date mono">Nov 12, 2026</span>
+                    <span class="ledger-note">Court record updated &mdash; view the docket on WCCA</span>
+                  </li>
+                  <li class="ledger-row ledger-court">
+                    <span class="ledger-date mono">Nov 05, 2026</span>
+                    <span class="ledger-note">Court record updated &mdash; view the docket on WCCA</span>
+                  </li>
+                  <li class="ledger-row ledger-wpr">
+                    <span class="ledger-date mono">Oct 28, 2026</span>
+                    <span class="ledger-note">Example pleaded not guilty at arraignment. A motion hearing is set for Dec. 9.</span>
+                  </li>
+                  <li class="ledger-row ledger-court">
+                    <span class="ledger-date mono">Oct 28, 2026</span>
+                    <span class="ledger-note">Court record updated &mdash; view the docket on WCCA</span>
+                  </li>
+                  <li class="ledger-row ledger-wpr">
+                    <span class="ledger-date mono">Oct 14, 2026</span>
+                    <span class="ledger-note">Criminal complaint filed. Our first story lays out the allegations.</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </article>
+
+          <p class="takeaway"><b>What a reader gets:</b> the record moved on Nov. 5 and Nov. 12, but not what happened. Until a reporter opens the docket and writes it up, the file is silent. Hearing dates are copied in by hand.</p>
+        </section>
+
+        <section class="col-after" aria-labelledby="after-h">
+          <div class="col-head">
+            <h2 id="after-h">With court-data access</h2>
+            <p>The same file, with the official record filled in.</p>
+          </div>
+
+          <article class="folder">
+            <div class="folder-tabrow">
+              <span class="folder-tab">Felony</span>
+              <span class="sample-flag">Sample</span>
+            </div>
+            <div class="folder-body">
+              <h3 class="case-headline">Sample case: former parks contractor charged with theft</h3>
+              <p class="case-meta">Marathon County &middot; State of Wisconsin vs. Pat Example (fictional)</p>
+              <p class="case-summary">Prosecutors allege a contractor billed the city for playground equipment that was never delivered. Example has pleaded not guilty.</p>
+              <p class="hearing">
+                <span class="hearing-date mono">Dec 09, 2026</span>
+                <span>Motion hearing, Branch 2, 9:00 a.m. <span class="src">from the court calendar</span></span>
+              </p>
+              <div class="charges">
+                <h3>Charges <span class="src">from the court record</span></h3>
+                <table>
+                  <tbody>
+                    <tr><td>Count 1</td><td>Theft of movable property, Wis. Stat. 943.20(1)(a)</td><td>Pending</td></tr>
+                    <tr><td>Count 2</td><td>Fraudulent writings, Wis. Stat. 943.39</td><td>Pending</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="detail">
+                <p class="presumption">A criminal charge is an accusation. Every defendant is presumed innocent unless and until proven guilty.</p>
+                <div class="ledger-head">
+                  <h3 class="ledger-title">Activity</h3>
+                  <span class="case-no mono">Case no. 2026CF000000 (sample)</span>
+                </div>
+                <ol class="ledger">
+                  <li class="ledger-row ledger-court">
+                    <span class="ledger-date mono">Nov 12, 2026</span>
+                    <span class="ledger-note">Notice of hearing: motion hearing set for Dec. 9, 9:00 a.m., Branch 2. <span class="src">official docket entry</span></span>
+                  </li>
+                  <li class="ledger-row ledger-court">
+                    <span class="ledger-date mono">Nov 05, 2026</span>
+                    <span class="ledger-note">Motion to suppress evidence filed by the defense. <span class="src">official docket entry</span></span>
+                  </li>
+                  <li class="ledger-row ledger-wpr">
+                    <span class="ledger-date mono">Oct 28, 2026</span>
+                    <span class="ledger-note">Example pleaded not guilty at arraignment. A motion hearing is set for Dec. 9.</span>
+                  </li>
+                  <li class="ledger-row ledger-court">
+                    <span class="ledger-date mono">Oct 28, 2026</span>
+                    <span class="ledger-note">Arraignment held. Plea of not guilty entered; cash bond continued. <span class="src">official docket entry</span></span>
+                  </li>
+                  <li class="ledger-row ledger-wpr">
+                    <span class="ledger-date mono">Oct 14, 2026</span>
+                    <span class="ledger-note">Criminal complaint filed. Our first story lays out the allegations.</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </article>
+
+          <p class="takeaway"><b>What a reader gets:</b> every red entry says what happened, in the court&rsquo;s own words. Charges and hearing dates come straight from the record. Reporters spend their time on the teal entries: the reporting.</p>
+        </section>
+      </div>
+
+      <section class="same">
+        <h2>What would not change</h2>
+        <ul>
+          <li><b>Editors still choose the cases.</b> The watchlist stays hand-picked and publisher-approved.</li>
+          <li><b>The rules stay in the software.</b> Family, juvenile, guardianship, and mental-health cases remain blocked, and every criminal case keeps the presumption-of-innocence note.</li>
+          <li><b>Reporters still explain.</b> Official entries say what the court did; the newsroom says what it means.</li>
+          <li><b>Only sanctioned access.</b> The data would come from the court system&rsquo;s own subscription service, never from scraping its website.</li>
+        </ul>
+        <p class="fine">More on how the tracker works today: <a href="./about.html">methodology and editorial rules</a>.</p>
+      </section>
+
+      <footer class="colophon">
+        <p>Illustration only; the sample case is fictional. Not affiliated with or endorsed by the Wisconsin court system.</p>
+        <p><a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &middot; 715-301-5539 &middot; <span class="tagline">Where Locals Look First For News</span></p>
+      </footer>
+    </main>
+  </body>
+</html>

@@ -84,7 +84,7 @@
       <header class="masthead">
         <img class="badge" src="/src/assets/wpr-badge.png" alt="" width="104" height="104" />
         <div>
-          <p class="eyebrow">Wausau Pilot &amp; Review</p>
+          <p class="eyebrow"><a href="https://wausaupilotandreview.com/">Wausau Pilot &amp; Review</a></p>
           <h1>How the Court Tracker works</h1>
           <p class="dek">Where the information comes from, what the newsroom decides, and the guardrails written into the software &mdash; in plain English.</p>
         </div>
@@ -143,18 +143,20 @@
         <h2>Reliability and transparency</h2>
         <p>The record is checked every two hours on weekdays, 8 a.m. to 6 p.m. Central. When the court system is slow to respond &mdash; which it sometimes is for automated checks &mdash; the check retries on a fresh machine and the tracker keeps serving its last good data, with the &ldquo;checked&rdquo; time shown honestly on the page.</p>
         <div class="record" role="list" aria-label="Service record">
-          <div role="listitem"><b>100%</b><span>Green runs &middot; last 100 checks</span></div>
-          <div role="listitem"><b>5</b><span>Court-system outages self-healed</span></div>
+          <div role="listitem"><b data-stat="recordChangesCaught">&mdash;</b><span>Court-record changes caught</span></div>
+          <div role="listitem"><b data-stat="medianDetection">&mdash;</b><span>Median time to catch a change</span></div>
+          <div role="listitem"><b data-stat="casesWatching">&mdash;</b><span>Cases watched now</span></div>
           <div role="listitem"><b>6&times;</b><span>Checks per weekday</span></div>
-          <div role="listitem"><b>MIT</b><span>Open-source license</span></div>
         </div>
-        <p class="record-asof">Service record as of September 1, 2026.</p>
+        <p class="record-asof" id="record-asof">Live figures, computed from the tracker&rsquo;s own public data.</p>
+        <p>&ldquo;Time to catch a change&rdquo; is the gap between the court posting an update and our next check seeing it. Because checks run on weekdays, a change posted in the evening or on a weekend is caught the next weekday morning.</p>
         <p>The software, the watchlist, and every change to the data are public on <a href="https://github.com/RowanFlynnPilot/wpr-court-tracker" target="_blank" rel="noreferrer">GitHub</a>, released under the MIT license. Anyone can audit what the tracker does and how it decides.</p>
       </section>
 
       <section>
         <h2>What comes next</h2>
         <p>Today the tracker knows <em>that</em> a case moved; reporters supply <em>what</em> moved. Subscription access to the court system&rsquo;s data service &mdash; which the newsroom is seeking grant support for &mdash; would add official docket entries, charges, and hearing dates automatically. The watchlist, the editorial rules, and the presumption note would stay exactly as they are; only the data layer changes.</p>
+        <p><a href="./preview.html">See what a case file would look like with court-data access &rarr;</a></p>
       </section>
 
       <section>
@@ -164,8 +166,34 @@
       </section>
 
       <footer class="colophon">
-        <p>Source: Wisconsin Circuit Court Access, via the court system&rsquo;s official per-case RSS feeds. Built by <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &mdash; <span class="tagline">More News. Less Fluff. All Local.</span></p>
+        <p>Source: Wisconsin Circuit Court Access, via the court system&rsquo;s official per-case RSS feeds. Not affiliated with or endorsed by the Wisconsin court system.</p>
+        <p><a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &middot; 715-301-5539 &middot; <span class="tagline">Where Locals Look First For News</span></p>
       </footer>
     </main>
+    <script type="module">
+      // Service-record tiles: live numbers from the pipeline's stats.json
+      // (pipeline/fetch.py build_stats). The page reads fine without them.
+      const fmt = (m) => (m == null ? '—' : m < 90 ? `${m} min` : `${(m / 60).toFixed(1)} hr`);
+      (async () => {
+        try {
+          const s = await (await fetch('./stats.json', { cache: 'no-store' })).json();
+          const set = (key, value) => {
+            const el = document.querySelector(`[data-stat="${key}"]`);
+            if (el && value != null) el.textContent = value;
+          };
+          set('recordChangesCaught', s.recordChangesCaught);
+          set('medianDetection', fmt(s.medianDetectionMinutes));
+          set('casesWatching', s.casesWatching);
+          const asOf = new Date(s.generatedAt).toLocaleDateString('en-US', {
+            month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Chicago',
+          });
+          const slowest = s.slowestDetectionMinutes == null ? '' : ` Slowest catch so far: ${fmt(s.slowestDetectionMinutes)}.`;
+          document.getElementById('record-asof').textContent =
+            `Live figures, computed from the tracker’s own public data as of ${asOf}.${slowest}`;
+        } catch {
+          /* tiles keep their dashes */
+        }
+      })();
+    </script>
   </body>
 </html>

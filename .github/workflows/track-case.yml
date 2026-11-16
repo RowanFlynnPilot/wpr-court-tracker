@@ -19,10 +19,14 @@ on:
   issues:
     types: [opened, edited]
   schedule:
-    # Publish sweeps at 7:45 a.m. and 3:45 p.m. Central (CDT = UTC-5),
-    # daily. GITHUB_TOKEN pushes never trigger on:push workflows
-    # (GitHub anti-recursion), so the sweep dispatches the deploy itself.
-    - cron: '45 12,20 * * *'
+    # Publish sweeps at 7:45 a.m. and 3:45 p.m. CENTRAL, daily, year-round.
+    # GitHub cron is UTC-only, so both offsets are scheduled and the
+    # `gate` job lets only the one matching Chicago's current offset
+    # through (same mechanism as update.yml; the gate matches these
+    # strings exactly - edit both). GITHUB_TOKEN pushes never trigger
+    # on:push workflows, so the sweep dispatches the deploy itself.
+    - cron: '45 12,20 * * *'   # daylight time (UTC-5)
+    - cron: '45 13,21 * * *'   # standard time (UTC-6)
   workflow_dispatch:
 
 permissions:
@@ -31,15 +35,37 @@ permissions:
   issues: write
   actions: write
 
-concurrency:
-  group: track-case-intake
-  cancel-in-progress: false
-
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.clock.outputs.run }}
+    steps:
+      - id: clock
+        env:
+          EVENT: ${{ github.event_name }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          RUN=true
+          if [ "$EVENT" = "schedule" ]; then
+            ZONE=$(TZ=America/Chicago date +%Z)
+            case "$CRON" in
+              '45 12,20 * * *') WANT=CDT ;;
+              *) WANT=CST ;;
+            esac
+            [ "$ZONE" = "$WANT" ] || RUN=false
+            echo "cron '$CRON' is the $WANT schedule; Chicago is on $ZONE -> run=$RUN"
+          fi
+          echo "run=$RUN" >> "$GITHUB_OUTPUT"
+
   feedback:
     if: >-
       github.event_name == 'issues' &&
       contains(github.event.issue.labels.*.name, 'track-a-case')
+    # Job-level so a skipped off-season sweep never displaces a queued run.
+    concurrency:
+      group: track-case-intake
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -116,7 +142,13 @@ jobs:
           gh issue comment "$ISSUE_NO" --body "Passed the editorial policy check — sign-off PR: $PR_URL"
 
   publish:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: gate
+    if: >-
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+      needs.gate.outputs.run == 'true'
+    concurrency:
+      group: track-case-intake
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

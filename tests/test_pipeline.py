@@ -117,6 +117,38 @@ def test_unnarrated_activity_flags_silent_files():
     assert "hearing passed" not in body.lower() or "### A hearing" not in body
 
 
+def test_build_stats_counts_only_live_caught_changes():
+    from fetch import build_stats
+
+    feed = {
+        "generatedAt": "2026-11-16T22:00:00+00:00",
+        "cases": [
+            {
+                "id": "a", "status": "watching",
+                "firstTrackedAt": "2026-07-11T20:00:00+00:00",
+                "updates": [{"date": "2026-06-25", "note": "n"}],
+                "observed": [
+                    # Posted after tracking began: caught 30 and 90 minutes later.
+                    {"updated": "2026-08-01T15:00:00+00:00", "observedAt": "2026-08-01T15:30:00+00:00"},
+                    {"updated": "2026-09-01T15:00:00+00:00", "observedAt": "2026-09-01T16:30:00+00:00"},
+                    # Predates tracking: backfill, not a detection.
+                    {"updated": "2026-06-25T20:00:00+00:00", "observedAt": "2026-07-11T20:21:00+00:00"},
+                ],
+            },
+            {"id": "b", "status": "closed", "firstTrackedAt": "2026-07-18T00:00:00+00:00",
+             "updates": [], "observed": []},
+            {"id": "s", "placeholder": True, "observed": [], "updates": [{"date": "2026-01-01", "note": "n"}]},
+        ],
+    }
+    s = build_stats(feed)
+    assert s["recordChangesCaught"] == 2
+    assert s["medianDetectionMinutes"] == 60 and s["slowestDetectionMinutes"] == 90
+    assert s["casesWatching"] == 1 and s["casesClosed"] == 1
+    assert s["newsroomNotes"] == 1 and s["trackingSince"] == "2026-07-11"
+    empty = build_stats({"generatedAt": "x", "cases": []})
+    assert empty["medianDetectionMinutes"] is None and empty["recordChangesCaught"] == 0
+
+
 def test_first_tracked_at_prefers_prior_then_backfills():
     from fetch import first_tracked_at
 

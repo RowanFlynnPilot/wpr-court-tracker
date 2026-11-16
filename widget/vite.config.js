@@ -20,6 +20,7 @@ export default defineConfig({
         og: fileURLToPath(new URL('./og-card.html', import.meta.url)),
         editor: fileURLToPath(new URL('./editor.html', import.meta.url)),
         about: fileURLToPath(new URL('./about.html', import.meta.url)),
+        preview: fileURLToPath(new URL('./preview.html', import.meta.url)),
       },
     },
   },

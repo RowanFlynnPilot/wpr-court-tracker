@@ -42,6 +42,7 @@ FEED_PATH = ROOT / "data" / "feed.json"
 CHANGES_PATH = ROOT / "data" / "changes.json"
 RSS_PATH = ROOT / "data" / "tracker.xml"
 ICS_PATH = ROOT / "data" / "hearings.ics"
+STATS_PATH = ROOT / "data" / "stats.json"
 
 # Public tracker URL - reader-facing links in the RSS/ics outputs.
 SITE_URL = "https://rowanflynnpilot.github.io/wpr-court-tracker/"
@@ -327,6 +328,44 @@ def build_hearings_ics(feed: dict) -> str:
     return "\r\n".join(lines) + "\r\n"
 
 
+def build_stats(feed: dict) -> dict:
+    """Service-record numbers for the methodology page, derived from data.
+
+    A record change counts as "caught live" when the court posted it AFTER
+    the case joined the watchlist; changes that predate tracking were
+    backfilled on the first fetch and say nothing about detection speed.
+    Detection time = when our check saw it minus when the court posted it.
+    """
+    real = [c for c in feed["cases"] if not c.get("placeholder")]
+    lags = []
+    for case in real:
+        first = case.get("firstTrackedAt")
+        for obs in case.get("observed", []):
+            if not first or not obs.get("observedAt"):
+                continue
+            seen = datetime.fromisoformat(obs["observedAt"])
+            posted = datetime.fromisoformat(obs["updated"])
+            if posted < datetime.fromisoformat(first):
+                continue
+            lags.append(max(0, round((seen - posted).total_seconds() / 60)))
+    lags.sort()
+    median = None
+    if lags:
+        mid = len(lags) // 2
+        median = lags[mid] if len(lags) % 2 else round((lags[mid - 1] + lags[mid]) / 2)
+    tracked = [c["firstTrackedAt"] for c in real if c.get("firstTrackedAt")]
+    return {
+        "generatedAt": feed["generatedAt"],
+        "casesWatching": sum(1 for c in real if c.get("status") != "closed"),
+        "casesClosed": sum(1 for c in real if c.get("status") == "closed"),
+        "recordChangesCaught": len(lags),
+        "medianDetectionMinutes": median,
+        "slowestDetectionMinutes": lags[-1] if lags else None,
+        "newsroomNotes": sum(len(c.get("updates", [])) for c in real),
+        "trackingSince": min(tracked)[:10] if tracked else None,
+    }
+
+
 def run() -> None:
     config = load_config()
     prior = load_prior_observations()
@@ -379,6 +418,9 @@ def run() -> None:
     CHANGES_PATH.write_text(
         json.dumps({"generatedAt": now, "changed": changed}, indent=2) + "\n",
         encoding="utf-8",
+    )
+    STATS_PATH.write_text(
+        json.dumps(build_stats(feed), indent=2) + "\n", encoding="utf-8"
     )
     RSS_PATH.write_bytes(build_tracker_rss(feed))
     ICS_PATH.write_text(build_hearings_ics(feed), encoding="utf-8", newline="")

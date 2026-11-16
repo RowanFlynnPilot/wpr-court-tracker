@@ -142,7 +142,9 @@ export default function App() {
       <header className="masthead">
         <img className="badge" src={badge} alt="" width="104" height="104" />
         <div>
-          <p className="eyebrow">Wausau Pilot &amp; Review</p>
+          <p className="eyebrow">
+            <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a>
+          </p>
           <h1>Marathon County Court Tracker</h1>
           <p className="dek">
             Cases of public interest our newsroom is following, with activity
@@ -306,10 +308,13 @@ export default function App() {
       <footer className="colophon">
         <p>{feed.disclaimer}</p>
         <p>
-          Source: <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>, via the court system&rsquo;s official per-case RSS feeds. Built by <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &mdash; <span className="tagline">More News. Less Fluff. All Local.</span>
+          Source: <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>, via the court system&rsquo;s official per-case RSS feeds. Not affiliated with or endorsed by the Wisconsin court system.
         </p>
         <p>
           Follow along: <a href={`${import.meta.env.BASE_URL}tracker.xml`}>case-activity feed (RSS)</a> &middot; <a href={`${import.meta.env.BASE_URL}hearings.ics`}>hearing calendar (.ics)</a> &mdash; both update automatically. <a href={`${import.meta.env.BASE_URL}about.html`}>Methodology &amp; editorial rules</a>.
+        </p>
+        <p>
+          <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a> &middot; 715-301-5539 &middot; <span className="tagline">Where Locals Look First For News</span>
         </p>
       </footer>
     </main>

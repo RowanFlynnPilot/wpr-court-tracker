@@ -2,9 +2,15 @@ name: Update court data and deploy
 
 on:
   schedule:
-    # Every 2 hours, 8 a.m.-6 p.m. Central (CDT = UTC-5), weekdays only.
-    # Courts don't docket overnight; don't poll overnight.
-    - cron: '0 13,15,17,19,21,23 * * 1-5'
+    # Every 2 hours, 8 a.m.-6 p.m. CENTRAL, weekdays only, year-round.
+    # Courts don't docket overnight; don't poll overnight. GitHub cron is
+    # UTC-only, so both offsets are scheduled and the `gate` job lets only
+    # the set matching Chicago's current offset through (keyed on WHICH
+    # cron fired, not the wall clock - scheduled runs start up to ~90
+    # minutes late). The gate matches these strings exactly: edit both.
+    - cron: '0 13,15,17,19,21,23 * * 1-5'   # daylight time (UTC-5)
+    - cron: '0 14,16,18,20,22 * * 1-5'      # standard time (UTC-6)
+    - cron: '0 0 * * 2-6'                   # standard time, the 6 p.m. tick
   push:
     branches: [main]
   workflow_dispatch:
@@ -21,12 +27,39 @@ permissions:
   actions: write
   issues: write
 
-concurrency:
-  group: court-tracker
-  cancel-in-progress: false
-
 jobs:
+  # Pushes and dispatches always run. A scheduled tick runs only when its
+  # cron belongs to Chicago's current UTC offset.
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.clock.outputs.run }}
+    steps:
+      - id: clock
+        env:
+          EVENT: ${{ github.event_name }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          RUN=true
+          if [ "$EVENT" = "schedule" ]; then
+            ZONE=$(TZ=America/Chicago date +%Z)
+            case "$CRON" in
+              '0 13,15,17,19,21,23 * * 1-5') WANT=CDT ;;
+              *) WANT=CST ;;
+            esac
+            [ "$ZONE" = "$WANT" ] || RUN=false
+            echo "cron '$CRON' is the $WANT schedule; Chicago is on $ZONE -> run=$RUN"
+          fi
+          echo "run=$RUN" >> "$GITHUB_OUTPUT"
+
   update:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    # Job-level, so skipped off-season ticks never queue behind (or
+    # cancel) a real run waiting in this group.
+    concurrency:
+      group: court-tracker
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     environment:
       name: github-pages

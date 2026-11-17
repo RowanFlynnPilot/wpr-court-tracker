@@ -168,6 +168,16 @@ pattern as wpr-brewers-tracker, never committed).
   the methodology page's live tiles (never hand-date numbers again);
   widget/preview.html is the grant illustration (ONE fictional,
   SAMPLE-flagged, noindex case - never put real names in it).
+  BACKSTOP TASK (2026-11-16): a Windows scheduled task on Rowan's
+  machine, "WPR Court Tracker backstop", runs tools/backstop-check.ps1
+  every 30 min, weekdays 8:05 a.m.-6 p.m. Central. It dispatches the
+  update workflow ONLY if the deployed heartbeat says the last check
+  is 125+ min old (and never within 110 min of its own last dispatch),
+  so it adds nothing when GitHub's scheduler keeps up. It works only
+  while that machine is on, logged in, and `gh` is signed in. Log:
+  %LOCALAPPDATA%\wpr-court-tracker\backstop.log. Remove with
+  `Unregister-ScheduledTask -TaskName 'WPR Court Tracker backstop'`.
+  If the repo folder moves, the task's script path must be updated.
   VISUALS (same night): Timeline.jsx puts a two-lane strip on every
   real case card (red ticks = court pings, teal dots = newsroom notes,
   ink diamond = hearing; lanes + shapes carry identity because the

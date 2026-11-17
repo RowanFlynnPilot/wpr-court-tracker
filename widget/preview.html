@@ -15,7 +15,9 @@
     <style>
       /* Page-specific layout; the case files themselves use the tracker's
          own classes so the preview can't drift from the real thing. */
-      .preview-page { max-width: 1180px; }
+      /* .shell.preview-page, not .preview-page: the bundled stylesheet
+         loads after this block, and its .shell width would otherwise win. */
+      .shell.preview-page { max-width: 1180px; }
       .notice {
         margin: 18px 0 0;
         border: 2px dashed var(--stamp);

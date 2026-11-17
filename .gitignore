@@ -6,3 +6,9 @@ out/
 
 # Check heartbeat: deployed with the site, never committed
 data/heartbeat.json
+
+# Walkthrough video: captures and renders are regenerated, not committed
+video/shots/
+video/walkthrough.html
+video/stills*/
+video/*.mp4

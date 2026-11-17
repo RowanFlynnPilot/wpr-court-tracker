@@ -36,7 +36,11 @@ NEWSROOM (author_association OWNER/MEMBER/COLLABORATOR) auto-publish on
 the twice-daily sweep in track-case.yml (12:45/20:45 UTC; closing the
 issue first cancels; workflow_dispatch publishes now) — filing the issue
 IS the sign-off when the publisher files it. Issues from anyone else
-become a sign-off PR a human must merge; auto-publish must NEVER be
+are labelled needs-editor-review and answered with a comment - nothing
+is committed, and an editor re-files the case from the desk if the
+newsroom takes it on (changed from a sign-off PR on 2026-11-16: that
+lane needed a repo setting that was off and had never run);
+auto-publish must NEVER be
 extended to outside authors on this public repo. Issue bodies are
 untrusted input: env/stdin-passed, never shell-interpolated.
 
@@ -173,11 +177,9 @@ pattern as wpr-brewers-tracker, never committed).
   through load_config), tools/replication_check.py (lists leftover
   WPR/Marathon/repo mentions; exits 1 on this repo by design). Keep
   the guide's "Make it yours" table in step with any new hardcoded
-  name, address or county. KNOWN GAP found while writing it: this
-  repo has "Allow GitHub Actions to create and approve pull requests"
-  OFF, so the outside-author sign-off-PR lane in track-case.yml would
-  fail at `gh pr create` (never exercised live). Rowan's setting to
-  change; newsroom (collaborator) submissions are unaffected.
+  name, address or county. The outside-submission lane is exercised
+  only by a non-collaborator's issue, so it is UNTESTED live as of
+  2026-11-16 (the owner's test issues always take the newsroom lane).
   BACKSTOP TASK (2026-11-16): a Windows scheduled task on Rowan's
   machine, "WPR Court Tracker backstop", runs tools/backstop-check.ps1
   every 30 min, weekdays 8:05 a.m.-6 p.m. Central. It dispatches the

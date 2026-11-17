@@ -14,7 +14,7 @@ On failure: a reporter-readable reason on stderr, exit 1.
 Issue bodies are untrusted input from a public repo. Nothing here executes
 or renders them: the WCCA URL must parse against wcca.wicourts.gov, dates
 must be real dates, and everything else is carried as inert JSON strings
-into a pull request a human must approve.
+into config/cases.json only by the newsroom's own publish sweep.
 """
 
 import json

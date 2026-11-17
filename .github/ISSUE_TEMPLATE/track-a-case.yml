@@ -11,7 +11,7 @@ body:
         the moment you submit. **Newsroom submissions publish
         automatically at the next sweep** (7:45 a.m. / 3:45 p.m. Central
         — close the issue before then to cancel); outside submissions
-        become a pull request the newsroom must merge. If anything is
+        are held for an editor to review. If anything is
         off, a comment explains what to fix; edit the description and it
         re-checks automatically.
 

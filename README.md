@@ -46,7 +46,7 @@ owner/members/collaborators) publish **automatically at the next
 sweep — 7:45 a.m. and 3:45 p.m. Central, daily**. Close the issue
 before the sweep to cancel, or run the "Track-a-case intake" workflow
 from the Actions tab to publish immediately. Submissions from anyone
-else become a pull request the newsroom must merge — auto-publish never
+else are labelled for an editor and held — auto-publish never
 extends to the public.
 
 **Or the bare issue form:** open a

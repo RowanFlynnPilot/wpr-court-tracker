@@ -114,12 +114,8 @@ reports none.
    it every newsroom submission is ignored. This cost us five days.
 3. **Collaborators:** add the editors who may publish. Submissions from
    the owner and collaborators publish automatically; anyone else's
-   become a pull request an editor must merge.
-4. **Let Actions open pull requests:** Settings → Actions → General →
-   tick *Allow GitHub Actions to create and approve pull requests*. The
-   workflows set their own permissions otherwise, but without this one
-   setting a submission from outside the newsroom cannot become the
-   sign-off pull request, and it fails without telling the submitter.
+   are labelled and held for an editor, who re-files the case from the
+   desk if you take it on.
 
 ### 5. First run
 

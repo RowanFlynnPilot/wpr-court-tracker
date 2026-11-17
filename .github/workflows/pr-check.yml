@@ -1,5 +1,5 @@
-# Verification for pull requests - sign-off case PRs from outside
-# authors and any future dependency PRs merge with proof they build.
+# Verification for pull requests - dependency updates and any hand-made
+# change merge with proof they build.
 #
 # Deliberately NO WCCA fetch here: pull requests (including ones from
 # forks) must never trigger court-system traffic. Validation of

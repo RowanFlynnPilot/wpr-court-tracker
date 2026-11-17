@@ -8,7 +8,9 @@ name: Track-a-case intake
 #        - Newsroom (repo owner/members/collaborators): queued, then
 #          published automatically by the twice-daily sweep below.
 #          Closing the issue before the sweep cancels it.
-#        - Anyone else: a sign-off pull request a human must merge.
+#        - Anyone else: labelled needs-editor-review and answered with a
+#          comment. Nothing is committed; an editor re-files it from the
+#          desk if the newsroom takes the case on.
 #          Auto-publish is NEVER extended to outside submissions - this
 #          is a public repo and the issue form is open to the internet.
 #
@@ -34,7 +36,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
   issues: write
   actions: write
 
@@ -89,7 +90,12 @@ jobs:
         run: |
           gh issue comment "$ISSUE_NO" --body "Passed the editorial policy check ✔ Queued as a newsroom submission — it publishes automatically at the next sweep (7:45 a.m. or 3:45 p.m. Central). Close this issue before then to cancel, or run the 'Track-a-case intake' workflow from the Actions tab to publish now."
 
-      - name: Open a sign-off PR for outside submissions
+      # Outside submissions are never published by automation and never
+      # reach the repo: they get a label and a comment, and wait for an
+      # editor. If the newsroom takes the case on, an editor files it from
+      # the Case Entry Desk under their own name - and THAT filing is the
+      # sign-off, exactly as for any newsroom submission.
+      - name: Hold an outside submission for an editor
         if: >-
           steps.parse.outcome == 'success' &&
           !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
@@ -97,29 +103,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NO: ${{ github.event.issue.number }}
         run: |
-          CASE_NO=$(python -c "import json; print(json.load(open('out/new_case.json'))['caseNo'])")
-          HEADLINE=$(python -c "import json; print(json.load(open('out/new_case.json'))['headline'])")
-          MODE=$(python -c "import json; print(json.load(open('out/new_case.json')).get('intakeMode','new'))")
-          [ "$MODE" = "update" ] && VERB="Update" || VERB="Track"
-          BRANCH="case/issue-$ISSUE_NO"
-          git config user.name "wpr-court-tracker"
-          git config user.email "actions@github.com"
-          git checkout -b "$BRANCH"
-          git add config/cases.json
-          git commit -m "$VERB $CASE_NO: $HEADLINE" -m "From track-a-case issue #$ISSUE_NO."
-          git push -f origin "HEAD:$BRANCH"
-          printf '%s\n' \
-            "Watchlist change from issue #$ISSUE_NO ($MODE)." \
-            "" \
-            "Passed the editorial policy gate. **Merging is the publisher sign-off** — it publishes within minutes." \
-            "" \
-            "Closes #$ISSUE_NO" > pr-body.md
-          PR_URL=$(gh pr list --head "$BRANCH" --json url --jq '.[0].url')
-          if [ -z "$PR_URL" ]; then
-            PR_URL=$(gh pr create --head "$BRANCH" \
-              --title "$VERB $CASE_NO: $HEADLINE" --body-file pr-body.md)
-          fi
-          gh issue comment "$ISSUE_NO" --body "Passed the editorial policy check — sign-off PR: $PR_URL"
+          gh label create needs-editor-review --color 5319E7             --description "Outside case request waiting on an editor" 2>/dev/null || true
+          gh issue edit "$ISSUE_NO" --add-label needs-editor-review
+          {
+            echo "Thanks. This request passed our editorial policy check."
+            echo
+            echo "Requests from outside the newsroom are never published automatically. An editor will review it, and if we take the case on we will add it to the tracker ourselves."
+            echo
+            echo "_Editors: to track this case, open the [Case Entry Desk](https://rowanflynnpilot.github.io/wpr-court-tracker/editor.html), paste the case link from this request, and submit it under your own name. Then close this issue._"
+          } > comment.md
+          gh issue comment "$ISSUE_NO" --body-file comment.md
 
   publish:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -148,12 +141,8 @@ jobs:
             ASSOC=$(gh api "repos/$GITHUB_REPOSITORY/issues/$N" --jq .author_association)
             case "$ASSOC" in
               OWNER|MEMBER|COLLABORATOR) ;;
-              *) echo "skip #$N ($ASSOC) - stays on the PR review path"; continue ;;
+              *) echo "skip #$N ($ASSOC) - outside request, held for an editor"; continue ;;
             esac
-            if [ -n "$(gh pr list --head "case/issue-$N" --json number --jq '.[0].number')" ]; then
-              echo "skip #$N - a sign-off PR already exists"
-              continue
-            fi
             gh issue view "$N" --json body --jq .body > body.txt
             if python pipeline/issue_case.py < body.txt 2> err.txt; then
               CASE_NO=$(python -c "import json; print(json.load(open('out/new_case.json'))['caseNo'])")

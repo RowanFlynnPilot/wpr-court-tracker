@@ -17,7 +17,7 @@ import {
 // prefill the form; the editor reviews every field against a live preview
 // and submits via the prefilled "Track a case" GitHub issue. Newsroom
 // submissions auto-publish at the twice-daily sweep; outside submissions
-// become a sign-off PR. This page never contacts the court system.
+// are held for an editor. This page never contacts the court system.
 
 const FALLBACK_PRESUMPTION =
   'A criminal charge is an accusation. Every defendant is presumed ' +
@@ -584,7 +584,7 @@ next publish sweep, or right away if you run it yourself (step 3
             run hours late. To publish now, open{' '}
             <a href="https://github.com/RowanFlynnPilot/wpr-court-tracker/actions/workflows/track-case.yml" target="_blank" rel="noreferrer">the intake workflow</a>{' '}
             and click <b>Run workflow</b>. Close the issue first to cancel.
-            Outside submissions become a pull request an editor must merge.
+            Requests from outside the newsroom are held for an editor.
           </li>
         </ol>
       </section>

@@ -168,11 +168,24 @@ pattern as wpr-brewers-tracker, never committed).
   the methodology page's live tiles (never hand-date numbers again);
   widget/preview.html is the grant illustration (ONE fictional,
   SAMPLE-flagged, noindex case - never put real names in it).
-  Schedules are Central-true year-round via a `gate` job in both
-  workflows: both UTC offsets are cron'd and the gate passes the set
-  matching Chicago's offset, keyed on github.event.schedule (cron
-  strings in `on:` and in the gate's case must match exactly; unknown
-  zone fails OPEN). Concurrency is job-level because of the gate.
+  SCHEDULING (rewritten late 2026-11-16, supersedes the cron-string
+  gate shipped hours earlier): GitHub delivers this repo's scheduled
+  runs late and drops most of them - 5.3 checks/day in July, 1.6/day
+  in November, sweeps 3-6 h late. NEVER claim "six checks a day"
+  without reading the live count. update.yml now schedules a ticket
+  every 20 min (minutes 7/27/47, UTC 13-00) and the `gate` job turns
+  one into a check only on a Central weekday 8 a.m.-7 p.m. AND when
+  the deployed heartbeat.json says the last check is 105+ min old
+  (no heartbeat -> one ticket per even hour, so it cannot over-poll).
+  The update job writes data/heartbeat.json every run (gitignored,
+  deployed, rolling 14-day history); about.html shows "successful
+  checks, past 7 days" from it. Concurrency is job-level because of
+  the gate. track-case.yml sweeps: tickets at 12:45/13:45/20:45/21:45
+  UTC, ungated (idempotent); tell the newsroom to use Run workflow
+  when timing matters. KEEPALIVE: GitHub disables scheduled workflows
+  after 60 days without repo activity, and signal-only commits left
+  the repo silent Oct 1-Nov 16 - the commit step now also commits a
+  refresh when the last commit is 25+ days old. Do not remove it.
   RELIABILITY FACTS (verified from run history, do not round up): 4
   failed deploy runs after the Jul 15 rework - Aug 6, Aug 17 x2, Sep 8 -
   all GitHub-side steps (API calls in handoff/flag steps, Pages

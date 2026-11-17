@@ -104,6 +104,28 @@ jobs:
       - name: Run pipeline tests
         run: python tests/test_pipeline.py
 
+      # A push that touches neither the watchlist nor the pipeline has no
+      # reason to contact the court system: it deploys the data already
+      # live. (One evening of development on 2026-11-16 was 17 pushes, each
+      # firing a check - and, during a WCCA outage, three runner attempts
+      # and an alert comment apiece.) Scheduled tickets, manual runs, the
+      # publish sweep's dispatch and handoffs always check. If the diff
+      # can't be computed, check: failing toward a check is the safe side.
+      - name: Decide whether this run checks the court record
+        id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          CHECK=true
+          if [ "$EVENT" = "push" ]; then
+            if git fetch -q --depth=1 origin "$BEFORE" 2>/dev/null                && git diff --quiet "$BEFORE" HEAD -- config pipeline; then
+              CHECK=false
+            fi
+          fi
+          echo "event=$EVENT -> check=$CHECK"
+          echo "check=$CHECK" >> "$GITHUB_OUTPUT"
+
       # continue-on-error so a WCCA stall can't block deploying - the site
       # ships with the last committed (still-valid) data. WCCA slows for
       # datacenter IPs in predictable windows (~1 p.m. and ~7 p.m. Central,
@@ -113,6 +135,7 @@ jobs:
       # green: red is reserved for real bugs (tests, build, deploy).
       - name: Fetch court activity (official WCCA RSS)
         id: fetch
+        if: steps.plan.outputs.check == 'true'
         continue-on-error: true
         run: python pipeline/fetch.py
 
@@ -158,22 +181,15 @@ jobs:
             gh issue close "$N" --comment "Recovered - court-record checks are succeeding again."
           fi
 
-      # Commit only real record changes. Timestamp lines (generatedAt,
-      # lastBuildDate) move every run; skipping them keeps "watch the repo"
-      # a pure newsroom alert channel - every data commit names its cases.
-      # changes.json is deliberately NOT part of the gate: it empties
-      # itself one run after each alert, which made every real commit
-      # echo a "refresh" commit. It still rides along (git add data/)
-      # whenever the gate opens. The deployed site always ships the
-      # fresh files from this workspace either way.
-      # Every check (success or stall) stamps heartbeat.json, deployed with
-      # the site and never committed. The gate reads it to space checks
-      # ~2 hours apart; the methodology page reads it for "successful
-      # checks, past 7 days". History rides along from the live copy.
+      # heartbeat.json is deployed with the site and never committed. The
+      # gate reads it to space checks ~2 hours apart; the methodology page
+      # reads it for "successful checks, past 7 days". Every run carries
+      # the live copy's history forward; only a run that actually checked
+      # (success or stall) adds an entry and moves the last-check time.
       - name: Record the check heartbeat
         continue-on-error: true
         env:
-          FETCH_OK: ${{ steps.fetch.outcome == 'success' }}
+          FETCH: ${{ steps.fetch.outcome }}
         run: |
           export PREV=$(curl -fsS --max-time 20 "https://rowanflynnpilot.github.io/wpr-court-tracker/heartbeat.json?t=$(date +%s)" 2>/dev/null || echo '{}')
           python3 - <<'PY'
@@ -185,12 +201,24 @@ jobs:
               prev = {}
           checks = [c for c in prev.get("checks", [])
                     if isinstance(c, dict) and now - int(c.get("at", 0)) < 14 * 86400]
-          checks.append({"at": now, "ok": os.environ.get("FETCH_OK") == "true"})
+          outcome = os.environ.get("FETCH", "")
+          last = int(prev.get("attemptedAtEpoch", 0) or 0)
+          if outcome in ("success", "failure"):
+              checks.append({"at": now, "ok": outcome == "success"})
+              last = now
           with open("data/heartbeat.json", "w") as f:
-              json.dump({"attemptedAtEpoch": now, "checks": checks}, f)
-          print(f"heartbeat: {len(checks)} checks on record")
+              json.dump({"attemptedAtEpoch": last, "checks": checks}, f)
+          print(f"heartbeat: fetch {outcome or 'n/a'}; {len(checks)} checks on record")
           PY
 
+      # Commit only real record changes. Timestamp lines (generatedAt,
+      # lastBuildDate) move every run; skipping them keeps "watch the repo"
+      # a pure newsroom alert channel - every data commit names its cases.
+      # changes.json is deliberately NOT part of the gate: it empties
+      # itself one run after each alert, which made every real commit
+      # echo a "refresh" commit. It still rides along (git add data/)
+      # whenever the gate opens. The deployed site always ships the
+      # fresh files from this workspace either way.
       # KEEPALIVE: GitHub disables scheduled workflows in a public repo
       # after 60 days without repository activity. Quiet cases plus
       # signal-only commits left this repo with no commit from Oct 1 to
@@ -208,6 +236,23 @@ jobs:
             git commit -m "$SUMMARY"
             git push
           fi
+
+      # Quiet checks never commit, so the committed feed's "checked" time
+      # is usually older than the live one. A run that skipped the check
+      # must not roll the site's checked-at backwards: it takes the data
+      # files from the live site when those are newer, all or nothing.
+      - name: Carry the live data forward (runs that didn't check)
+        if: steps.fetch.outcome == 'skipped'
+        continue-on-error: true
+        run: |
+          SITE=https://rowanflynnpilot.github.io/wpr-court-tracker
+          mkdir -p live
+          for f in feed.json changes.json stats.json tracker.xml hearings.ics; do
+            curl -fsS --max-time 20 "$SITE/$f?t=$(date +%s)" -o "live/$f" || { echo "could not fetch $f; keeping the committed data"; exit 0; }
+          done
+          NEWER=$(python3 -c "import json; a=json.load(open('live/feed.json'))['generatedAt']; b=json.load(open('data/feed.json'))['generatedAt']; print('yes' if a > b else 'no')")
+          if [ "$NEWER" = "yes" ]; then cp live/* data/; echo "carried the live data forward"; else echo "committed data is current"; fi
+          rm -rf live
 
       - uses: actions/setup-node@v7
         with:

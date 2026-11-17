@@ -172,6 +172,16 @@ pattern as wpr-brewers-tracker, never committed).
   the methodology page's live tiles (never hand-date numbers again);
   widget/preview.html is the grant illustration (ONE fictional,
   SAMPLE-flagged, noindex case - never put real names in it).
+  PUSHES DON'T CHECK THE COURTS (2026-11-16 night): update.yml's
+  "plan" step skips the WCCA fetch on a push unless the push touched
+  config/ or pipeline/ (diff can't be computed -> it checks). A
+  no-check run carries the LIVE data files forward so the site's
+  checked-at never rolls back, and adds no heartbeat entry. Schedule,
+  workflow_dispatch (sweep publish, handoff, backstop, manual) always
+  check. Before this, 17 dev pushes in one evening each fired a check,
+  and during a real WCCA outage (HTTP 500 from everywhere, issue #19)
+  each fired three runner attempts plus an alert comment. Batch your
+  commits anyway.
   WALKTHROUGH VIDEO (2026-11-16): video/ holds an 84 s captioned
   1920x1080 walkthrough built with the html-video skill from captures
   of the LIVE site (capture.mjs -> build.mjs -> the skill's render.mjs;

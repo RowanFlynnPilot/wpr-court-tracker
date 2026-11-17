@@ -15,8 +15,10 @@ from fetch import (
     parse_feed,
     parse_wcca_url,
     validate_date,
+    validate_stage,
     validate_status,
     PipelineError,
+    STAGES,
 )
 
 
@@ -219,6 +221,39 @@ def test_issue_form_parses_to_case():
         {"date": "2026-07-08", "note": "Initial appearance held."},
     ]
     assert "links" not in case  # "_No response_" means empty
+
+
+def test_stage_is_a_short_fixed_list():
+    for key in STAGES:
+        assert validate_stage(key, "t") == key
+    for bad in ("Pretrial", "convicted", "", None, 3):
+        try:
+            validate_stage(bad, "test")
+        except PipelineError:
+            pass
+        else:
+            raise AssertionError(f"{bad!r} must fail stage validation")
+
+
+def test_issue_form_stage_maps_label_to_key():
+    from issue_case import parse_stage
+    # A form filed before the field existed, or left at "Not set": no chip.
+    assert "stage" not in build_case(ISSUE_BODY)
+    for blank in ("", "Not set", "None", "  not set "):
+        assert parse_stage(blank) is None
+    assert parse_stage("On appeal") == "appeal"
+    assert parse_stage("pretrial") == "pretrial"
+    nl = chr(10)
+    stage_block = "### Where the case stands" + nl * 2 + "Pretrial" + nl * 2
+    body = ISSUE_BODY.replace("### WCCA case link", stage_block + "### WCCA case link")
+    assert body != ISSUE_BODY
+    assert build_case(body)["stage"] == "pretrial"
+    try:
+        build_case(body.replace(nl + "Pretrial" + nl, nl + "Guilty" + nl))
+    except PipelineError as e:
+        assert "isn't on the list" in str(e)
+    else:
+        raise AssertionError("an off-list stage must be rejected")
 
 
 def test_issue_form_empty_optionals():

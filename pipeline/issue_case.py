@@ -28,6 +28,7 @@ import policy  # noqa: E402
 from fetch import (  # noqa: E402
     CONFIG_PATH,
     PipelineError,
+    STAGES,
     load_config,
     parse_wcca_url,
 )
@@ -41,6 +42,7 @@ COUNTY_NAMES = {37: "Marathon"}
 # Issue-form section headings (must match .github/ISSUE_TEMPLATE/track-a-case.yml labels).
 F_MODE = "New case or update?"
 F_STATUS = "Case status"
+F_STAGE = "Where the case stands"
 F_URL = "WCCA case link"
 F_HEADLINE = "Headline"
 F_SUMMARY = "Summary"
@@ -123,6 +125,21 @@ def parse_link_lines(raw: str) -> list[dict]:
     return rows
 
 
+def parse_stage(raw: str) -> str | None:
+    """The form shows the reader-facing labels; the config stores the key.
+    "Not set" (or GitHub's own "None") means no chip on the card."""
+    label = raw.strip().lower()
+    if label in ("", "not set", "none"):
+        return None
+    for key, name in STAGES.items():
+        if label in (name.lower(), key):
+            return key
+    raise PipelineError(
+        f"Where the case stands: {raw!r} isn't on the list. Choose one of: "
+        + ", ".join(STAGES.values()) + " (or Not set)."
+    )
+
+
 def build_case(body: str) -> dict:
     form = parse_form(body)
     missing = [f for f in (F_URL, F_HEADLINE, F_SUMMARY, F_TOPICS) if not form.get(f)]
@@ -154,6 +171,9 @@ def build_case(body: str) -> dict:
     }
     if form.get(F_STATUS, "").lower().startswith("closed"):
         case["status"] = "closed"
+    stage = parse_stage(form.get(F_STAGE, ""))
+    if stage:
+        case["stage"] = stage
     if form.get(F_HEARING_DATE):
         case["nextHearing"] = {
             "date": form[F_HEARING_DATE],

@@ -63,6 +63,21 @@ REQUIRED_CASE_FIELDS = ("id", "wccaUrl", "county", "headline", "summary", "tags"
 # motions still show up on the record and should still alert the newsroom.
 VALID_STATUSES = ("watching", "closed")
 
+# Where a case stands, in one word a reader already knows. An EDITORIAL
+# field: a reporter picks it at the desk from this short list (the feed
+# can't tell us - see hard boundary 6). Optional; a card with no stage
+# shows no chip. Mirrored in widget/src/parseCase.js (STAGES) and the
+# issue form's dropdown - keep the three in step.
+STAGES = {
+    "charged": "Charged",
+    "filed": "Filed",
+    "pretrial": "Pretrial",
+    "trial": "Trial",
+    "sentencing": "Sentencing",
+    "deferred": "Deferred",
+    "appeal": "On appeal",
+}
+
 
 class PipelineError(Exception):
     pass
@@ -93,6 +108,15 @@ def validate_status(value, where: str) -> str:
     if value not in VALID_STATUSES:
         raise PipelineError(
             f"{where} must be one of {', '.join(VALID_STATUSES)}, got {value!r}"
+        )
+    return value
+
+
+def validate_stage(value, where: str) -> str:
+    """The optional editorial `stage` must be one of STAGES' keys."""
+    if not isinstance(value, str) or value not in STAGES:
+        raise PipelineError(
+            f"{where} must be one of {', '.join(STAGES)}, got {value!r}"
         )
     return value
 
@@ -134,6 +158,11 @@ def load_config() -> dict:
         case["caseTypeLabel"] = policy.case_type_label(case_no)
         case["isCriminal"] = policy.is_criminal(case_no)
         case["status"] = validate_status(case.get("status"), f"{case['id']}: status")
+        # stageLabel is derived, never hand-written.
+        case.pop("stageLabel", None)
+        if "stage" in case:
+            validate_stage(case["stage"], f"{case['id']}: stage")
+            case["stageLabel"] = STAGES[case["stage"]]
         if "nextHearing" in case:
             validate_date(case["nextHearing"].get("date"),
                           f"{case['id']}: nextHearing.date")

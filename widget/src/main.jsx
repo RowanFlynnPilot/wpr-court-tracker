@@ -22,7 +22,11 @@ if (window.parent !== window) {
   // Belt and suspenders for webviews that starve the render loop (where
   // ResizeObserver never fires): re-measure after any interaction, and a
   // few times after load while the feed and fonts come in.
-  document.addEventListener('click', () => setTimeout(report, 60));
+  // (60 ms catches an instant change; 420 ms lands after a case file's
+  // unfold transition has finished.)
+  document.addEventListener('click', () => {
+    for (const ms of [60, 420]) setTimeout(report, ms);
+  });
   window.addEventListener('load', () => {
     report();
     for (const ms of [400, 1200, 3000]) setTimeout(report, ms);

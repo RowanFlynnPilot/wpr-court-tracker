@@ -40,6 +40,23 @@ body:
       default: 0
     validations:
       required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Where the case stands
+      description: "One word on the case card telling readers where things are. Your call, from the docket. Leave it at Not set for no label."
+      options:
+        - Not set
+        - Charged
+        - Filed
+        - Pretrial
+        - Trial
+        - Sentencing
+        - Deferred
+        - On appeal
+      default: 0
+    validations:
+      required: true
   - type: input
     id: wcca_url
     attributes:

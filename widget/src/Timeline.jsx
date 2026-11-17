@@ -102,7 +102,7 @@ export default function Timeline({ c, generatedMs }) {
             <line className="tl-today" x1={`${m.today}%`} x2={`${m.today}%`} y1="0" y2="24" />
             {m.court.map((ms, i) => (
               <g key={`${ms}-${i}`}>
-                <line className="tl-tick" x1={`${m.x(ms)}%`} x2={`${m.x(ms)}%`} y1="5" y2="19" />
+                <line className="tl-tick" style={{ '--i': Math.min(i, 24) }} x1={`${m.x(ms)}%`} x2={`${m.x(ms)}%`} y1="5" y2="19" />
                 <line
                   className="tl-hit"
                   x1={`${m.x(ms)}%`}
@@ -128,7 +128,7 @@ export default function Timeline({ c, generatedMs }) {
             <line className="tl-today" x1={`${m.today}%`} x2={`${m.today}%`} y1="0" y2="24" />
             {m.notes.map((n, i) => (
               <svg key={`${n.ms}-${i}`} x={`${m.x(n.ms)}%`} y="12" overflow="visible">
-                <circle className="tl-dot" r="5" />
+                <circle className="tl-dot" style={{ '--i': Math.min(i, 24) }} r="5" />
                 <circle
                   className="tl-hit-dot"
                   r="11"

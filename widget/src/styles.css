@@ -40,6 +40,17 @@ body {
 }
 
 .mono { font-family: var(--font-mono); font-size: 0.98em; letter-spacing: 0.01em; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* ---------- masthead: badge + thick-thin newspaper rule ---------- */
 .masthead {
@@ -170,6 +181,41 @@ body {
   min-width: 200px;
 }
 .search:focus { border-color: var(--teal); }
+.filters-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 12px; margin-left: auto; }
+.filters-tools .search { margin-left: 0; }
+.sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 500 11.5px var(--font-display);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted-deep);
+}
+.sort select {
+  font: 400 13.5px var(--font-body);
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.sort select:focus { border-color: var(--teal); }
+
+/* "Where cases stand": stage totals that double as a filter. Ink chips,
+   so they never read as topic chips (teal). */
+.standing { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 14px 0 -6px; }
+.standing-label {
+  margin-right: 4px;
+  font: 600 11px var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.chip-ink { border-color: var(--ink); color: var(--ink); border-radius: 4px; padding: 3px 10px; }
+.chip-ink b { margin-left: 5px; font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; }
+.chip-ink.chip-on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.chip-ink:hover:not(.chip-on) { background: rgba(17, 17, 17, 0.07); }
 
 /* ---------- docket strip ---------- */
 .docket {
@@ -273,6 +319,20 @@ body {
   text-wrap: balance;
 }
 .case-meta { margin: 0; font-size: 13px; color: var(--muted-deep); }
+/* Where the case stands: one reporter-chosen word, typed like a label on
+   the file. Ink, not a status colour: it is a fact, not an alarm. */
+.case-stage { margin: 0 0 7px; line-height: 1; }
+.stage-chip {
+  display: inline-block;
+  font: 700 11.5px var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 3px;
+  padding: 4px 8px 3px;
+}
+.stage-closed { background: transparent; color: var(--muted-deep); box-shadow: inset 0 0 0 1.5px var(--muted-deep); }
 
 .toggle {
   flex-shrink: 0;
@@ -288,6 +348,8 @@ body {
 }
 .toggle:hover { background: var(--ink); color: #fff; }
 .toggle[aria-expanded='true'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+/* Phone layout swaps the head button for this one (see the 560px block). */
+.toggle-foot { display: none; }
 
 .case-summary { margin: 10px 0 0; max-width: 68ch; font-size: 14.5px; }
 
@@ -303,6 +365,18 @@ body {
   font-size: 14px;
 }
 .hearing-date { font-weight: 700; color: var(--teal-deep); white-space: nowrap; }
+.hearing-what { min-width: 0; }
+.hearing-caveat { display: block; margin-top: 1px; font-size: 12px; color: var(--muted-deep); }
+/* No date on file: the same slot, quieter, so every open file answers
+   "what's next" one way or the other. */
+.hearing-none { border-left-color: var(--manila-edge); font-size: 13px; color: var(--muted-deep); }
+.hearing-label {
+  font: 600 11px var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+}
 .hearing-ics {
   margin-left: auto;
   align-self: center;
@@ -433,6 +507,12 @@ body {
 @media (max-width: 620px) { .glance { grid-template-columns: repeat(2, 1fr); } }
 
 /* ---------- ledger detail ---------- */
+/* The file unfolds: a grid row animates 0fr -> 1fr, which follows the
+   content's real height (no measuring, no max-height guess). Hidden
+   visibility while closed keeps links out of the tab order. */
+.detail-wrap { display: grid; grid-template-rows: 0fr; visibility: hidden; }
+.detail-wrap.is-open { grid-template-rows: 1fr; visibility: visible; }
+.detail-clip { min-height: 0; overflow: hidden; }
 .detail { border-top: 1px solid var(--manila-edge); margin-top: 14px; padding-top: 12px; }
 .presumption {
   margin: 0 0 12px;
@@ -599,6 +679,11 @@ a:hover { color: var(--teal); }
   .masthead { gap: 14px; }
   .badge { width: 76px; height: 76px; }
   .folder-head { flex-direction: column; }
+  /* The open/close button moves to the foot of the card, full width. */
+  .toggle-head { display: none; }
+  .toggle-foot { display: block; width: 100%; margin-top: 14px; padding: 11px 14px; font-size: 14px; }
+  .filters-tools { margin-left: 0; width: 100%; }
+  .filters-tools .search { min-width: 0; flex: 1 1 180px; }
   .request-grid { grid-template-columns: 1fr; }
   .ledger-row { grid-template-columns: 100px 1fr; }
   .last-activity { margin-left: 0; }
@@ -612,12 +697,45 @@ a:hover { color: var(--teal); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .detail:not([hidden]) { animation: unfold 180ms ease-out; }
-  @keyframes unfold {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: none; }
+  .detail-wrap {
+    transition: grid-template-rows 280ms cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 280ms;
   }
+  .detail-wrap.is-open { transition-delay: 0s, 0s; }
+  /* Scoped to the wrapper: preview.html uses a bare .detail, always open. */
+  .detail-wrap .detail { opacity: 0; transition: opacity 200ms ease-out; }
+  .detail-wrap.is-open .detail { opacity: 1; transition-delay: 80ms; }
+
+  /* Timeline marks draw in once, oldest first, when a card appears. The
+     resting state is fully drawn (fill-mode backwards), so a screenshot,
+     a print or a missed animation never shows an empty strip. */
+  .tl-tick, .tl-dot {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: tl-in 320ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(120ms + var(--i, 0) * 22ms);
+  }
+  .tl-tick { animation-name: tl-tick-in; }
+  .tl-hearing { animation: tl-fade 320ms ease-out 520ms backwards; }
+  @keyframes tl-tick-in { from { transform: scaleY(0); opacity: 0; } }
+  @keyframes tl-in { from { transform: scale(0); opacity: 0; } }
+  @keyframes tl-fade { from { opacity: 0; } }
+
+  .sk { animation: sk-pulse 1.4s ease-in-out infinite; }
+  @keyframes sk-pulse { 50% { opacity: 0.45; } }
 }
+
+/* ---------- loading skeleton (App.jsx, before feed.json lands) ---------- */
+.sk { display: block; border-radius: 3px; background: var(--manila-edge); opacity: 0.8; }
+.glance .sk { background: var(--line); }
+.sk-num { width: 44px; height: 22px; margin-top: 4px; }
+.sk-label { width: 78%; height: 9px; margin-top: 4px; }
+.sk-tab { width: 92px; height: 12px; margin: 3px 0 2px; }
+.sk-stack { margin-top: 64px; }
+.sk-head { width: 62%; height: 22px; }
+.sk-line { width: 100%; height: 11px; margin-top: 12px; }
+.sk-short { width: 38%; margin-top: 9px; }
+.sk-mid { width: 71%; }
+.sk-strip { width: 100%; height: 58px; margin-top: 18px; opacity: 0.45; }
 
 /* ---------- newsletter digest card (mini-digest.html -> digest.png) ---------- */
 .mini-card {
@@ -753,7 +871,10 @@ a:hover { color: var(--teal); }
   .folder, .folder:hover { filter: none; }
   .folder-body { background: #fff; }
   .folder-sample .folder-body { background: #fff; }
-  .detail[hidden] { display: block; } /* print every file fully open */
+  /* print every file fully open */
+  .detail-wrap { grid-template-rows: 1fr !important; visibility: visible !important; transition: none !important; }
+  .detail-wrap .detail { opacity: 1 !important; transition: none !important; }
+  .toggle-foot, .standing, .hearing-caveat { display: none !important; }
   .stamp { mask-image: none; }
   .cabinet[open] summary { color: var(--ink); }
   a { color: var(--ink); text-decoration: none; }

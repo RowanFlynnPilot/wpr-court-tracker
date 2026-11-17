@@ -9,6 +9,7 @@ import {
   caseType,
   extractFromText,
   parseWccaUrl,
+  STAGES,
 } from '../src/parseCase.js';
 
 let failures = 0;
@@ -169,6 +170,24 @@ test('label-less links get a derived label instead of being dropped', () => {
       'WPR coverage | https://www.wausaupilotandreview.com/2026/story/\nwpt.org | https://wpt.org/coverage',
     p.get('links')
   );
+});
+
+test('stage: key in the entry, label in the issue form, mirror of the pipeline', () => {
+  assert(!('stage' in buildCaseEntry(FORM)));
+  assert(buildCaseEntry({ ...FORM, stage: 'pretrial' }).stage === 'pretrial');
+  assert(!('stage' in buildCaseEntry({ ...FORM, stage: 'guilty' })), 'off-list stage must be dropped');
+  assert(new URL(buildIssueUrl(FORM)).searchParams.get('stage') === 'Not set');
+  assert(new URL(buildIssueUrl({ ...FORM, stage: 'appeal' })).searchParams.get('stage') === 'On appeal');
+  // The Python list is the enforcement point; this one must not drift from it.
+  const py = readFileSync(new URL('../../pipeline/fetch.py', import.meta.url), 'utf8');
+  const block = /STAGES = \{([^}]*)\}/.exec(py)[1];
+  const fromPy = Object.fromEntries(
+    [...block.matchAll(/"([a-z]+)":\s*"([^"]+)"/g)].map((m) => [m[1], m[2]])
+  );
+  assert(JSON.stringify(fromPy) === JSON.stringify(STAGES), JSON.stringify(fromPy));
+  // ...and the issue form must offer exactly these labels.
+  const yml = readFileSync(new URL('../../.github/ISSUE_TEMPLATE/track-a-case.yml', import.meta.url), 'utf8');
+  for (const label of Object.values(STAGES)) assert(yml.includes(`        - ${label}`), label);
 });
 
 process.exit(failures ? 1 : 0);

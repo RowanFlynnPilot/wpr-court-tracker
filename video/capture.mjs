@@ -46,7 +46,7 @@ const open = async (path, width, ready) => {
     try { await page.waitForSelector(ready, { timeout: 20000 }); break; } catch { await page.waitForTimeout(8000); }
   }
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(1200); // fonts settle; timeline marks finish drawing in
   return page;
 };
 
@@ -58,8 +58,8 @@ const meta = { capturedAt: new Date().toISOString() };
   await page.screenshot({ path: `${OUT}tracker.png`, fullPage: true });
 
   // The first case file, opened.
-  await page.locator('.folder').first().locator('.toggle').click();
-  await page.waitForTimeout(500);
+  await page.locator('.folder').first().locator('.toggle-head').click();
+  await page.waitForTimeout(800); // the file's unfold transition
   const box = await page.locator('.folder').first().boundingBox();
   meta.file = {
     w: Math.round(box.width),

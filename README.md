@@ -70,14 +70,18 @@ description and it re-checks.
   "headline": "Plain-English headline",
   "summary": "Why WPR is tracking this case.",
   "tags": ["Public safety"],
+  "stage": "pretrial",
   "nextHearing": { "date": "2026-08-03", "note": "Preliminary hearing, Branch 2" },
   "updates": [ { "date": "2026-07-01", "note": "Complaint filed." } ],
   "links": [ { "label": "WPR coverage", "url": "https://..." } ]
 }
 ```
 
-`nextHearing`, `updates`, and `links` are optional. Everything else is
-required. Family, juvenile, guardianship, and mental health cases are
+`stage`, `nextHearing`, `updates`, and `links` are optional. Everything
+else is required. `stage` is the one-word label on the card saying where
+the case stands, chosen by a reporter: `charged`, `filed`, `pretrial`,
+`trial`, `sentencing`, `deferred` or `appeal` (the list lives in
+`pipeline/fetch.py`). Family, juvenile, guardianship, and mental health cases are
 blocked by policy and the pipeline will refuse to run — this is
 intentional (see `pipeline/policy.py`).
 

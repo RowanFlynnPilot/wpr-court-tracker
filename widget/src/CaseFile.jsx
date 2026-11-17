@@ -139,6 +139,10 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
     );
   }, [c]);
   const lastActivity = ledger.length ? ledger[0].ms : null;
+  const isClosed = c.status === 'closed';
+  // One word on where the case stands, chosen by a reporter (optional).
+  // A closed file says so whatever stage it last carried.
+  const stageText = isClosed ? 'Closed' : c.stageLabel;
   const detailId = `detail-${c.id}`;
 
   return (
@@ -152,6 +156,12 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
       <div className="folder-body">
         <div className="folder-head">
           <div>
+            {stageText && (
+              <p className="case-stage">
+                <span className="sr-only">Where the case stands: </span>
+                <span className={`stage-chip${isClosed ? ' stage-closed' : ''}`}>{stageText}</span>
+              </p>
+            )}
             <h2 className="case-headline">{c.headline}</h2>
             <p className="case-meta">
               {c.county} County
@@ -159,7 +169,7 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
             </p>
           </div>
           <button
-            className="toggle"
+            className="toggle toggle-head"
             aria-expanded={open}
             aria-controls={detailId}
             onClick={() => setOpen((v) => !v)}
@@ -170,12 +180,19 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
 
         <p className="case-summary">{c.summary}</p>
 
-        {hearingUpcoming && (
+        {hearingUpcoming ? (
           <p className="hearing">
             <span className="hearing-date mono">
               {dateFmt.format(datePartsToMs(c.nextHearing.date))}
             </span>
-            <span>{c.nextHearing.note}</span>
+            <span className="hearing-what">
+              {c.nextHearing.note || 'Hearing scheduled'}
+              <span className="hearing-caveat">
+                Court dates can change. Check{' '}
+                <a href={c.wccaUrl} target="_blank" rel="noreferrer">the docket</a>{' '}
+                before you go.
+              </span>
+            </span>
             <a
               className="hearing-ics"
               href={icsHref}
@@ -184,6 +201,16 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
               Add to calendar
             </a>
           </p>
+        ) : (
+          !isClosed && (
+            <p className="hearing hearing-none">
+              <span className="hearing-label">What&rsquo;s next</span>
+              <span className="hearing-what">
+                No hearing date on file. The court&rsquo;s calendar is on{' '}
+                <a href={c.wccaUrl} target="_blank" rel="noreferrer">the docket</a>.
+              </span>
+            </p>
+          )
         )}
 
         {!c.placeholder && <Timeline c={c} generatedMs={generatedMs} />}
@@ -199,7 +226,11 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
           )}
         </p>
 
-        <div id={detailId} className="detail" hidden={!open}>
+        {/* Unfolds by animating a grid row from 0fr to 1fr; visibility
+            keeps the closed file out of the tab order and reading order. */}
+        <div id={detailId} className={`detail-wrap${open ? ' is-open' : ''}`}>
+        <div className="detail-clip">
+        <div className="detail">
           {c.isCriminal && <p className="presumption">{presumptionNote}</p>}
           <div className="ledger-head">
             <h3 className="ledger-title">Activity</h3>
@@ -261,6 +292,19 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
             </button>
           </p>
         </div>
+        </div>
+        </div>
+
+        {/* Phone layout: the button sits at the foot, full width, where
+            the thumb is (the head one is hidden there). */}
+        <button
+          className="toggle toggle-foot"
+          aria-expanded={open}
+          aria-controls={detailId}
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? 'Close file' : 'Open file'}
+        </button>
       </div>
     </article>
   );

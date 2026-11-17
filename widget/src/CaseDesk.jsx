@@ -5,6 +5,7 @@ import badge from './assets/wpr-badge.png';
 import {
   ALLOWED_CASE_TYPES,
   CRIMINAL_CASE_TYPES,
+  STAGES,
   buildCaseEntry,
   buildIssueUrl,
   caseType,
@@ -35,6 +36,7 @@ const EMPTY = {
   updates: [],
   links: [],
   status: 'watching',
+  stage: '',
   updateMode: false,
 };
 
@@ -124,6 +126,7 @@ export default function CaseDesk() {
       updates: (c.updates || []).map((u) => ({ ...u })),
       links: (c.links || []).map((l) => ({ ...l })),
       status: c.status === 'closed' ? 'closed' : 'watching',
+      stage: c.stage || '',
       updateMode: true,
     });
   };
@@ -264,6 +267,7 @@ export default function CaseDesk() {
           caseTypeLabel: ALLOWED_CASE_TYPES[urlInfo.type],
           isCriminal: CRIMINAL_CASE_TYPES.has(urlInfo.type),
           status: 'watching',
+          ...(f.stage in STAGES ? { stage: f.stage, stageLabel: STAGES[f.stage] } : {}),
           observed: baseCase?.observed ?? [],
           ...(baseCase?.officialCaption ? { officialCaption: baseCase.officialCaption } : {}),
           ...(baseCase?.firstTrackedAt ? { firstTrackedAt: baseCase.firstTrackedAt } : {}),
@@ -450,6 +454,15 @@ next publish sweep, or right away if you run it yourself (step 3
             <select value={f.status} onChange={set('status')}>
               <option value="watching">Watching &mdash; open on the tracker</option>
               <option value="closed">Closed &mdash; move to the Closed Files drawer</option>
+            </select>
+          </label>
+          <label className="desk-label">
+            Where the case stands (a one-word label on the card)
+            <select value={f.stage} onChange={set('stage')}>
+              <option value="">Not set &mdash; no label</option>
+              {Object.entries(STAGES).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
             </select>
           </label>
           <div className="desk-two">

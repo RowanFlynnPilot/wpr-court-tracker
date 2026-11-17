@@ -14,6 +14,10 @@ const docketFmt = new Intl.DateTimeFormat('en-US', {
 const sinceFmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
 const fmtMinutes = (m) => (m < 90 ? `${m} min` : `${(m / 60).toFixed(1)} hr`);
 
+// Display order for the "Where cases stand" totals (keys from the
+// pipeline's STAGES; an unknown key sorts last rather than vanishing).
+const STAGE_ORDER = ['filed', 'charged', 'pretrial', 'trial', 'sentencing', 'deferred', 'appeal'];
+
 export function latestActivity(c) {
   const stamps = [];
   if (c.observed?.length) stamps.push(Date.parse(c.observed[0].updated));
@@ -33,6 +37,8 @@ export default function App() {
   const [stats, setStats] = useState(null);
   const [activeTag, setActiveTag] = useState('All');
   const [query, setQuery] = useState('');
+  const [activeStage, setActiveStage] = useState('');
+  const [sort, setSort] = useState('activity');
 
   // Deep link: /#case-id opens that folder and scrolls to it.
   const focusId = useMemo(
@@ -82,14 +88,49 @@ export default function App() {
           .some((field) => field.toLowerCase().includes(q))
       );
     }
+    if (activeStage) list = list.filter((c) => c.stage === activeStage);
+    const byActivity = (a, b) => latestActivity(b) - latestActivity(a);
+    const n = new Date();
+    const today = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+    // Upcoming hearings soonest first; files with none keep activity order.
+    const hearingMs = (c) => {
+      const ms = c.nextHearing ? datePartsToMs(c.nextHearing.date) : 0;
+      return ms >= today ? ms : Infinity;
+    };
+    const order =
+      sort === 'hearing'
+        ? (a, b) => {
+            const ha = hearingMs(a);
+            const hb = hearingMs(b);
+            return ha === hb ? byActivity(a, b) : ha - hb;
+          }
+        : sort === 'az'
+          ? (a, b) => a.headline.localeCompare(b.headline)
+          : byActivity;
     // Placeholders (SAMPLE cards) always sort below real cases - activity
     // dates on demo content must never outrank the real record.
     return [...list].sort(
-      (a, b) =>
-        (a.placeholder ? 1 : 0) - (b.placeholder ? 1 : 0) ||
-        latestActivity(b) - latestActivity(a)
+      (a, b) => (a.placeholder ? 1 : 0) - (b.placeholder ? 1 : 0) || order(a, b)
     );
-  }, [feed, activeTag, query]);
+  }, [feed, activeTag, query, activeStage, sort]);
+
+  // "Where cases stand": totals of the reporter-set stage across open
+  // files, in the order a case moves through court. Doubles as a filter.
+  const standing = useMemo(() => {
+    if (!feed) return [];
+    const counts = new Map();
+    for (const c of feed.cases) {
+      if (c.placeholder || c.status === 'closed' || !c.stage) continue;
+      const row = counts.get(c.stage) ?? { key: c.stage, label: c.stageLabel ?? c.stage, n: 0 };
+      row.n += 1;
+      counts.set(c.stage, row);
+    }
+    const rank = (k) => {
+      const i = STAGE_ORDER.indexOf(k);
+      return i === -1 ? STAGE_ORDER.length : i;
+    };
+    return [...counts.values()].sort((a, b) => rank(a.key) - rank(b.key));
+  }, [feed]);
 
   const watching = cases.filter((c) => c.status !== 'closed');
   const closed = cases.filter((c) => c.status === 'closed');
@@ -111,9 +152,26 @@ export default function App() {
       .slice(0, 2);
   }, [feed]);
 
+  const masthead = (
+    <header className="masthead">
+      <img className="badge" src={badge} alt="" width="104" height="104" />
+      <div>
+        <p className="eyebrow">
+          <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a>
+        </p>
+        <h1>Marathon County Court Tracker</h1>
+        <p className="dek">
+          Cases of public interest our newsroom is following, with activity
+          checked against the official court record.
+        </p>
+      </div>
+    </header>
+  );
+
   if (error) {
     return (
       <main className="shell">
+        {masthead}
         <p className="load-error" role="alert">
           The case list didn&rsquo;t load ({error}). Reload the page to try again.
         </p>
@@ -121,9 +179,37 @@ export default function App() {
     );
   }
   if (!feed) {
+    // The page's real frame with placeholder blocks where the data goes,
+    // so nothing jumps when the feed lands.
     return (
-      <main className="shell">
-        <p className="loading">Opening the case files&hellip;</p>
+      <main className="shell" aria-busy="true">
+        {masthead}
+        <p className="sr-only" role="status">Opening the case files&hellip;</p>
+        <div className="glance" aria-hidden="true">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i}>
+              <b><i className="sk sk-num" /></b>
+              <span><i className="sk sk-label" /></span>
+            </div>
+          ))}
+        </div>
+        <div className="stack sk-stack" aria-hidden="true">
+          {[0, 1].map((i) => (
+            <div key={i} className="folder">
+              <div className="folder-tabrow">
+                <span className="folder-tab"><i className="sk sk-tab" /></span>
+              </div>
+              <div className="folder-body">
+                <i className="sk sk-head" />
+                <i className="sk sk-line sk-short" />
+                <i className="sk sk-line" />
+                <i className="sk sk-line" />
+                <i className="sk sk-line sk-mid" />
+                <i className="sk sk-strip" />
+              </div>
+            </div>
+          ))}
+        </div>
       </main>
     );
   }
@@ -138,6 +224,8 @@ export default function App() {
   const watchedCount = feed.cases.filter(
     (c) => !c.placeholder && c.status !== 'closed'
   ).length;
+  // The sort control earns its space once there is a list to sort.
+  const realCount = feed.cases.filter((c) => !c.placeholder).length;
   const updatedLabel = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -149,19 +237,7 @@ export default function App() {
 
   return (
     <main className="shell">
-      <header className="masthead">
-        <img className="badge" src={badge} alt="" width="104" height="104" />
-        <div>
-          <p className="eyebrow">
-            <a href="https://wausaupilotandreview.com/" target="_blank" rel="noreferrer">Wausau Pilot &amp; Review</a>
-          </p>
-          <h1>Marathon County Court Tracker</h1>
-          <p className="dek">
-            Cases of public interest our newsroom is following, with activity
-            checked against the official court record.
-          </p>
-        </div>
-      </header>
+      {masthead}
 
       <div className="glance" role="list" aria-label="Tracker at a glance">
         <div role="listitem">
@@ -251,6 +327,22 @@ export default function App() {
         </details>
       </div>
 
+      {standing.length > 0 && (
+        <p className="standing" role="group" aria-label="Where cases stand. Choose one to filter.">
+          <span className="standing-label">Where cases stand</span>
+          {standing.map((s) => (
+            <button
+              key={s.key}
+              className={`chip chip-ink${activeStage === s.key ? ' chip-on' : ''}`}
+              aria-pressed={activeStage === s.key}
+              onClick={() => setActiveStage(activeStage === s.key ? '' : s.key)}
+            >
+              {s.label} <b>{s.n}</b>
+            </button>
+          ))}
+        </p>
+      )}
+
       <nav className="filters" aria-label="Filter cases by topic">
         {tags.map((t) => (
           <button
@@ -262,14 +354,26 @@ export default function App() {
             {t}
           </button>
         ))}
-        <input
-          type="search"
-          className="search"
-          placeholder="Search cases or names&hellip;"
-          aria-label="Search cases"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <span className="filters-tools">
+          {realCount >= 3 && (
+            <label className="sort">
+              Sort
+              <select value={sort} onChange={(e) => setSort(e.target.value)}>
+                <option value="activity">Latest activity</option>
+                <option value="hearing">Next hearing</option>
+                <option value="az">A&ndash;Z</option>
+              </select>
+            </label>
+          )}
+          <input
+            type="search"
+            className="search"
+            placeholder="Search cases or names&hellip;"
+            aria-label="Search cases"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </span>
       </nav>
 
       {docket.length > 0 && (
@@ -296,7 +400,7 @@ export default function App() {
       )}
 
       {cases.length === 0 ? (
-        <p className="empty">No tracked cases match. Clear the search or pick another topic &mdash; or ask us to track a case below.</p>
+        <p className="empty">No tracked cases match. Clear the search or pick another topic or stage &mdash; or ask us to track a case below.</p>
       ) : (
         <>
           <section className="stack" aria-label="Tracked cases">

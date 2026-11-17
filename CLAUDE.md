@@ -215,6 +215,27 @@ pattern as wpr-brewers-tracker, never committed).
   stats.json; RequestForm is collapsed behind a "Send a request"
   button. Verify visual work with a local dist server + Playwright
   (transparent SVG hit targets need hover({ force: true })).
+  CARD POLISH (late 2026-11-16): optional editorial `stage` field
+  (charged/filed/pretrial/trial/sentencing/deferred/appeal; STAGES in
+  fetch.py is the list, mirrored in parseCase.js and the issue form's
+  dropdown - test-parse.mjs fails if the three drift). The pipeline
+  derives stageLabel; the card shows an ink chip (a closed file says
+  "Closed"), and App.jsx totals the stages in a "Where cases stand"
+  row that filters. It is a reporter's call from the docket, like
+  hearing dates - NEVER infer a stage from ping data, and never set
+  one on a real case yourself. Every open file now answers "what's
+  next" (hearing bar with a dates-can-change caveat, or "No hearing
+  date on file"). The file unfolds via .detail-wrap (grid 0fr -> 1fr,
+  visibility hidden while closed) - NOT the [hidden] attribute; any
+  motion rule must be scoped to .detail-wrap because preview.html
+  uses a bare, always-open .detail (an unscoped opacity rule blanked
+  its ledgers once). Timeline marks animate in with fill-mode
+  backwards so captures and print always see the finished strip.
+  Phones get the Open file button at the card's foot (.toggle-foot;
+  target .toggle-head in scripts). A sort select appears at 3+ real
+  cases. Loading shows a skeleton of the real frame.
+  `python pipeline/fetch.py` takes NO flags: any invocation, even
+  with --help, runs a live check.
   SCHEDULING (rewritten late 2026-11-16, supersedes the cron-string
   gate shipped hours earlier): GitHub delivers this repo's scheduled
   runs late and drops most of them - 5.3 checks/day in July, 1.6/day

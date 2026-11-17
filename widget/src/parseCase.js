@@ -26,6 +26,19 @@ export const ALLOWED_CASE_TYPES = {
 };
 export const CRIMINAL_CASE_TYPES = new Set(['CF', 'CM', 'CT']);
 
+// Mirror of pipeline/fetch.py STAGES (and the issue form's dropdown):
+// where a case stands, picked by the reporter. Keys are stored, labels
+// are shown.
+export const STAGES = {
+  charged: 'Charged',
+  filed: 'Filed',
+  pretrial: 'Pretrial',
+  trial: 'Trial',
+  sentencing: 'Sentencing',
+  deferred: 'Deferred',
+  appeal: 'On appeal',
+};
+
 const CASE_NO_RE = /\b((?:19|20)\d{2}[A-Z]{2}\d{6})\b/;
 
 export function caseType(caseNo) {
@@ -200,6 +213,7 @@ export function buildCaseEntry(f) {
       .filter(Boolean),
   };
   if (f.status === 'closed') entry.status = 'closed';
+  if (f.stage && f.stage in STAGES) entry.stage = f.stage;
   if (f.hearingDate) {
     entry.nextHearing = { date: f.hearingDate, note: f.hearingNote.trim() };
   }
@@ -219,6 +233,7 @@ export function buildIssueUrl(f) {
     title: `${f.updateMode ? 'Update' : 'Track'}: ${f.headline.trim() || 'case'}`,
     mode: f.updateMode ? 'Update an already-tracked case' : 'New case',
     status: f.status === 'closed' ? 'Closed' : 'Watching',
+    stage: STAGES[f.stage] || 'Not set',
     wcca_url: f.wccaUrl.trim(),
     headline: f.headline.trim(),
     summary: f.summary.trim(),

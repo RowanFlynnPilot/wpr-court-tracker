@@ -11,6 +11,9 @@ const docketFmt = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
 });
 
+const sinceFmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
+const fmtMinutes = (m) => (m < 90 ? `${m} min` : `${(m / 60).toFixed(1)} hr`);
+
 export function latestActivity(c) {
   const stamps = [];
   if (c.observed?.length) stamps.push(Date.parse(c.observed[0].updated));
@@ -27,6 +30,7 @@ export function datePartsToMs(d) {
 export default function App() {
   const [feed, setFeed] = useState(null);
   const [error, setError] = useState(null);
+  const [stats, setStats] = useState(null);
   const [activeTag, setActiveTag] = useState('All');
   const [query, setQuery] = useState('');
 
@@ -44,6 +48,12 @@ export default function App() {
       })
       .then(setFeed)
       .catch((e) => setError(e.message));
+    // Service-record numbers for the at-a-glance band (pipeline's
+    // build_stats). Optional: the band shrinks to what the feed knows.
+    fetch(`${import.meta.env.BASE_URL}stats.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setStats)
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -153,10 +163,32 @@ export default function App() {
         </div>
       </header>
 
+      <div className="glance" role="list" aria-label="Tracker at a glance">
+        <div role="listitem">
+          <b>{watchedCount}</b>
+          <span>Case{watchedCount === 1 ? '' : 's'} watched</span>
+        </div>
+        {stats?.recordChangesCaught != null && (
+          <div role="listitem">
+            <b>{stats.recordChangesCaught}</b>
+            <span>Court-record changes caught</span>
+          </div>
+        )}
+        {stats?.medianDetectionMinutes != null && (
+          <div role="listitem">
+            <b>{fmtMinutes(stats.medianDetectionMinutes)}</b>
+            <span>Median time to catch a change</span>
+          </div>
+        )}
+        {stats?.trackingSince && (
+          <div role="listitem">
+            <b>{sinceFmt.format(datePartsToMs(stats.trackingSince))}</b>
+            <span>Tracking since</span>
+          </div>
+        )}
+      </div>
+
       <p className="statline">
-        <span>
-          <span className="mono statnum">{watchedCount}</span> case{watchedCount === 1 ? '' : 's'} watched
-        </span>
         <span>
           Checked <span className="mono">{updatedLabel}</span>
         </span>
@@ -164,58 +196,60 @@ export default function App() {
         <span>Official court record</span>
       </p>
 
-      <details className="about">
-        <summary>How this tracker works</summary>
-        <div className="about-body">
-          <p>
-            <b>The newsroom chooses the cases.</b> Wausau Pilot &amp; Review
-            editors hand-pick cases of public interest. Family, juvenile,
-            guardianship, and mental-health cases are never tracked &mdash;
-            that&rsquo;s editorial policy, enforced in our software.
-          </p>
-          <p>
-            <b>The official record is checked automatically.</b> Every two
-            hours on weekdays we check each case against{' '}
-            <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>,
-            using the court system&rsquo;s sanctioned data feed. We never
-            scrape the court website.
-          </p>
-          <p>
-            <b>Machines observe; reporters explain.</b> A red entry in a
-            case&rsquo;s activity log means the official record changed. The
-            teal entries &mdash; what happened, in plain English &mdash; are
-            written by our reporters. Criminal cases always carry a
-            presumption-of-innocence note.
-          </p>
-          <p>
-            <b>See something wrong?</b> Email{' '}
-            <a href={`mailto:${feed.requestEmail}`}>{feed.requestEmail}</a>{' '}
-            and we&rsquo;ll correct the file.
-          </p>
-          <p>
-            <a href={`${import.meta.env.BASE_URL}about.html`}>Read the full methodology &rarr;</a>
-          </p>
-        </div>
-      </details>
-
-      <details className="about">
-        <summary>Court terms, plain English</summary>
-        <div className="about-body gloss-body">
-          <div className="gloss">
-            {GLOSSARY.map((g) => (
-              <p key={g.term}>
-                <b>{g.term}</b> &mdash; {g.def}
-              </p>
-            ))}
+      <div className="drawers">
+        <details className="about">
+          <summary>How this tracker works</summary>
+          <div className="about-body">
+            <p>
+              <b>The newsroom chooses the cases.</b> Wausau Pilot &amp; Review
+              editors hand-pick cases of public interest. Family, juvenile,
+              guardianship, and mental-health cases are never tracked &mdash;
+              that&rsquo;s editorial policy, enforced in our software.
+            </p>
+            <p>
+              <b>The official record is checked automatically.</b> Every two
+              hours on weekdays we check each case against{' '}
+              <a href="https://wcca.wicourts.gov/" target="_blank" rel="noreferrer">Wisconsin Circuit Court Access</a>,
+              using the court system&rsquo;s sanctioned data feed. We never
+              scrape the court website.
+            </p>
+            <p>
+              <b>Machines observe; reporters explain.</b> A red entry in a
+              case&rsquo;s activity log means the official record changed. The
+              teal entries &mdash; what happened, in plain English &mdash; are
+              written by our reporters. Criminal cases always carry a
+              presumption-of-innocence note.
+            </p>
+            <p>
+              <b>See something wrong?</b> Email{' '}
+              <a href={`mailto:${feed.requestEmail}`}>{feed.requestEmail}</a>{' '}
+              and we&rsquo;ll correct the file.
+            </p>
+            <p>
+              <a href={`${import.meta.env.BASE_URL}about.html`}>Read the full methodology &rarr;</a>
+            </p>
           </div>
-          <p className="gloss-note">
-            General plain-language definitions for Wisconsin circuit courts
-            &mdash; not legal advice. Confused by something in a case file?{' '}
-            <a href={`mailto:${feed.requestEmail}`}>Tell us</a> and
-            we&rsquo;ll explain it here.
-          </p>
-        </div>
-      </details>
+        </details>
+
+        <details className="about">
+          <summary>Court terms, plain English</summary>
+          <div className="about-body gloss-body">
+            <div className="gloss">
+              {GLOSSARY.map((g) => (
+                <p key={g.term}>
+                  <b>{g.term}</b> &mdash; {g.def}
+                </p>
+              ))}
+            </div>
+            <p className="gloss-note">
+              General plain-language definitions for Wisconsin circuit courts
+              &mdash; not legal advice. Confused by something in a case file?{' '}
+              <a href={`mailto:${feed.requestEmail}`}>Tell us</a> and
+              we&rsquo;ll explain it here.
+            </p>
+          </div>
+        </details>
+      </div>
 
       <nav className="filters" aria-label="Filter cases by topic">
         {tags.map((t) => (

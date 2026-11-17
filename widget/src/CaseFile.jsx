@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { datePartsToMs } from './App.jsx';
+import Timeline from './Timeline.jsx';
 
 const dateFmt = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -184,6 +185,8 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
             </a>
           </p>
         )}
+
+        {!c.placeholder && <Timeline c={c} generatedMs={generatedMs} />}
 
         <p className="case-tags">
           {c.tags.map((t) => (

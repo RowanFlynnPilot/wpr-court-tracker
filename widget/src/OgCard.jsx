@@ -31,10 +31,10 @@ export default function OgCard() {
         <h1>Marathon County Court Tracker</h1>
         <p className="og-dek">
           Cases of public interest, checked against the official court
-          record all day.
+          record through the business day.
         </p>
         <p className="og-stat">
-          {watched} case{watched === 1 ? '' : 's'} watched &middot; updated every 2 hours
+          {watched} case{watched === 1 ? '' : 's'} watched &middot; official court record
         </p>
       </div>
       <div className="og-tabs" aria-hidden="true">

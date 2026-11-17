@@ -37,7 +37,8 @@ html, body { margin: 0; background: var(--paper) }
 .frame { left: 160px; top: 128px; width: 1600px; height: 772px; overflow: hidden; background: var(--warm); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 30px rgba(17, 17, 17, .13); box-sizing: border-box }
 .cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform }
 .cam img { display: block }
-.ring { position: absolute; box-sizing: border-box; border: 5px solid var(--teal); border-radius: 10px; box-shadow: 0 0 0 4px rgba(255, 255, 255, .8); opacity: 0; pointer-events: none }
+/* The ring is also a spotlight: the far shadow veils everything around it (the frame clips it). */
+.ring { position: absolute; box-sizing: border-box; border: 5px solid var(--teal); border-radius: 10px; box-shadow: 0 0 0 4px rgba(255, 255, 255, .85), 0 0 0 4000px rgba(255, 255, 255, .46); opacity: 0; pointer-events: none }
 
 /* Caption band: sits above the scenes, so page turns slide beneath it */
 #band { position: absolute; left: 0; top: 924px; width: 1920px; height: 156px; background: var(--ink); z-index: 50; opacity: 0 }
@@ -276,11 +277,14 @@ window.ready = (async () => {
   const full = (W) => FW / W;                         // scale that fits the capture's width to the frame
   // Centre a narrow capture (or a narrow column of one) horizontally at scale s.
   const cx = (r, s) => r.x + r.w / 2 - FW / s / 2;
+  // Frame a content column: the page's own margins are cropped away so the text reads large.
+  const col = (r, pad = 70) => ({ s: FW / (r.w + pad * 2), x: r.x - pad });
 
+  const c1 = col(T.card, 70);
   KEYS.cam1 = [
-    { t: 5.6, s: full(T.w), x: 0, y: 0 },
-    { t: 13.4, s: full(T.w), x: 0, y: Math.max(0, T.card.y - 40) },
-    { t: 16.0, ...viewOf(T.tl, 1.9, 120) },
+    { t: 5.6, ...c1, y: 0 },
+    { t: 13.4, ...c1, y: Math.max(0, T.card.y - 46) },
+    { t: 16.0, ...viewOf(T.tl, 2.1, 20) },
   ];
   addRing('cam1', 'glance', T.glance, 10);
   addRing('cam1', 'tl', T.tl, 8);
@@ -294,24 +298,24 @@ window.ready = (async () => {
   addRing('cam2', 'wpr', F.wpr, 6);
   addRing('cam2', 'presumption', F.presumption, 7);
 
-  const as = full(A.w);
+  const c3 = col(A.source, 60), as = c3.s;
   KEYS.cam3 = [
-    { t: 35.0, s: as, x: 0, y: A.source.y - 34 },
-    { t: 42.4, s: as, x: 0, y: A.record.y - (FH / as) * 0.52 },
+    { t: 35.0, ...c3, y: A.source.y - 40 },
+    { t: 42.4, ...c3, y: A.record.y - (FH / as) * 0.5 },
   ];
   addRing('cam3', 'source', { x: A.source.x - 6, y: A.source.y - 2, w: A.source.w + 12, h: Math.min(A.source.h, FH / as - 70) }, 8);
   addRing('cam3', 'record', A.record, 10);
 
-  const ds = full(D.w);
+  const c4 = col(D.grid, 60), ds = c4.s;
   KEYS.cam4 = [
-    { t: 46.4, s: ds, x: 0, y: Math.max(0, D.grid.y - 60) },
-    { t: 53.4, s: ds, x: 0, y: D.preview.y - 34 },
+    { t: 46.4, ...c4, y: Math.max(0, D.grid.y - 40) },
+    { t: 53.4, ...c4, y: D.preview.y - 30 },
   ];
   addRing('cam4', 'deskPreview', { x: D.preview.x, y: D.preview.y + 44, w: D.preview.w, h: Math.min(D.preview.h - 44, FH / ds - 110) }, 10);
 
-  const ps = full(P.w);
+  const c5 = col(P.compare, 50);
   KEYS.cam5 = [
-    { t: 57.0, s: ps, x: 0, y: P.notice.y - 30 },
+    { t: 57.0, ...c5, y: P.notice.y - 24 },
     { t: 64.0, ...viewOf(P.beforeLedger, 2.0, 46) },
     { t: 69.8, ...viewOf(P.afterLedger, 2.0, 46) },
   ];

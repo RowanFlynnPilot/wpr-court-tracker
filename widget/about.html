@@ -141,12 +141,12 @@
 
       <section>
         <h2>Reliability and transparency</h2>
-        <p>The record is checked every two hours on weekdays, 8 a.m. to 6 p.m. Central. When the court system is slow to respond &mdash; which it sometimes is for automated checks &mdash; the check retries on a fresh machine and the tracker keeps serving its last good data, with the &ldquo;checked&rdquo; time shown honestly on the page.</p>
+        <p>The record is checked about every two hours on weekdays, between 8 a.m. and 6 p.m. Central. The checks run on GitHub&rsquo;s free scheduler, which sometimes starts them late; the count below is what actually completed. When the court system is slow to respond &mdash; which it sometimes is for automated checks &mdash; the check retries on a fresh machine and the tracker keeps serving its last good data, with the &ldquo;checked&rdquo; time shown honestly on the page.</p>
         <div class="record" role="list" aria-label="Service record">
           <div role="listitem"><b data-stat="recordChangesCaught">&mdash;</b><span>Court-record changes caught</span></div>
           <div role="listitem"><b data-stat="medianDetection">&mdash;</b><span>Median time to catch a change</span></div>
           <div role="listitem"><b data-stat="casesWatching">&mdash;</b><span>Cases watched now</span></div>
-          <div role="listitem"><b>6&times;</b><span>Checks per weekday</span></div>
+          <div role="listitem"><b data-stat="checks7d">&mdash;</b><span>Successful checks, past 7 days</span></div>
         </div>
         <p class="record-asof" id="record-asof">Live figures, computed from the tracker&rsquo;s own public data.</p>
         <p>&ldquo;Time to catch a change&rdquo; is the gap between the court posting an update and our next check seeing it. Because checks run on weekdays, a change posted in the evening or on a weekend is caught the next weekday morning.</p>
@@ -192,6 +192,17 @@
             `Live figures, computed from the tracker’s own public data as of ${asOf}.${slowest}`;
         } catch {
           /* tiles keep their dashes */
+        }
+        // Checks actually completed, from the heartbeat the deploy workflow
+        // writes on every run (history began Nov. 16, 2026).
+        try {
+          const h = await (await fetch('./heartbeat.json', { cache: 'no-store' })).json();
+          const weekAgo = Date.now() / 1000 - 7 * 86400;
+          const n = (h.checks ?? []).filter((c) => c.ok && c.at >= weekAgo).length;
+          const el = document.querySelector('[data-stat="checks7d"]');
+          if (el) el.textContent = n;
+        } catch {
+          /* tile keeps its dash */
         }
       })();
     </script>

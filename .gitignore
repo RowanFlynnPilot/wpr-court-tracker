@@ -3,3 +3,6 @@ dist/
 __pycache__/
 *.pyc
 out/
+
+# Check heartbeat: deployed with the site, never committed
+data/heartbeat.json

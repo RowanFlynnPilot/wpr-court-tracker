@@ -168,10 +168,10 @@ export default function App() {
           <b>{watchedCount}</b>
           <span>Case{watchedCount === 1 ? '' : 's'} watched</span>
         </div>
-        {stats?.recordChangesCaught != null && (
+        {stats?.recordChangesLogged != null && (
           <div role="listitem">
-            <b>{stats.recordChangesCaught}</b>
-            <span>Court-record changes caught</span>
+            <b>{stats.recordChangesLogged}</b>
+            <span>Court-record changes logged</span>
           </div>
         )}
         {stats?.medianDetectionMinutes != null && (

@@ -1,7 +1,8 @@
 {
-  "generatedAt": "2026-11-16T23:34:41.585373+00:00",
+  "generatedAt": "2026-11-17T01:17:38.734433+00:00",
   "casesWatching": 2,
   "casesClosed": 0,
+  "recordChangesLogged": 18,
   "recordChangesCaught": 16,
   "medianDetectionMinutes": 90,
   "slowestDetectionMinutes": 267,

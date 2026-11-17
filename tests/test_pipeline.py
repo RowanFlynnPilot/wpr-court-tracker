@@ -141,7 +141,7 @@ def test_build_stats_counts_only_live_caught_changes():
         ],
     }
     s = build_stats(feed)
-    assert s["recordChangesCaught"] == 2
+    assert s["recordChangesCaught"] == 2 and s["recordChangesLogged"] == 3
     assert s["medianDetectionMinutes"] == 60 and s["slowestDetectionMinutes"] == 90
     assert s["casesWatching"] == 1 and s["casesClosed"] == 1
     assert s["newsroomNotes"] == 1 and s["trackingSince"] == "2026-07-11"

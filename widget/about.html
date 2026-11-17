@@ -143,13 +143,13 @@
         <h2>Reliability and transparency</h2>
         <p>The record is checked about every two hours on weekdays, between 8 a.m. and 6 p.m. Central. The checks run on GitHub&rsquo;s free scheduler, which sometimes starts them late; the count below is what actually completed. When the court system is slow to respond &mdash; which it sometimes is for automated checks &mdash; the check retries on a fresh machine and the tracker keeps serving its last good data, with the &ldquo;checked&rdquo; time shown honestly on the page.</p>
         <div class="record" role="list" aria-label="Service record">
-          <div role="listitem"><b data-stat="recordChangesCaught">&mdash;</b><span>Court-record changes caught</span></div>
+          <div role="listitem"><b data-stat="recordChangesLogged">&mdash;</b><span>Court-record changes logged</span></div>
           <div role="listitem"><b data-stat="medianDetection">&mdash;</b><span>Median time to catch a change</span></div>
           <div role="listitem"><b data-stat="casesWatching">&mdash;</b><span>Cases watched now</span></div>
           <div role="listitem"><b data-stat="checks7d">&mdash;</b><span>Successful checks, past 7 days</span></div>
         </div>
         <p class="record-asof" id="record-asof">Live figures, computed from the tracker&rsquo;s own public data.</p>
-        <p>&ldquo;Time to catch a change&rdquo; is the gap between the court posting an update and our next check seeing it. Because checks run on weekdays, a change posted in the evening or on a weekend is caught the next weekday morning.</p>
+        <p>&ldquo;Time to catch a change&rdquo; is the gap between the court posting an update and our next check seeing it, measured on changes posted after a case joined the watchlist. Because checks run on weekdays, a change posted in the evening or on a weekend is caught the next weekday morning.</p>
         <p>The software, the watchlist, and every change to the data are public on <a href="https://github.com/RowanFlynnPilot/wpr-court-tracker" target="_blank" rel="noreferrer">GitHub</a>, released under the MIT license. Anyone can audit what the tracker does and how it decides.</p>
       </section>
 
@@ -181,7 +181,7 @@
             const el = document.querySelector(`[data-stat="${key}"]`);
             if (el && value != null) el.textContent = value;
           };
-          set('recordChangesCaught', s.recordChangesCaught);
+          set('recordChangesLogged', s.recordChangesLogged ?? s.recordChangesCaught);
           set('medianDetection', fmt(s.medianDetectionMinutes));
           set('casesWatching', s.casesWatching);
           const asOf = new Date(s.generatedAt).toLocaleDateString('en-US', {

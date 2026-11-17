@@ -5,12 +5,14 @@
 
 .desk-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr), not 1fr: a long no-wrap value (the picker's
+     "Updating: <headline>") otherwise widens its column past the page. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 26px;
   margin-top: 26px;
 }
 @media (max-width: 860px) {
-  .desk-grid { grid-template-columns: 1fr; }
+  .desk-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Section headings only - .desk h2 would leak into the CaseFile preview,
@@ -126,7 +128,7 @@
 .desk-chip:hover { background: rgba(58, 134, 124, 0.1); }
 .desk-chiprow { margin: -4px 0 12px; }
 
-.desk-two { display: grid; grid-template-columns: 170px 1fr; gap: 12px; }
+.desk-two { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 12px; }
 @media (max-width: 560px) { .desk-two { grid-template-columns: 1fr; } }
 
 .desk-subhead {
@@ -140,7 +142,7 @@
 }
 .desk-row {
   display: grid;
-  grid-template-columns: 150px 1fr 34px;
+  grid-template-columns: 150px minmax(0, 1fr) 34px;
   gap: 8px;
   margin-bottom: 8px;
 }
@@ -267,3 +269,7 @@
   color: var(--ink-soft);
 }
 .desk-steps li { margin-bottom: 5px; }
+
+/* Timeline/link rows on phones: narrower date, inputs allowed to shrink. */
+.desk-row input { min-width: 0; }
+@media (max-width: 560px) { .desk-row { grid-template-columns: 128px minmax(0, 1fr) 34px; } }

@@ -358,6 +358,9 @@ def build_stats(feed: dict) -> dict:
         "generatedAt": feed["generatedAt"],
         "casesWatching": sum(1 for c in real if c.get("status") != "closed"),
         "casesClosed": sum(1 for c in real if c.get("status") == "closed"),
+        # Every change on the files (what the cards add up to), and the
+        # subset caught live - the only ones a detection time exists for.
+        "recordChangesLogged": sum(len(c.get("observed", [])) for c in real),
         "recordChangesCaught": len(lags),
         "medianDetectionMinutes": median,
         "slowestDetectionMinutes": lags[-1] if lags else None,

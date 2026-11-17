@@ -242,6 +242,10 @@ export default function CaseDesk() {
     }
   };
 
+  // When updating a tracked case, the preview keeps what the pipeline
+  // already knows (observed record changes, official caption, tracked-
+  // since date) - an update replaces editorial fields only, so "exactly
+  // as it will publish" has to include them. (baseCase is defined above.)
   const previewCase =
     urlInfo.state === 'ok' && !blocked && f.headline.trim()
       ? {
@@ -260,7 +264,9 @@ export default function CaseDesk() {
           caseTypeLabel: ALLOWED_CASE_TYPES[urlInfo.type],
           isCriminal: CRIMINAL_CASE_TYPES.has(urlInfo.type),
           status: 'watching',
-          observed: [],
+          observed: baseCase?.observed ?? [],
+          ...(baseCase?.officialCaption ? { officialCaption: baseCase.officialCaption } : {}),
+          ...(baseCase?.firstTrackedAt ? { firstTrackedAt: baseCase.firstTrackedAt } : {}),
         }
       : null;
 
@@ -274,8 +280,9 @@ export default function CaseDesk() {
           <p className="dek">
             Paste a case page (or upload a saved copy), check what the desk
             found, and publish &mdash; newsroom submissions go live at the
-            next sweep, 7:45 a.m. or 3:45 p.m. Central. Nothing you paste
-            leaves this page until you submit the reviewed fields.
+next publish sweep, or right away if you run it yourself (step 3
+            below). Nothing you paste leaves this page until you submit the
+            reviewed fields.
           </p>
         </div>
       </header>
@@ -572,10 +579,12 @@ export default function CaseDesk() {
             on the page within a minute.
           </li>
           <li>
-            Newsroom submissions publish automatically at the next sweep
-            &mdash; <b>7:45 a.m. and 3:45 p.m. Central</b>. Close the issue
-            before then to cancel. Outside submissions become a pull request
-            an editor must merge.
+            Newsroom submissions publish automatically at the next sweep.
+            Sweeps aim for <b>7:45 a.m. and 3:45 p.m. Central</b> but can
+            run hours late. To publish now, open{' '}
+            <a href="https://github.com/RowanFlynnPilot/wpr-court-tracker/actions/workflows/track-case.yml" target="_blank" rel="noreferrer">the intake workflow</a>{' '}
+            and click <b>Run workflow</b>. Close the issue first to cancel.
+            Outside submissions become a pull request an editor must merge.
           </li>
         </ol>
       </section>

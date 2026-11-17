@@ -168,6 +168,14 @@ pattern as wpr-brewers-tracker, never committed).
   the methodology page's live tiles (never hand-date numbers again);
   widget/preview.html is the grant illustration (ONE fictional,
   SAMPLE-flagged, noindex case - never put real names in it).
+  VISUALS (same night): Timeline.jsx puts a two-lane strip on every
+  real case card (red ticks = court pings, teal dots = newsroom notes,
+  ink diamond = hearing; lanes + shapes carry identity because the
+  brand teal is under the dataviz chroma floor - keep it matched to
+  the ledger's teal anyway). App.jsx has a live at-a-glance band from
+  stats.json; RequestForm is collapsed behind a "Send a request"
+  button. Verify visual work with a local dist server + Playwright
+  (transparent SVG hit targets need hover({ force: true })).
   SCHEDULING (rewritten late 2026-11-16, supersedes the cron-string
   gate shipped hours earlier): GitHub delivers this repo's scheduled
   runs late and drops most of them - 5.3 checks/day in July, 1.6/day

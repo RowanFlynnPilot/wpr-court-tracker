@@ -1,0 +1,19 @@
+{
+  "requestEmail": "news@your-newsroom.example",
+  "cases": [
+    {
+      "id": "sample-first-case",
+      "placeholder": true,
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000001&countyNo=37",
+      "county": "Marathon",
+      "headline": "Sample case: replace this with your first real case",
+      "summary": "A placeholder so the page has something to show on day one. Placeholder cases are never checked against the court record and wear a SAMPLE flag. Delete this entry once a real case is in.",
+      "tags": ["Courts"],
+      "nextHearing": { "date": "2027-01-15", "note": "Example hearing, Branch 1, 9 a.m." },
+      "updates": [
+        { "date": "2026-12-01", "note": "Example newsroom note. Reporters write these; the software never does." }
+      ],
+      "links": []
+    }
+  ]
+}

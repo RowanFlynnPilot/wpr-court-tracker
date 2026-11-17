@@ -168,6 +168,16 @@ pattern as wpr-brewers-tracker, never committed).
   the methodology page's live tiles (never hand-date numbers again);
   widget/preview.html is the grant illustration (ONE fictional,
   SAMPLE-flagged, noindex case - never put real names in it).
+  REPLICATION KIT (2026-11-16): REPLICATE.md (guide for other
+  newsrooms), config/cases.example.json (starter watchlist; validated
+  through load_config), tools/replication_check.py (lists leftover
+  WPR/Marathon/repo mentions; exits 1 on this repo by design). Keep
+  the guide's "Make it yours" table in step with any new hardcoded
+  name, address or county. KNOWN GAP found while writing it: this
+  repo has "Allow GitHub Actions to create and approve pull requests"
+  OFF, so the outside-author sign-off-PR lane in track-case.yml would
+  fail at `gh pr create` (never exercised live). Rowan's setting to
+  change; newsroom (collaborator) submissions are unaffected.
   BACKSTOP TASK (2026-11-16): a Windows scheduled task on Rowan's
   machine, "WPR Court Tracker backstop", runs tools/backstop-check.ps1
   every 30 min, weekdays 8:05 a.m.-6 p.m. Central. It dispatches the

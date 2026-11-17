@@ -169,6 +169,16 @@ case files that owe readers a reporter's note — a hearing that passed,
 or a court record that moved, with no note since. It rewrites itself
 each sweep and closes once every file is current.
 
+## Run it in your county
+
+Another newsroom can stand up its own tracker in an afternoon. It works
+as-is for any Wisconsin county. [REPLICATE.md](REPLICATE.md) is the
+step-by-step guide: what to change, what to set up on GitHub, the rules
+worth keeping, and what we learned running it.
+`config/cases.example.json` is a clean starter watchlist, and
+`python tools/replication_check.py` lists anything in a copy that still
+points at us.
+
 ## License
 
 [MIT](LICENSE) — copyright Wausau Pilot & Review. Use it, fork it for

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Court Tracker walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Court Tracker walkthrough, 1920x1080. Every frame is a pure function of
+   time: seek(t) sets every style from t alone (html-video contract). The
+   screens are real captures of the live tracker (video/capture.mjs); the
+   camera and rings are placed from the measurements build.mjs inlines. */
+:root {
+  --ink: #111111; --paper: #ffffff; --warm: #fcfaf4; --line: #ddd4bf;
+  --teal: #3a867c; --teal-deep: #2c685f; --manila-tab: #e6d5ab; --manila-edge: #d9c893;
+  --muted: #575b51;
+  --disp: 'Oswald', 'Arial Narrow', sans-serif;
+  --body: 'Merriweather', Georgia, serif;
+  --mono: 'Courier Prime', 'Courier New', monospace;
+}
+html, body { margin: 0; background: var(--paper) }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); font-family: var(--body); color: var(--ink) }
+.scene { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); visibility: hidden; will-change: transform }
+.scene.turning { box-shadow: -30px 0 60px rgba(0, 0, 0, .22) }
+.abs { position: absolute; margin: 0 }
+.fx { will-change: transform, opacity }
+
+/* Shared header on the capture scenes: the flag, the scene's name, a double rule */
+.hd-badge { left: 60px; top: 16px; width: 66px; height: 66px; border-radius: 50% }
+.hd-eyebrow { left: 146px; top: 18px; font-family: var(--disp); font-weight: 600; font-size: 19px; letter-spacing: .22em; text-transform: uppercase }
+.hd-title { left: 146px; top: 42px; font-family: var(--disp); font-weight: 700; font-size: 34px; line-height: 1.1 }
+.hd-date { right: 60px; top: 46px; font-family: var(--mono); font-size: 19px; color: var(--muted) }
+.hd-rule { left: 60px; top: 96px; width: 1800px; height: 3px; border-top: 4px solid var(--ink); border-bottom: 1px solid var(--ink); box-sizing: content-box }
+
+/* The window the camera looks through */
+.frame { left: 160px; top: 128px; width: 1600px; height: 772px; overflow: hidden; background: var(--warm); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 30px rgba(17, 17, 17, .13); box-sizing: border-box }
+.cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform }
+.cam img { display: block }
+.ring { position: absolute; box-sizing: border-box; border: 5px solid var(--teal); border-radius: 10px; box-shadow: 0 0 0 4px rgba(255, 255, 255, .8); opacity: 0; pointer-events: none }
+
+/* Caption band: sits above the scenes, so page turns slide beneath it */
+#band { position: absolute; left: 0; top: 924px; width: 1920px; height: 156px; background: var(--ink); z-index: 50; opacity: 0 }
+.cap { position: absolute; left: 150px; right: 150px; top: 0; height: 156px; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; font-size: 39px; line-height: 1.34; opacity: 0 }
+.cap b { color: #9fd6cc; font-weight: 700 }
+.cap .red { color: #f0a59f; font-weight: 700 }
+
+/* Scene 0: cover */
+.cover { border-top: 12px solid var(--ink); box-sizing: border-box }
+.c-badge { left: 190px; top: 300px; width: 330px; height: 330px; border-radius: 50% }
+.c-stack { left: 590px; top: 292px; width: 1180px; display: flex; flex-direction: column; gap: 22px }
+.c-eyebrow { margin: 0; font-family: var(--disp); font-weight: 600; font-size: 30px; letter-spacing: .22em; text-transform: uppercase }
+.c-h { margin: 0; font-family: var(--disp); font-weight: 700; font-size: 124px; line-height: 1.0; letter-spacing: .005em }
+.c-h span { display: block }
+.c-sub { margin: 8px 0 0; font-size: 38px; line-height: 1.42; color: #404040; max-width: 24em }
+.c-tabs { left: 190px; bottom: 0; display: flex; gap: 16px }
+.c-tabs span { background: var(--manila-tab); border: 1px solid var(--manila-edge); border-bottom: none; border-radius: 12px 12px 0 0; font-family: var(--mono); font-weight: 700; font-size: 24px; letter-spacing: .12em; text-transform: uppercase; padding: 14px 34px 12px }
+
+/* Scene 6: end card */
+.end { background: var(--ink); color: #fff }
+.e-stack { left: 190px; top: 250px; width: 1540px; display: flex; flex-direction: column; gap: 30px }
+.e-eyebrow { margin: 0; font-family: var(--disp); font-weight: 600; font-size: 30px; letter-spacing: .22em; text-transform: uppercase; color: #9fd6cc }
+.e-url { margin: 0; font-family: var(--mono); font-weight: 700; font-size: 54px; line-height: 1.15; white-space: nowrap }
+.e-p { margin: 10px 0 0; font-size: 38px; line-height: 1.45; color: #e4e1d6; max-width: 30em }
+.e-foot { left: 190px; top: 840px; display: flex; align-items: center; gap: 26px }
+.e-foot img { width: 112px; height: 112px; border-radius: 50%; background: #fff }
+.e-name { font-family: var(--disp); font-weight: 600; font-size: 34px; letter-spacing: .04em }
+.e-tag { margin-top: 6px; font-family: var(--disp); font-weight: 500; font-size: 19px; letter-spacing: .26em; text-transform: uppercase; color: #cfccc0 }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <section class="scene cover" id="s0">
+    <img class="abs c-badge fx" id="c-badge" src="../widget/src/assets/wpr-badge.png" alt="">
+    <div class="abs c-stack">
+      <p class="c-eyebrow fx" id="c-eyebrow">Wausau Pilot &amp; Review</p>
+      <h1 class="c-h"><span class="fx" id="c-h1">Marathon County</span><span class="fx" id="c-h2">Court Tracker</span></h1>
+      <p class="c-sub fx" id="c-sub">Court cases of public interest, followed by a local newsroom and checked against the official record.</p>
+    </div>
+    <div class="abs c-tabs fx" id="c-tabs"><span>Felony</span><span>Misdemeanor</span><span>Civil</span></div>
+  </section>
+
+  <section class="scene" id="s1">
+    <img class="abs hd-badge" src="../widget/src/assets/wpr-badge.png" alt="">
+    <p class="abs hd-eyebrow">Court Tracker</p><p class="abs hd-title">The tracker</p><p class="abs hd-date" data-date></p><span class="abs hd-rule"></span>
+    <div class="abs frame"><div class="cam" id="cam1"><img src="shots/tracker.png" data-w="tracker" alt=""></div></div>
+  </section>
+
+  <section class="scene" id="s2">
+    <img class="abs hd-badge" src="../widget/src/assets/wpr-badge.png" alt="">
+    <p class="abs hd-eyebrow">Court Tracker</p><p class="abs hd-title">Inside a case file</p><p class="abs hd-date" data-date></p><span class="abs hd-rule"></span>
+    <div class="abs frame"><div class="cam" id="cam2"><img src="shots/file.png" data-w="file" alt=""></div></div>
+  </section>
+
+  <section class="scene" id="s3">
+    <img class="abs hd-badge" src="../widget/src/assets/wpr-badge.png" alt="">
+    <p class="abs hd-eyebrow">Court Tracker</p><p class="abs hd-title">How it works</p><p class="abs hd-date" data-date></p><span class="abs hd-rule"></span>
+    <div class="abs frame" style="background: #fff"><div class="cam" id="cam3"><img src="shots/about.png" data-w="about" alt=""></div></div>
+  </section>
+
+  <section class="scene" id="s4">
+    <img class="abs hd-badge" src="../widget/src/assets/wpr-badge.png" alt="">
+    <p class="abs hd-eyebrow">Court Tracker</p><p class="abs hd-title">The newsroom desk</p><p class="abs hd-date" data-date></p><span class="abs hd-rule"></span>
+    <div class="abs frame" style="background: #fff"><div class="cam" id="cam4"><img src="shots/desk.png" data-w="desk" alt=""></div></div>
+  </section>
+
+  <section class="scene" id="s5">
+    <img class="abs hd-badge" src="../widget/src/assets/wpr-badge.png" alt="">
+    <p class="abs hd-eyebrow">Court Tracker</p><p class="abs hd-title">What court-data access would add</p><p class="abs hd-date">Sample case &middot; illustration</p><span class="abs hd-rule"></span>
+    <div class="abs frame" style="background: #fff"><div class="cam" id="cam5"><img src="shots/preview.png" data-w="preview" alt=""></div></div>
+  </section>
+
+  <section class="scene end" id="s6">
+    <div class="abs e-stack">
+      <p class="e-eyebrow fx" id="e-eyebrow">See it live</p>
+      <p class="e-url fx" id="e-url">rowanflynnpilot.github.io/wpr-court-tracker</p>
+      <p class="e-p fx" id="e-p">Free to read. Open source. Any Wisconsin newsroom can run its own.</p>
+    </div>
+    <div class="abs e-foot fx" id="e-foot">
+      <img src="../widget/src/assets/wpr-badge.png" alt="">
+      <div><div class="e-name">Wausau Pilot &amp; Review</div><div class="e-tag">Where Locals Look First For News</div></div>
+    </div>
+  </section>
+
+  <div id="band"></div>
+</div>
+<script>
+window.COMPOSITION = { width: 1920, height: 1080, fps: 30, duration: 84 };
+const META = /*__META__*/null;
+
+// ---- Engine (from the html-video template) ---------------------------------------------------------------------
+function bezier(x1, y1, x2, y2) {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sx = (t) => ((ax * t + bx) * t + cx) * t, sy = (t) => ((ay * t + by) * t + cy) * t;
+  return (x) => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let lo = 0, hi = 1, t = x;
+    for (let i = 0; i < 40; i++) { const v = sx(t); if (Math.abs(v - x) < 1e-7) break; if (v < x) lo = t; else hi = t; t = (lo + hi) / 2; }
+    return sy(t);
+  };
+}
+const OUT = bezier(.16, 1, .3, 1);
+const INOUT = (k) => (k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+const BACK = (k) => 1 + 2.70158 * Math.pow(k - 1, 3) + 1.70158 * Math.pow(k - 1, 2);
+const p = (t, a, b, e = OUT) => (t <= a ? 0 : t >= b ? 1 : e((t - a) / (b - a)));
+const lerp = (a, b, k) => a + (b - a) * k;
+const $ = (id) => document.getElementById(id);
+function arrive(el, k, dy = 60) { el.style.opacity = k; el.style.transform = 'translateY(' + ((1 - k) * dy).toFixed(1) + 'px)'; }
+
+// ---- Camera over a capture: keys are views {t, x, y, s} in the capture's own CSS pixels ------------------------
+const FW = 1600, FH = 772;
+function cam(id, t, keys, mv = 1.4) {
+  let v = keys[0];
+  for (let i = 1; i < keys.length; i++) {
+    const k = p(t, keys[i].t - mv, keys[i].t, INOUT);
+    if (k <= 0) break;
+    v = { x: lerp(v.x, keys[i].x, k), y: lerp(v.y, keys[i].y, k), s: lerp(v.s, keys[i].s, k) };
+  }
+  $(id).style.transform = 'translate(' + (-v.x * v.s).toFixed(2) + 'px,' + (-v.y * v.s).toFixed(2) + 'px) scale(' + v.s.toFixed(4) + ')';
+}
+// A view that centres a rect at scale s (or the largest scale <= s that fits it with some air).
+function viewOf(r, s, air = 60) {
+  const fit = Math.min(s, FW / (r.w + air * 2), FH / (r.h + air * 2));
+  return { s: fit, x: r.x + r.w / 2 - FW / fit / 2, y: r.y + r.h / 2 - FH / fit / 2 };
+}
+const RINGS = {};
+function addRing(camId, name, r, pad = 8) {
+  const el = document.createElement('span');
+  el.className = 'ring';
+  el.style.cssText = 'left:' + (r.x - pad) + 'px;top:' + (r.y - pad) + 'px;width:' + (r.w + pad * 2) + 'px;height:' + (r.h + pad * 2) + 'px';
+  $(camId).appendChild(el);
+  RINGS[name] = el;
+}
+function ringIO(name, t, a, b) {
+  const k = p(t, a, a + 0.5) * (1 - p(t, b - 0.4, b));
+  const el = RINGS[name];
+  el.style.opacity = k.toFixed(3);
+  el.style.transform = 'scale(' + lerp(1.06, 1, p(t, a, a + 0.5)).toFixed(4) + ')';
+}
+
+// ---- Scenes, captions, camera keys -----------------------------------------------------------------------------
+const TURN = 0.6;
+const PAGES = [[null, 5.6], [5.6, 19.2], [19.2, 35.0], [35.0, 46.4], [46.4, 57.0], [57.0, 75.0], [75.0, null]];
+
+// Read top to bottom, the captions tell the whole story on their own.
+const CAPS = [
+  [6.3, 12.2, 'Editors choose the cases. Software checks each one against the <b>official court record</b>.'],
+  [12.7, 19.0, 'Each file shows its history on one line: court-record changes above, reporters&rsquo; notes below.'],
+  [20.0, 25.2, '<span class="red">Red entries:</span> the official court record changed.'],
+  [25.7, 30.3, '<b>Teal entries:</b> a reporter explains what happened.'],
+  [30.8, 34.8, 'Every criminal case carries the presumption of innocence. The software adds it.'],
+  [35.8, 40.8, 'It reads only the court system&rsquo;s approved data feed. The court website is never scraped.'],
+  [41.4, 46.2, 'Its service record is public, and the numbers are live.'],
+  [47.0, 51.9, 'Reporters add a case at the newsroom desk in about two minutes.'],
+  [52.4, 56.8, 'Every entry is checked against editorial policy before it publishes.'],
+  [57.7, 62.2, 'What would court-data access add? One sample case, shown two ways.'],
+  [62.7, 67.8, '<b>Today:</b> the tracker knows that a record changed, and when.'],
+  [68.3, 74.8, '<b>With access:</b> what changed, in the court&rsquo;s own words, plus charges and hearing dates.'],
+];
+let KEYS = {};
+let capEls = [];
+
+function seek(t) {
+  PAGES.forEach(([tin, tout], i) => {
+    const el = $('s' + i);
+    const inK = tin === null ? 1 : p(t, tin, tin + TURN, INOUT);
+    const outK = tout === null ? 0 : p(t, tout, tout + TURN, INOUT);
+    el.style.visibility = (tin === null || t >= tin) && (tout === null || t < tout + TURN) ? 'visible' : 'hidden';
+    el.style.zIndex = i;
+    el.style.transform = 'translateX(' + (inK < 1 ? lerp(1920, 0, inK) : -420 * outK).toFixed(2) + 'px)';
+    el.classList.toggle('turning', inK > 0 && inK < 1);
+  });
+
+  // Caption band rides in with the first capture scene and leaves under the end card.
+  $('band').style.opacity = (p(t, 5.6, 6.2) * (1 - p(t, 75.0, 75.5))).toFixed(3);
+  CAPS.forEach(([a, b], i) => {
+    const k = p(t, a, a + 0.45) * (1 - p(t, b - 0.35, b));
+    capEls[i].style.opacity = k.toFixed(3);
+    capEls[i].style.transform = 'translateY(' + ((1 - p(t, a, a + 0.45)) * 14).toFixed(1) + 'px)';
+  });
+
+  // Cover: composed on frame 0 (it is the thumbnail), with a gentle settle.
+  $('c-badge').style.transform = 'scale(' + lerp(0.94, 1, p(t, 0, 1.2)).toFixed(4) + ')';
+  $('c-h1').style.transform = 'translateY(' + ((1 - p(t, 0, 0.9, BACK)) * 26).toFixed(1) + 'px)';
+  $('c-h2').style.transform = 'translateY(' + ((1 - p(t, 0.15, 1.05, BACK)) * 26).toFixed(1) + 'px)';
+  $('c-sub').style.transform = 'translateY(' + ((1 - p(t, 0.2, 1.3)) * 18).toFixed(1) + 'px)';
+  $('c-tabs').style.transform = 'translateY(' + ((1 - p(t, 0.3, 1.3)) * 16).toFixed(1) + 'px)';
+
+  // Scene 1: the tracker. Top of page, then the first card, then into its timeline.
+  cam('cam1', t, KEYS.cam1);
+  ringIO('glance', t, 7.2, 11.6);
+  ringIO('tl', t, 15.6, 18.8);
+
+  // Scene 2: the open case file.
+  cam('cam2', t, KEYS.cam2);
+  ringIO('court', t, 20.8, 25.0);
+  ringIO('wpr', t, 26.0, 30.1);
+  ringIO('presumption', t, 31.1, 34.6);
+
+  // Scene 3: methodology.
+  cam('cam3', t, KEYS.cam3);
+  ringIO('source', t, 36.4, 40.4);
+  ringIO('record', t, 42.4, 46.0);
+
+  // Scene 4: the desk.
+  cam('cam4', t, KEYS.cam4);
+  ringIO('deskPreview', t, 53.4, 56.6);
+
+  // Scene 5: the grant preview. Wide, then the left file's ledger, then the right one's.
+  cam('cam5', t, KEYS.cam5);
+  ringIO('beforeLedger', t, 63.6, 67.4);
+  ringIO('afterLedger', t, 69.4, 74.4);
+
+  // End card.
+  arrive($('e-eyebrow'), p(t, 75.5, 76.2), 30);
+  arrive($('e-url'), p(t, 75.8, 76.7), 40);
+  arrive($('e-p'), p(t, 76.6, 77.5), 30);
+  arrive($('e-foot'), p(t, 77.4, 78.3), 24);
+}
+
+window.ready = (async () => {
+  await document.fonts.ready;
+  // Captures are 2x: lay each out at its CSS width so the measurements line up.
+  document.querySelectorAll('img[data-w]').forEach((img) => { img.style.width = META[img.dataset.w].w + 'px'; });
+  await Promise.all([...document.images].map((img) => img.decode().catch(() => null)));
+
+  const when = new Date(META.capturedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Chicago' });
+  document.querySelectorAll('[data-date]').forEach((el) => { el.textContent = 'Live tracker, captured ' + when; });
+
+  const band = $('band');
+  capEls = CAPS.map(([, , html]) => { const el = document.createElement('div'); el.className = 'cap'; el.innerHTML = '<span>' + html + '</span>'; band.appendChild(el); return el; });
+
+  const T = META.tracker, F = META.file, A = META.about, D = META.desk, P = META.preview;
+  const full = (W) => FW / W;                         // scale that fits the capture's width to the frame
+  // Centre a narrow capture (or a narrow column of one) horizontally at scale s.
+  const cx = (r, s) => r.x + r.w / 2 - FW / s / 2;
+
+  KEYS.cam1 = [
+    { t: 5.6, s: full(T.w), x: 0, y: 0 },
+    { t: 13.4, s: full(T.w), x: 0, y: Math.max(0, T.card.y - 40) },
+    { t: 16.0, ...viewOf(T.tl, 1.9, 120) },
+  ];
+  addRing('cam1', 'glance', T.glance, 10);
+  addRing('cam1', 'tl', T.tl, 8);
+
+  const fs = 1.6, fAll = { x: 0, y: 0, w: F.w, h: F.h };
+  KEYS.cam2 = [
+    { t: 19.2, s: fs, x: cx(fAll, fs), y: -14 },
+    { t: 21.2, s: fs, x: cx(fAll, fs), y: Math.max(-14, Math.min(F.h - FH / fs + 16, F.tl.y - 18)) },
+  ];
+  addRing('cam2', 'court', F.court, 6);
+  addRing('cam2', 'wpr', F.wpr, 6);
+  addRing('cam2', 'presumption', F.presumption, 7);
+
+  const as = full(A.w);
+  KEYS.cam3 = [
+    { t: 35.0, s: as, x: 0, y: A.source.y - 34 },
+    { t: 42.4, s: as, x: 0, y: A.record.y - (FH / as) * 0.52 },
+  ];
+  addRing('cam3', 'source', { x: A.source.x - 6, y: A.source.y - 2, w: A.source.w + 12, h: Math.min(A.source.h, FH / as - 70) }, 8);
+  addRing('cam3', 'record', A.record, 10);
+
+  const ds = full(D.w);
+  KEYS.cam4 = [
+    { t: 46.4, s: ds, x: 0, y: Math.max(0, D.grid.y - 60) },
+    { t: 53.4, s: ds, x: 0, y: D.preview.y - 34 },
+  ];
+  addRing('cam4', 'deskPreview', { x: D.preview.x, y: D.preview.y + 44, w: D.preview.w, h: Math.min(D.preview.h - 44, FH / ds - 110) }, 10);
+
+  const ps = full(P.w);
+  KEYS.cam5 = [
+    { t: 57.0, s: ps, x: 0, y: P.notice.y - 30 },
+    { t: 64.0, ...viewOf(P.beforeLedger, 2.0, 46) },
+    { t: 69.8, ...viewOf(P.afterLedger, 2.0, 46) },
+  ];
+  addRing('cam5', 'beforeLedger', P.beforeLedger, 8);
+  addRing('cam5', 'afterLedger', P.afterLedger, 8);
+
+  seek(0);
+  return window.COMPOSITION;
+})();
+window.seek = seek;
+</script>
+</body>
+</html>

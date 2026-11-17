@@ -10,5 +10,5 @@ data/heartbeat.json
 # Walkthrough video: captures and renders are regenerated, not committed
 video/shots/
 video/walkthrough.html
-video/stills*/
+video/_stills*/
 video/*.mp4

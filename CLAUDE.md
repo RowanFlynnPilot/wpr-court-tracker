@@ -172,6 +172,13 @@ pattern as wpr-brewers-tracker, never committed).
   the methodology page's live tiles (never hand-date numbers again);
   widget/preview.html is the grant illustration (ONE fictional,
   SAMPLE-flagged, noindex case - never put real names in it).
+  WALKTHROUGH VIDEO (2026-11-16): video/ holds an 84 s captioned
+  1920x1080 walkthrough built with the html-video skill from captures
+  of the LIVE site (capture.mjs -> build.mjs -> the skill's render.mjs;
+  steps in video/README.md). Sources are committed; shots, the built
+  page and MP4s are gitignored. It is a snapshot: re-capture and
+  re-render whenever the case files change (first cut predates the
+  newsroom's November notes).
   REPLICATION KIT (2026-11-16): REPLICATE.md (guide for other
   newsrooms), config/cases.example.json (starter watchlist; validated
   through load_config), tools/replication_check.py (lists leftover

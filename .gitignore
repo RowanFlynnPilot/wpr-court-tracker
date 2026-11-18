@@ -12,4 +12,4 @@ video/shots/
 video/walkthrough.html
 video/_stills*/
 video/*.mp4
-video/v1/
+video/v[0-9]*/

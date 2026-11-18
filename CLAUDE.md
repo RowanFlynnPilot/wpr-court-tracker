@@ -187,8 +187,10 @@ pattern as wpr-brewers-tracker, never committed).
   of the LIVE site (capture.mjs -> build.mjs -> the skill's render.mjs;
   steps in video/README.md). Sources are committed; shots, the built
   page and MP4s are gitignored. It is a snapshot: re-capture and
-  re-render whenever the case files change (first cut predates the
-  newsroom's November notes).
+  re-render whenever the case files change. Current cut: captured
+  2026-11-18, after the card polish, with the case files still as
+  they stood in October (no stage labels, no upcoming hearing);
+  earlier cuts are kept in video/v1 and video/v2.
   REPLICATION KIT (2026-11-16): REPLICATE.md (guide for other
   newsrooms), config/cases.example.json (starter watchlist; validated
   through load_config), tools/replication_check.py (lists leftover

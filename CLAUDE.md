@@ -199,9 +199,13 @@ pattern as wpr-brewers-tracker, never committed).
   2026-11-16 (the owner's test issues always take the newsroom lane).
   BACKSTOP TASK (2026-11-16): a Windows scheduled task on Rowan's
   machine, "WPR Court Tracker backstop", runs tools/backstop-check.ps1
-  every 30 min, weekdays 8:05 a.m.-6 p.m. Central. It dispatches the
+  every 30 min, weekdays 8:05 a.m.-6:05 p.m. Central. It dispatches the
   update workflow ONLY if the deployed heartbeat says the last check
-  is 125+ min old (and never within 110 min of its own last dispatch),
+  is 110+ min old (and never within 100 min of its own last dispatch;
+  tightened from 125/110 on 2026-11-18 because GitHub was dropping
+  nearly every ticket and the backstop alone was giving 150-min
+  spacing, 4 checks a day - the new numbers aim at 8:05, 10:05 ...
+  6:05, six a day),
   so it adds nothing when GitHub's scheduler keeps up. It works only
   while that machine is on, logged in, and `gh` is signed in. Log:
   %LOCALAPPDATA%\wpr-court-tracker\backstop.log. Remove with

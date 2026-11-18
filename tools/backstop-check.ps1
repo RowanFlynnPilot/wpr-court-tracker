@@ -17,15 +17,15 @@
 
 param(
   [switch]$DryRun,       # print the decision; dispatch nothing, log nothing
-  [switch]$IgnoreHours   # testing only: evaluate as if inside the 8-6 window
+  [switch]$IgnoreHours   # testing only: evaluate as if inside the weekday window
 )
 
 $ErrorActionPreference = 'Stop'
 $Site = 'https://rowanflynnpilot.github.io/wpr-court-tracker'
 $Repo = 'RowanFlynnPilot/wpr-court-tracker'
 $Workflow = 'Update court data and deploy'
-$OverdueMinutes = 125     # the workflow's own gate runs a check at 105
-$MinGapMinutes = 110      # never dispatch twice inside this window
+$OverdueMinutes = 110     # two-hour spacing on a 30-minute tick; the workflow's own gate is 105
+$MinGapMinutes = 100      # never dispatch twice inside this window
 
 $StateDir = Join-Path $env:LOCALAPPDATA 'wpr-court-tracker'
 $LogPath = Join-Path $StateDir 'backstop.log'
@@ -46,8 +46,10 @@ try {
   $central = [TimeZoneInfo]::FindSystemTimeZoneById('Central Standard Time')
   $now = [TimeZoneInfo]::ConvertTimeFromUtc([DateTime]::UtcNow, $central)
   $weekday = $now.DayOfWeek -notin 'Saturday', 'Sunday'
-  if (-not $IgnoreHours -and (-not $weekday -or $now.Hour -lt 8 -or $now.Hour -ge 18)) {
-    Write-Log "skip: outside weekdays 8 a.m.-6 p.m. Central ($($now.ToString('ddd HH:mm')))"
+  # Through 6:10 p.m. so the task's last tick (6:05) can make the day's sixth check.
+  $minuteOfDay = $now.Hour * 60 + $now.Minute
+  if (-not $IgnoreHours -and (-not $weekday -or $minuteOfDay -lt 480 -or $minuteOfDay -gt 1090)) {
+    Write-Log "skip: outside weekdays 8 a.m.-6:10 p.m. Central ($($now.ToString('ddd HH:mm')))"
     exit 0
   }
 

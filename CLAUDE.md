@@ -224,8 +224,9 @@ pattern as wpr-brewers-tracker, never committed).
   row that filters. It is a reporter's call from the docket, like
   hearing dates - NEVER infer a stage from ping data, and never set
   one on a real case yourself. Every open file now answers "what's
-  next" (hearing bar with a dates-can-change caveat, or "No hearing
-  date on file"). The file unfolds via .detail-wrap (grid 0fr -> 1fr,
+  next" (hearing bar with a dates-can-change caveat, or "No upcoming
+  hearing on file" - worded that way because a PAST hearing may still
+  be on the file and on the timeline). The file unfolds via .detail-wrap (grid 0fr -> 1fr,
   visibility hidden while closed) - NOT the [hidden] attribute; any
   motion rule must be scoped to .detail-wrap because preview.html
   uses a bare, always-open .detail (an unscoped opacity rule blanked

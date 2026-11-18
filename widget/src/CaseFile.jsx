@@ -206,7 +206,7 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
             <p className="hearing hearing-none">
               <span className="hearing-label">What&rsquo;s next</span>
               <span className="hearing-what">
-                No hearing date on file. The court&rsquo;s calendar is on{' '}
+                No upcoming hearing on file. The court&rsquo;s calendar is on{' '}
                 <a href={c.wccaUrl} target="_blank" rel="noreferrer">the docket</a>.
               </span>
             </p>

@@ -36,12 +36,28 @@ DESCRIPTION:Plea and sentencing hearing\, Judge Suzanne O’Neill (Case 2025CF00
 URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2025cf001134
 END:VEVENT
 BEGIN:VEVENT
+UID:2025CF001035-20270202@wpr-court-tracker
+DTSTART;VALUE=DATE:20270202
+DTEND;VALUE=DATE:20270203
+SUMMARY:Hearing: Former Kronenwetter trustee faces 43 counts in Schofield dog neglect case
+DESCRIPTION:Motion hearing (Case 2025CF001035\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2025cf001035
+END:VEVENT
+BEGIN:VEVENT
 UID:2025CF000943-20270125@wpr-court-tracker
 DTSTART;VALUE=DATE:20270125
 DTEND;VALUE=DATE:20270126
 SUMMARY:Hearing: Wausau man charged with killing roommate faces January trial
 DESCRIPTION:Jury trial\, expected to last five days (Case 2025CF000943\, Marathon County)
 URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2025cf000943
+END:VEVENT
+BEGIN:VEVENT
+UID:2026CF000431-20261208@wpr-court-tracker
+DTSTART;VALUE=DATE:20261208
+DTEND;VALUE=DATE:20261209
+SUMMARY:Hearing: Birnamwood man charged with homicide in brother’s stabbing death
+DESCRIPTION:Arraignment and bond hearing (Case 2026CF000431\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2026cf000431
 END:VEVENT
 BEGIN:VEVENT
 UID:2026CF000604-20261214@wpr-court-tracker

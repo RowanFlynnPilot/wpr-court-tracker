@@ -14,10 +14,13 @@ website. The feed signals *that* a record changed; WPR reporters supply
 presumption-of-innocence note on every criminal case — is enforced in
 code, not by convention.
 
-Service record since the July 2026 reliability rework: zero failed runs
-in the last hundred, court-system outages flagged and self-healed
-without intervention, and every change to the data published as a
-commit that names its case. The live widget runs on GitHub Pages and is
+Service record since the July 2026 reliability rework: all but four
+runs have finished clean (those four failed in GitHub's own services
+and lost no data), court-system outages are flagged and cleared
+automatically, and every change to the data is published as a commit
+that names its case. Live figures are on the
+[methodology page](https://rowanflynnpilot.github.io/wpr-court-tracker/about.html).
+The live widget runs on GitHub Pages and is
 embedded in WordPress via iframe. See CLAUDE.md for architecture and
 hard boundaries.
 

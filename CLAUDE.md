@@ -190,7 +190,11 @@ pattern as wpr-brewers-tracker, never committed).
   re-render whenever the case files change. Current cut: captured
   2026-11-18, after the card polish, with the case files still as
   they stood in October (no stage labels, no upcoming hearing);
-  earlier cuts are kept in video/v1 and video/v2.
+  earlier cuts are kept in video/v1 and video/v2. video/private/
+  (gitignored) holds a local-only extended cut: its build script
+  transforms walkthrough.src.html by exact string replacement and
+  throws if an anchor is missing, so re-run it after editing the
+  public composition.
   REPLICATION KIT (2026-11-16): REPLICATE.md (guide for other
   newsrooms), config/cases.example.json (starter watchlist; validated
   through load_config), tools/replication_check.py (lists leftover

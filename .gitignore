@@ -13,3 +13,5 @@ video/walkthrough.html
 video/_stills*/
 video/*.mp4
 video/v[0-9]*/
+# Local-only extended cuts of the video and their build scripts
+video/private/

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T01:17:38.734433+00:00",
+  "generatedAt": "2026-11-19T17:31:16.681705+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
@@ -153,10 +153,19 @@
         "Public safety",
         "Government"
       ],
+      "stage": "deferred",
+      "nextHearing": {
+        "date": "2027-04-16",
+        "note": "DEOJ Review"
+      },
       "updates": [
         {
           "date": "2025-08-27",
           "note": "Case filed in circuit court."
+        },
+        {
+          "date": "2026-04-16",
+          "note": "DEOJ approved"
         }
       ],
       "links": [
@@ -171,6 +180,7 @@
       "caseTypeLabel": "Misdemeanor",
       "isCriminal": true,
       "status": "watching",
+      "stageLabel": "Deferred",
       "observed": [
         {
           "guid": "37-2025CM000682-Some(2026-04-28T14:08:18.483Z)",
@@ -181,6 +191,293 @@
       ],
       "officialCaption": "State of Wisconsin vs. Nicholas Michael Endres",
       "firstTrackedAt": "2026-07-18T18:58:01.008065+00:00"
+    },
+    {
+      "id": "marathon-2023cf000217",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2023CF000217&countyNo=37&mode=details",
+      "county": "Marathon",
+      "headline": "Wausau man convicted of sexually assaulting child awaits sentencing",
+      "summary": "Sandro Gerena-Vazquez, 53, of Wausau, was convicted by a Marathon County jury Sept. 24 of first-degree sexual assault of a child and faces up to 60 years in prison. Wausau Pilot & Review does not identify victims of sexual assault.",
+      "tags": [
+        "Child safety"
+      ],
+      "stage": "sentencing",
+      "nextHearing": {
+        "date": "2027-03-15",
+        "note": "Sentencing, 9 a.m., Judge Suzanne O\u2019Neill"
+      },
+      "updates": [
+        {
+          "date": "2026-09-24",
+          "note": "A jury returned a guilty verdict after a three-day trial. Judge Suzanne O\u2019Neill revoked bond and ordered a presentence investigation."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/10/01/wausau-man-convicted-of-sexually-assaulting-child-faces-up-to-60-years-in-prison/"
+        }
+      ],
+      "caseNo": "2023CF000217",
+      "countyNo": 37,
+      "caseType": "CF",
+      "caseTypeLabel": "Felony",
+      "isCriminal": true,
+      "status": "watching",
+      "stageLabel": "Sentencing",
+      "observed": [
+        {
+          "guid": "37-2023CF000217-Some(2026-11-10T23:03:55.376Z)",
+          "updated": "2026-11-10T23:03:55+00:00",
+          "officialCaption": "State of Wisconsin vs. Sandro Gerena-Vazquez",
+          "observedAt": "2026-11-19T17:31:16.681705+00:00"
+        }
+      ],
+      "officialCaption": "State of Wisconsin vs. Sandro Gerena-Vazquez",
+      "firstTrackedAt": "2026-11-19T17:31:16.681705+00:00"
+    },
+    {
+      "id": "marathon-2025cf001134",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CF001134&countyNo=37&mode=details",
+      "county": "Marathon",
+      "headline": "Weston ATM jackpotting suspect set for plea hearing in January",
+      "summary": "Enhnort Leonardo Araujo Valero, 28, is accused of breaching a Weston credit union ATM in December 2025. He faces two other cases in Marathon County. A single hearing on Jan. 7 and a $25,000 cash bond cover all three.",
+      "tags": [
+        "Financial crime"
+      ],
+      "stage": "pretrial",
+      "nextHearing": {
+        "date": "2027-01-07",
+        "note": "Plea and sentencing hearing, Judge Suzanne O\u2019Neill"
+      },
+      "updates": [
+        {
+          "date": "2026-06-03",
+          "note": "Judge Suzanne O\u2019Neill set a $25,000 cash bond covering his three Marathon County cases."
+        },
+        {
+          "date": "2026-08-12",
+          "note": "Pretrial conference held."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/10/23/weston-atm-jackpotting-suspect-faces-charges-in-two-counties-plea-hearing-set-for-january/"
+        }
+      ],
+      "caseNo": "2025CF001134",
+      "countyNo": 37,
+      "caseType": "CF",
+      "caseTypeLabel": "Felony",
+      "isCriminal": true,
+      "status": "watching",
+      "stageLabel": "Pretrial",
+      "observed": [
+        {
+          "guid": "37-2025CF001134-Some(2026-10-15T19:12:25.512Z)",
+          "updated": "2026-10-15T19:12:25+00:00",
+          "officialCaption": "State of Wisconsin vs. Enhnort Leonardo Araujo Valero",
+          "observedAt": "2026-11-19T17:31:16.681705+00:00"
+        }
+      ],
+      "officialCaption": "State of Wisconsin vs. Enhnort Leonardo Araujo Valero",
+      "firstTrackedAt": "2026-11-19T17:31:16.681705+00:00"
+    },
+    {
+      "id": "marathon-2025cf001035",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CF001035&countyNo=37&index=0&mode=details",
+      "county": "Marathon",
+      "headline": "Former Kronenwetter trustee faces 43 counts in Schofield dog neglect case",
+      "summary": "Sean Dumais, 49, a former Kronenwetter village trustee, faces 43 counts, including felony theft in a business setting of more than $100,000 and four felony counts of mistreatment of animals causing death. Investigators say they found starving dogs in October 2025 at Central Wisconsin K-9, his Schofield training business. Two other people are charged in separate cases.",
+      "tags": [
+        "Animal welfare",
+        "Government"
+      ],
+      "stage": "pretrial",
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/09/29/former-worker-in-schofield-dog-neglect-case-set-for-plea-hearing/"
+        }
+      ],
+      "caseNo": "2025CF001035",
+      "countyNo": 37,
+      "caseType": "CF",
+      "caseTypeLabel": "Felony",
+      "isCriminal": true,
+      "status": "watching",
+      "stageLabel": "Pretrial",
+      "observed": [
+        {
+          "guid": "37-2025CF001035-Some(2026-11-18T15:08:51.297Z)",
+          "updated": "2026-11-18T15:08:51+00:00",
+          "officialCaption": "State of Wisconsin vs. Sean M Dumais",
+          "observedAt": "2026-11-19T17:31:16.681705+00:00"
+        }
+      ],
+      "officialCaption": "State of Wisconsin vs. Sean M Dumais",
+      "firstTrackedAt": "2026-11-19T17:31:16.681705+00:00"
+    },
+    {
+      "id": "marathon-2025cf000943",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CF000943&countyNo=37&mode=details",
+      "county": "Marathon",
+      "headline": "Wausau man charged with killing roommate faces January trial",
+      "summary": "Dustin Stinson, 35, of Wausau, is charged with first-degree intentional homicide in the Sept. 14, 2025, shooting death of his roommate, Jacob Socha, 31. He pleaded not guilty Jan. 2. A judge lowered his bail from $1 million to $75,000 cash on Oct. 19.",
+      "tags": [
+        "Violent crime"
+      ],
+      "stage": "pretrial",
+      "nextHearing": {
+        "date": "2027-01-25",
+        "note": "Jury trial, expected to last five days"
+      },
+      "updates": [
+        {
+          "date": "2025-10-08",
+          "note": "Charged with first-degree intentional homicide."
+        },
+        {
+          "date": "2026-01-02",
+          "note": "Pleaded not guilty."
+        },
+        {
+          "date": "2026-10-19",
+          "note": "Judge Suzanne O\u2019Neill lowered bail from $1 million to $75,000 cash."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/10/20/judge-lowers-bail-for-wausau-man-charged-with-killing-roommate-2/"
+        }
+      ],
+      "caseNo": "2025CF000943",
+      "countyNo": 37,
+      "caseType": "CF",
+      "caseTypeLabel": "Felony",
+      "isCriminal": true,
+      "status": "watching",
+      "stageLabel": "Pretrial",
+      "observed": [
+        {
+          "guid": "37-2025CF000943-Some(2026-10-23T16:33:34.184Z)",
+          "updated": "2026-10-23T16:33:34+00:00",
+          "officialCaption": "State of Wisconsin vs. Dustin Stinson",
+          "observedAt": "2026-11-19T17:31:16.681705+00:00"
+        }
+      ],
+      "officialCaption": "State of Wisconsin vs. Dustin Stinson",
+      "firstTrackedAt": "2026-11-19T17:31:16.681705+00:00"
+    },
+    {
+      "id": "marathon-2026cf000431",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000431&countyNo=37&index=0&mode=details",
+      "county": "Marathon",
+      "headline": "Birnamwood man charged with homicide in brother\u2019s stabbing death",
+      "summary": "Timothy J. Anker, 58, of Birnamwood, is charged with first-degree intentional homicide in the April 26 death of his brother, Thomas J. Anker, 57, at the home they shared in the town of Norrie. He told investigators his brother lunged onto a knife; prosecutors say forensic evidence undermines that account. He remains in custody on a $500,000 cash bond.",
+      "tags": [
+        "Violent crime"
+      ],
+      "stage": "pretrial",
+      "updates": [
+        {
+          "date": "2026-06-04",
+          "note": "Charged with first-degree intentional homicide with a domestic abuse modifier."
+        },
+        {
+          "date": "2026-06-05",
+          "note": "At his initial appearance, Judge Suzanne O\u2019Neill set bond at $500,000 cash."
+        },
+        {
+          "date": "2026-08-03",
+          "note": "Judge Rick Cveykus denied a defense request to reduce the bond."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/10/27/preliminary-hearing-pushed-to-nov-18-for-birnamwood-man-accused-of-killing-brother/"
+        },
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/06/16/marathon-county-man-charged-in-brothers-stabbing-death-court-documents-reveal-disputed-timeline-hidden-knife/"
+        }
+      ],
+      "caseNo": "2026CF000431",
+      "countyNo": 37,
+      "caseType": "CF",
+      "caseTypeLabel": "Felony",
+      "isCriminal": true,
+      "status": "watching",
+      "stageLabel": "Pretrial",
+      "observed": [
+        {
+          "guid": "37-2026CF000431-Some(2026-11-18T15:37:52.152Z)",
+          "updated": "2026-11-18T15:37:52+00:00",
+          "officialCaption": "State of Wisconsin vs. Timothy J. Anker",
+          "observedAt": "2026-11-19T17:31:16.681705+00:00"
+        }
+      ],
+      "officialCaption": "State of Wisconsin vs. Timothy J. Anker",
+      "firstTrackedAt": "2026-11-19T17:31:16.681705+00:00"
+    },
+    {
+      "id": "marathon-2026cf000604",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000604&countyNo=37&mode=details",
+      "county": "Marathon",
+      "headline": "Weston man charged with attempted homicide in Wausau bar shooting",
+      "summary": "Jacob Allen Fong Lo, 23, of Weston, is charged with attempted first-degree intentional homicide in an Aug. 2 shooting outside a Wausau bar. A 43-year-old man was struck in the back; police said the wound was not life-threatening. Lo remains in custody on a $250,000 cash bond. A separate case charges him in an Aug. 5 police pursuit.",
+      "tags": [
+        "Violent crime"
+      ],
+      "stage": "pretrial",
+      "nextHearing": {
+        "date": "2026-12-14",
+        "note": "Jury trial, four days, Judge Gregory Strasser"
+      },
+      "updates": [
+        {
+          "date": "2026-08-05",
+          "note": "Charged with first-degree recklessly endangering safety in the Aug. 2 shooting outside M&R Station."
+        },
+        {
+          "date": "2026-08-07",
+          "note": "Prosecutors amended the complaint to attempted first-degree intentional homicide."
+        },
+        {
+          "date": "2026-08-17",
+          "note": "After a preliminary hearing, the court found probable cause and bound Lo over for trial."
+        },
+        {
+          "date": "2026-09-21",
+          "note": "Judge Gregory Strasser appointed attorney Jay Kronenwetter to represent Lo."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/11/02/weston-man-accused-in-wausau-bar-shooting-120-mph-chase-faces-attempted-homicide-trial-dec-14/"
+        }
+      ],
+      "caseNo": "2026CF000604",
+      "countyNo": 37,
+      "caseType": "CF",
+      "caseTypeLabel": "Felony",
+      "isCriminal": true,
+      "status": "watching",
+      "stageLabel": "Pretrial",
+      "observed": [
+        {
+          "guid": "37-2026CF000604-Some(2026-11-18T14:31:50.167Z)",
+          "updated": "2026-11-18T14:31:50+00:00",
+          "officialCaption": "State of Wisconsin vs. Jacob Allen Fong Lo",
+          "observedAt": "2026-11-19T17:31:16.681705+00:00"
+        }
+      ],
+      "officialCaption": "State of Wisconsin vs. Jacob Allen Fong Lo",
+      "firstTrackedAt": "2026-11-19T17:31:16.681705+00:00"
     }
   ]
 }

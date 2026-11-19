@@ -11,4 +11,44 @@ SUMMARY:Hearing: Wausau man pleads not guilty to bail jumping\, disorderly condu
 DESCRIPTION:Judicial pretrial\, Branch 3\, 10:40 a.m.\, Judge LaMont Jacobson (Case 2026CM000231\, Marathon County)
 URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#wausau-2026cm000231
 END:VEVENT
+BEGIN:VEVENT
+UID:2025CM000682-20270416@wpr-court-tracker
+DTSTART;VALUE=DATE:20270416
+DTEND;VALUE=DATE:20270417
+SUMMARY:Hearing: Battery charge dismissed\, disorderly conduct sentence deferred for Marathon County supervisor
+DESCRIPTION:DEOJ Review (Case 2025CM000682\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2025cm000682
+END:VEVENT
+BEGIN:VEVENT
+UID:2023CF000217-20270315@wpr-court-tracker
+DTSTART;VALUE=DATE:20270315
+DTEND;VALUE=DATE:20270316
+SUMMARY:Hearing: Wausau man convicted of sexually assaulting child awaits sentencing
+DESCRIPTION:Sentencing\, 9 a.m.\, Judge Suzanne O’Neill (Case 2023CF000217\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2023cf000217
+END:VEVENT
+BEGIN:VEVENT
+UID:2025CF001134-20270107@wpr-court-tracker
+DTSTART;VALUE=DATE:20270107
+DTEND;VALUE=DATE:20270108
+SUMMARY:Hearing: Weston ATM jackpotting suspect set for plea hearing in January
+DESCRIPTION:Plea and sentencing hearing\, Judge Suzanne O’Neill (Case 2025CF001134\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2025cf001134
+END:VEVENT
+BEGIN:VEVENT
+UID:2025CF000943-20270125@wpr-court-tracker
+DTSTART;VALUE=DATE:20270125
+DTEND;VALUE=DATE:20270126
+SUMMARY:Hearing: Wausau man charged with killing roommate faces January trial
+DESCRIPTION:Jury trial\, expected to last five days (Case 2025CF000943\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2025cf000943
+END:VEVENT
+BEGIN:VEVENT
+UID:2026CF000604-20261214@wpr-court-tracker
+DTSTART;VALUE=DATE:20261214
+DTEND;VALUE=DATE:20261215
+SUMMARY:Hearing: Weston man charged with attempted homicide in Wausau bar shooting
+DESCRIPTION:Jury trial\, four days\, Judge Gregory Strasser (Case 2026CF000604\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2026cf000604
+END:VEVENT
 END:VCALENDAR

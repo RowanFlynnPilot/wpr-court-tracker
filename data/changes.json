@@ -1,4 +1,53 @@
 {
-  "generatedAt": "2026-11-17T01:17:38.734433+00:00",
-  "changed": []
+  "generatedAt": "2026-11-19T17:31:16.681705+00:00",
+  "changed": [
+    {
+      "id": "marathon-2023cf000217",
+      "headline": "Wausau man convicted of sexually assaulting child awaits sentencing",
+      "caseNo": "2023CF000217",
+      "county": "Marathon",
+      "updated": "2026-11-10T23:03:55+00:00",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2023CF000217&countyNo=37&mode=details"
+    },
+    {
+      "id": "marathon-2025cf001134",
+      "headline": "Weston ATM jackpotting suspect set for plea hearing in January",
+      "caseNo": "2025CF001134",
+      "county": "Marathon",
+      "updated": "2026-10-15T19:12:25+00:00",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CF001134&countyNo=37&mode=details"
+    },
+    {
+      "id": "marathon-2025cf001035",
+      "headline": "Former Kronenwetter trustee faces 43 counts in Schofield dog neglect case",
+      "caseNo": "2025CF001035",
+      "county": "Marathon",
+      "updated": "2026-11-18T15:08:51+00:00",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CF001035&countyNo=37&index=0&mode=details"
+    },
+    {
+      "id": "marathon-2025cf000943",
+      "headline": "Wausau man charged with killing roommate faces January trial",
+      "caseNo": "2025CF000943",
+      "county": "Marathon",
+      "updated": "2026-10-23T16:33:34+00:00",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CF000943&countyNo=37&mode=details"
+    },
+    {
+      "id": "marathon-2026cf000431",
+      "headline": "Birnamwood man charged with homicide in brother\u2019s stabbing death",
+      "caseNo": "2026CF000431",
+      "county": "Marathon",
+      "updated": "2026-11-18T15:37:52+00:00",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000431&countyNo=37&index=0&mode=details"
+    },
+    {
+      "id": "marathon-2026cf000604",
+      "headline": "Weston man charged with attempted homicide in Wausau bar shooting",
+      "caseNo": "2026CF000604",
+      "county": "Marathon",
+      "updated": "2026-11-18T14:31:50+00:00",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000604&countyNo=37&mode=details"
+    }
+  ]
 }

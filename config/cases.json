@@ -204,6 +204,45 @@
           "url": "https://wausaupilotandreview.com/2026/06/16/marathon-county-man-charged-in-brothers-stabbing-death-court-documents-reveal-disputed-timeline-hidden-knife/"
         }
       ]
+    },
+    {
+      "id": "marathon-2026cf000604",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000604&countyNo=37&mode=details",
+      "county": "Marathon",
+      "headline": "Weston man charged with attempted homicide in Wausau bar shooting",
+      "summary": "Jacob Allen Fong Lo, 23, of Weston, is charged with attempted first-degree intentional homicide in an Aug. 2 shooting outside a Wausau bar. A 43-year-old man was struck in the back; police said the wound was not life-threatening. Lo remains in custody on a $250,000 cash bond. A separate case charges him in an Aug. 5 police pursuit.",
+      "tags": [
+        "Violent crime"
+      ],
+      "stage": "pretrial",
+      "nextHearing": {
+        "date": "2026-12-14",
+        "note": "Jury trial, four days, Judge Gregory Strasser"
+      },
+      "updates": [
+        {
+          "date": "2026-08-05",
+          "note": "Charged with first-degree recklessly endangering safety in the Aug. 2 shooting outside M&R Station."
+        },
+        {
+          "date": "2026-08-07",
+          "note": "Prosecutors amended the complaint to attempted first-degree intentional homicide."
+        },
+        {
+          "date": "2026-08-17",
+          "note": "After a preliminary hearing, the court found probable cause and bound Lo over for trial."
+        },
+        {
+          "date": "2026-09-21",
+          "note": "Judge Gregory Strasser appointed attorney Jay Kronenwetter to represent Lo."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/11/02/weston-man-accused-in-wausau-bar-shooting-120-mph-chase-faces-attempted-homicide-trial-dec-14/"
+        }
+      ]
     }
   ]
 }

@@ -54,6 +54,13 @@ const meta = { capturedAt: new Date().toISOString() };
 
 {
   const page = await open('', 1280, '.tl');
+  // Lead with the case that has the nearest hearing, so the opened file
+  // shows a hearing bar. The sort control only exists at 3+ real cases.
+  const sort = page.locator('label.sort select');
+  if (await sort.count()) {
+    await sort.selectOption('hearing');
+    await page.waitForTimeout(1500); // timeline marks draw in again
+  }
   meta.tracker = { ...(await size(page)), ...(await rects(page, { glance: '.glance', card: '.folder:nth-of-type(1)', tl: '.folder:nth-of-type(1) .tl', statline: '.statline' })) };
   await page.screenshot({ path: `${OUT}tracker.png`, fullPage: true });
 

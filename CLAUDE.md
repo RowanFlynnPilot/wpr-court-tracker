@@ -188,9 +188,10 @@ pattern as wpr-brewers-tracker, never committed).
   steps in video/README.md). Sources are committed; shots, the built
   page and MP4s are gitignored. It is a snapshot: re-capture and
   re-render whenever the case files change. Current cut: captured
-  2026-11-18, after the card polish, with the case files still as
-  they stood in October (no stage labels, no upcoming hearing);
-  earlier cuts are kept in video/v1 and video/v2. video/private/
+  2026-11-19 with eight cases on the watchlist (six added that
+  morning). capture.mjs sorts by next hearing first, so the opened
+  file is the one with the nearest hearing and shows a hearing bar;
+  earlier cuts are kept in video/v1, v2 and v3. video/private/
   (gitignored) holds a local-only extended cut: its build script
   transforms walkthrough.src.html by exact string replacement and
   throws if an anchor is missing, so re-run it after editing the

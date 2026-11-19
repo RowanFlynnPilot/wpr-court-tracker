@@ -128,6 +128,10 @@
         "Government"
       ],
       "stage": "pretrial",
+      "nextHearing": {
+        "date": "2027-02-02",
+        "note": "Motion hearing"
+      },
       "links": [
         {
           "label": "WPR coverage",

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T17:43:06.264446+00:00",
+  "generatedAt": "2026-11-19T18:46:08.642008+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
@@ -156,7 +156,7 @@
       "stage": "deferred",
       "nextHearing": {
         "date": "2027-04-16",
-        "note": "DEOJ Review"
+        "note": "Deferred entry of judgment review"
       },
       "updates": [
         {
@@ -165,7 +165,7 @@
         },
         {
           "date": "2026-04-16",
-          "note": "DEOJ approved"
+          "note": "Deferred entry of judgment approved."
         }
       ],
       "links": [
@@ -334,8 +334,8 @@
       ],
       "stage": "pretrial",
       "nextHearing": {
-        "date": "2027-01-25",
-        "note": "Jury trial, expected to last five days"
+        "date": "2027-01-05",
+        "note": "Motion hearing. A jury trial is scheduled to begin Jan. 25."
       },
       "updates": [
         {

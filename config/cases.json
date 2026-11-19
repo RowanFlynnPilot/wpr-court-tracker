@@ -37,10 +37,19 @@
         "Public safety",
         "Government"
       ],
+      "stage": "deferred",
+      "nextHearing": {
+        "date": "2027-04-16",
+        "note": "DEOJ Review"
+      },
       "updates": [
         {
           "date": "2025-08-27",
           "note": "Case filed in circuit court."
+        },
+        {
+          "date": "2026-04-16",
+          "note": "DEOJ approved"
         }
       ],
       "links": [

@@ -58,6 +58,33 @@
           "url": "https://wausaupilotandreview.com/2026/06/21/marathon-county-board-to-consider-censuring-supervisor-charged-in-domestic-abuse-case/"
         }
       ]
+    },
+    {
+      "id": "marathon-2023cf000217",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2023CF000217&countyNo=37&mode=details",
+      "county": "Marathon",
+      "headline": "Wausau man convicted of sexually assaulting child awaits sentencing",
+      "summary": "Sandro Gerena-Vazquez, 53, of Wausau, was convicted by a Marathon County jury Sept. 24 of first-degree sexual assault of a child and faces up to 60 years in prison. Wausau Pilot & Review does not identify victims of sexual assault.",
+      "tags": [
+        "Child safety"
+      ],
+      "stage": "sentencing",
+      "nextHearing": {
+        "date": "2027-03-15",
+        "note": "Sentencing, 9 a.m., Judge Suzanne O’Neill"
+      },
+      "updates": [
+        {
+          "date": "2026-09-24",
+          "note": "A jury returned a guilty verdict after a three-day trial. Judge Suzanne O’Neill revoked bond and ordered a presentence investigation."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/10/01/wausau-man-convicted-of-sexually-assaulting-child-faces-up-to-60-years-in-prison/"
+        }
+      ]
     }
   ]
 }

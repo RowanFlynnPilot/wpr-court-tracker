@@ -92,7 +92,7 @@
 
       <p class="statline about-nav">
         <span><a href="./">Back to the tracker</a></span>
-        <span>Updated <span class="mono">Sep 2026</span></span>
+        <span>Updated <span class="mono">Nov 2026</span></span>
         <span><a href="https://github.com/RowanFlynnPilot/wpr-court-tracker" target="_blank" rel="noreferrer">Source code</a></span>
       </p>
 
@@ -130,7 +130,7 @@
           <li class="court"><b>Red:</b> the official court record changed on this date. The entry links to the docket on WCCA. The software wrote it.</li>
           <li><b>Teal:</b> what happened, in plain English. A reporter wrote it.</li>
         </ul>
-        <p>Hearing dates and case summaries are editorial work, typed by reporters from the record. The software keeps the newsroom honest about that division of labor: when a hearing date passes, or the record moves, and no reporter&rsquo;s note follows, it flags the file for follow-up until one does.</p>
+        <p>Hearing dates, case summaries and the one-word label showing where a case stands are editorial work, entered by reporters from the record. The software keeps the newsroom honest about that division of labor: when a hearing date passes, or the record moves, and no reporter&rsquo;s note follows, it flags the file for follow-up until one does.</p>
       </section>
 
       <section>
@@ -141,7 +141,7 @@
 
       <section>
         <h2>Reliability and transparency</h2>
-        <p>The record is checked about every two hours on weekdays, between 8 a.m. and 6 p.m. Central. The checks run on GitHub&rsquo;s free scheduler, which sometimes starts them late; the count below is what actually completed. When the court system is slow to respond &mdash; which it sometimes is for automated checks &mdash; the check retries on a fresh machine and the tracker keeps serving its last good data, with the &ldquo;checked&rdquo; time shown honestly on the page.</p>
+        <p>The record is checked about every two hours on weekdays, between 8 a.m. and 6 p.m. Central. The checks run on GitHub&rsquo;s free scheduler, which starts many of them late or skips them, so a backup trigger fills the gaps; the count below is what actually completed. When the court system is slow to respond &mdash; which it sometimes is for automated checks &mdash; the check retries on a fresh machine and the tracker keeps serving its last good data, with the &ldquo;checked&rdquo; time shown honestly on the page.</p>
         <div class="record" role="list" aria-label="Service record">
           <div role="listitem"><b data-stat="recordChangesLogged">&mdash;</b><span>Court-record changes logged</span></div>
           <div role="listitem"><b data-stat="medianDetection">&mdash;</b><span>Median time to catch a change</span></div>

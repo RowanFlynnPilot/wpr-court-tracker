@@ -134,6 +134,41 @@
           "url": "https://wausaupilotandreview.com/2026/09/29/former-worker-in-schofield-dog-neglect-case-set-for-plea-hearing/"
         }
       ]
+    },
+    {
+      "id": "marathon-2025cf000943",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CF000943&countyNo=37&mode=details",
+      "county": "Marathon",
+      "headline": "Wausau man charged with killing roommate faces January trial",
+      "summary": "Dustin Stinson, 35, of Wausau, is charged with first-degree intentional homicide in the Sept. 14, 2025, shooting death of his roommate, Jacob Socha, 31. He pleaded not guilty Jan. 2. A judge lowered his bail from $1 million to $75,000 cash on Oct. 19.",
+      "tags": [
+        "Violent crime"
+      ],
+      "stage": "pretrial",
+      "nextHearing": {
+        "date": "2027-01-25",
+        "note": "Jury trial, expected to last five days"
+      },
+      "updates": [
+        {
+          "date": "2025-10-08",
+          "note": "Charged with first-degree intentional homicide."
+        },
+        {
+          "date": "2026-01-02",
+          "note": "Pleaded not guilty."
+        },
+        {
+          "date": "2026-10-19",
+          "note": "Judge Suzanne O’Neill lowered bail from $1 million to $75,000 cash."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/10/20/judge-lowers-bail-for-wausau-man-charged-with-killing-roommate-2/"
+        }
+      ]
     }
   ]
 }

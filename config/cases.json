@@ -184,6 +184,10 @@
         "Violent crime"
       ],
       "stage": "pretrial",
+      "nextHearing": {
+        "date": "2026-12-08",
+        "note": "Arraignment and bond hearing"
+      },
       "updates": [
         {
           "date": "2026-06-04",

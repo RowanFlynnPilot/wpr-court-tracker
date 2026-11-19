@@ -85,6 +85,37 @@
           "url": "https://wausaupilotandreview.com/2026/10/01/wausau-man-convicted-of-sexually-assaulting-child-faces-up-to-60-years-in-prison/"
         }
       ]
+    },
+    {
+      "id": "marathon-2025cf001134",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2025CF001134&countyNo=37&mode=details",
+      "county": "Marathon",
+      "headline": "Weston ATM jackpotting suspect set for plea hearing in January",
+      "summary": "Enhnort Leonardo Araujo Valero, 28, is accused of breaching a Weston credit union ATM in December 2025. He faces two other cases in Marathon County. A single hearing on Jan. 7 and a $25,000 cash bond cover all three.",
+      "tags": [
+        "Financial crime"
+      ],
+      "stage": "pretrial",
+      "nextHearing": {
+        "date": "2027-01-07",
+        "note": "Plea and sentencing hearing, Judge Suzanne O’Neill"
+      },
+      "updates": [
+        {
+          "date": "2026-06-03",
+          "note": "Judge Suzanne O’Neill set a $25,000 cash bond covering his three Marathon County cases."
+        },
+        {
+          "date": "2026-08-12",
+          "note": "Pretrial conference held."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/10/23/weston-atm-jackpotting-suspect-faces-charges-in-two-counties-plea-hearing-set-for-january/"
+        }
+      ]
     }
   ]
 }

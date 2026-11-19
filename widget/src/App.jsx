@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import CaseFile from './CaseFile.jsx';
 import RequestForm from './RequestForm.jsx';
+import CaseList from './CaseList.jsx';
 import { GLOSSARY } from './glossary.js';
 import badge from './assets/wpr-badge.png';
 
@@ -39,6 +40,32 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [activeStage, setActiveStage] = useState('');
   const [sort, setSort] = useState('activity');
+  // Cards are the default; the list view is a per-reader preference.
+  const [view, setViewState] = useState(() => {
+    if (window.location.hash.length > 1) return 'cards'; // a link to one case always shows its card
+    try {
+      return localStorage.getItem('wpr-tracker-view') === 'list' ? 'list' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+  const setView = (v) => {
+    setViewState(v);
+    try {
+      localStorage.setItem('wpr-tracker-view', v);
+    } catch {
+      /* the preference just won't stick */
+    }
+  };
+  // A case picked from the list (or the docket strip while in list view)
+  // opens once the cards are back on the page.
+  const [pendingOpen, setPendingOpen] = useState(null);
+  useEffect(() => {
+    if (!pendingOpen || view !== 'cards') return;
+    window.dispatchEvent(new CustomEvent('wpr-open-case', { detail: pendingOpen }));
+    document.getElementById(pendingOpen)?.scrollIntoView({ block: 'start' });
+    setPendingOpen(null);
+  }, [pendingOpen, view]);
 
   // Deep link: /#case-id opens that folder and scrolls to it.
   const focusId = useMemo(
@@ -149,7 +176,7 @@ export default function App() {
           datePartsToMs(c.nextHearing.date) >= today
       )
       .sort((a, b) => datePartsToMs(a.nextHearing.date) - datePartsToMs(b.nextHearing.date))
-      .slice(0, 2);
+      .slice(0, 4);
   }, [feed]);
 
   const masthead = (
@@ -226,6 +253,11 @@ export default function App() {
   ).length;
   // The sort control earns its space once there is a list to sort.
   const realCount = feed.cases.filter((c) => !c.placeholder).length;
+  const showList = view === 'list' && realCount >= 3;
+  const pickCase = (id) => {
+    setView('cards');
+    setPendingOpen(id);
+  };
   const updatedLabel = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -344,21 +376,30 @@ export default function App() {
       )}
 
       <nav className="filters" aria-label="Filter cases by topic">
-        {tags.map((t) => (
-          <button
-            key={t}
-            className={`chip${t === activeTag ? ' chip-on' : ''}`}
-            aria-pressed={t === activeTag}
-            onClick={() => setActiveTag(t)}
-          >
-            {t}
-          </button>
-        ))}
+        {/* One row that scrolls sideways on a phone instead of wrapping. */}
+        <span className="chip-row">
+          {tags.map((t) => (
+            <button
+              key={t}
+              className={`chip${t === activeTag ? ' chip-on' : ''}`}
+              aria-pressed={t === activeTag}
+              onClick={() => setActiveTag(t)}
+            >
+              {t}
+            </button>
+          ))}
+        </span>
         <span className="filters-tools">
           {realCount >= 3 && (
+            <span className="viewtoggle" role="group" aria-label="Show cases as">
+              <button type="button" aria-pressed={!showList} onClick={() => setView('cards')}>Cards</button>
+              <button type="button" aria-pressed={showList} onClick={() => setView('list')}>List</button>
+            </span>
+          )}
+          {realCount >= 3 && (
             <label className="sort">
-              Sort
-              <select value={sort} onChange={(e) => setSort(e.target.value)}>
+              <span className="sort-word">Sort</span>
+              <select aria-label="Sort cases" value={sort} onChange={(e) => setSort(e.target.value)}>
                 <option value="activity">Latest activity</option>
                 <option value="hearing">Next hearing</option>
                 <option value="az">A&ndash;Z</option>
@@ -384,11 +425,15 @@ export default function App() {
               key={c.id}
               href={`#${c.id}`}
               className="docket-item"
-              onClick={() =>
-                window.dispatchEvent(
-                  new CustomEvent('wpr-open-case', { detail: c.id })
-                )
-              }
+              title={c.headline}
+              onClick={(e) => {
+                if (showList) {
+                  e.preventDefault();
+                  pickCase(c.id);
+                } else {
+                  window.dispatchEvent(new CustomEvent('wpr-open-case', { detail: c.id }));
+                }
+              }}
             >
               <span className="mono docket-date">
                 {docketFmt.format(datePartsToMs(c.nextHearing.date))}
@@ -403,18 +448,22 @@ export default function App() {
         <p className="empty">No tracked cases match. Clear the search or pick another topic or stage &mdash; or ask us to track a case below.</p>
       ) : (
         <>
-          <section className="stack" aria-label="Tracked cases">
-            {watching.map((c) => (
-              <CaseFile
-                key={c.id}
-                c={c}
-                generatedMs={generatedMs}
-                presumptionNote={feed.presumptionNote}
-                defaultOpen={c.id === focusId}
-                isNew={hasNewActivity(c)}
-              />
-            ))}
-          </section>
+          {showList ? (
+            <CaseList cases={watching} isNew={hasNewActivity} onPick={pickCase} />
+          ) : (
+            <section className="stack" aria-label="Tracked cases">
+              {watching.map((c) => (
+                <CaseFile
+                  key={c.id}
+                  c={c}
+                  generatedMs={generatedMs}
+                  presumptionNote={feed.presumptionNote}
+                  defaultOpen={c.id === focusId}
+                  isNew={hasNewActivity(c)}
+                />
+              ))}
+            </section>
+          )}
 
           {closed.length > 0 && (
             <details

@@ -243,6 +243,20 @@ pattern as wpr-brewers-tracker, never committed).
   cases. Loading shows a skeleton of the real frame.
   `python pipeline/fetch.py` takes NO flags: any invocation, even
   with --help, runs a live check.
+  TEN-CASE PASS (2026-11-18, eve of the funder demo): tested against
+  a mocked ten-case feed, because two cases hid every scaling
+  problem. Phone header compressed (inline tiles, one status line,
+  chip rows scroll sideways via .chip-row) so the first case starts
+  ~690 px down, not ~940. Closed cards clamp the summary to three
+  lines (.stack .folder:not(.folder-open)); the file gets
+  .folder-open when open. Docket strip shows up to four hearings in
+  a two-column grid (three on phones). Phone ledger stacks each date
+  above its note. CaseList.jsx is a compact list view behind a
+  Cards/List switch that appears at 3+ real cases; cards stay the
+  default, a #case link always opens cards, and picking a row hands
+  off through pendingOpen + the wpr-open-case event. When changing
+  layout, re-run a many-case mock (route feed.json in Playwright) -
+  the live feed is too small to show problems.
   SCHEDULING (rewritten late 2026-11-16, supersedes the cron-string
   gate shipped hours earlier): GitHub delivers this repo's scheduled
   runs late and drops most of them - 5.3 checks/day in July, 1.6/day

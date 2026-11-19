@@ -146,7 +146,7 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
   const detailId = `detail-${c.id}`;
 
   return (
-    <article id={c.id} className={`folder${c.placeholder ? ' folder-sample' : ''}`}>
+    <article id={c.id} className={`folder${c.placeholder ? ' folder-sample' : ''}${open ? ' folder-open' : ''}`}>
       <div className="folder-tabrow">
         <span className="folder-tab">{c.caseTypeLabel}</span>
         {isNew && <span className="stamp">New activity</span>}

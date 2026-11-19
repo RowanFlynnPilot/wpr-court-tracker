@@ -169,6 +169,41 @@
           "url": "https://wausaupilotandreview.com/2026/10/20/judge-lowers-bail-for-wausau-man-charged-with-killing-roommate-2/"
         }
       ]
+    },
+    {
+      "id": "marathon-2026cf000431",
+      "wccaUrl": "https://wcca.wicourts.gov/caseDetail.html?caseNo=2026CF000431&countyNo=37&index=0&mode=details",
+      "county": "Marathon",
+      "headline": "Birnamwood man charged with homicide in brother’s stabbing death",
+      "summary": "Timothy J. Anker, 58, of Birnamwood, is charged with first-degree intentional homicide in the April 26 death of his brother, Thomas J. Anker, 57, at the home they shared in the town of Norrie. He told investigators his brother lunged onto a knife; prosecutors say forensic evidence undermines that account. He remains in custody on a $500,000 cash bond.",
+      "tags": [
+        "Violent crime"
+      ],
+      "stage": "pretrial",
+      "updates": [
+        {
+          "date": "2026-06-04",
+          "note": "Charged with first-degree intentional homicide with a domestic abuse modifier."
+        },
+        {
+          "date": "2026-06-05",
+          "note": "At his initial appearance, Judge Suzanne O’Neill set bond at $500,000 cash."
+        },
+        {
+          "date": "2026-08-03",
+          "note": "Judge Rick Cveykus denied a defense request to reduce the bond."
+        }
+      ],
+      "links": [
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/10/27/preliminary-hearing-pushed-to-nov-18-for-birnamwood-man-accused-of-killing-brother/"
+        },
+        {
+          "label": "WPR coverage",
+          "url": "https://wausaupilotandreview.com/2026/06/16/marathon-county-man-charged-in-brothers-stabbing-death-court-documents-reveal-disputed-timeline-hidden-knife/"
+        }
+      ]
     }
   ]
 }

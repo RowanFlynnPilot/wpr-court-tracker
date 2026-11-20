@@ -44,9 +44,14 @@ jobs:
     if: >-
       github.event_name == 'issues' &&
       contains(github.event.issue.labels.*.name, 'track-a-case')
+    # One lane PER ISSUE. This job only validates and comments, so two
+    # issues never need to wait on each other - and a shared lane let
+    # GitHub cancel all but one waiting check when several were filed at
+    # once (2026-11-19: seven filed together, two got a comment). A later
+    # edit of the same issue supersedes its earlier check.
     concurrency:
-      group: track-case-intake
-      cancel-in-progress: false
+      group: track-case-feedback-${{ github.event.issue.number }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -116,8 +121,11 @@ jobs:
 
   publish:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    # Its own lane, apart from the feedback checks: sharing one let a
+    # just-filed issue's check cancel a waiting publish run (2026-11-19).
+    # Sweeps still run one at a time; a spare one is a harmless no-op.
     concurrency:
-      group: track-case-intake
+      group: track-case-publish
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:

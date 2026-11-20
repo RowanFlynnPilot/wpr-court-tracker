@@ -276,10 +276,12 @@ export default function App() {
           <b>{watchedCount}</b>
           <span>Case{watchedCount === 1 ? '' : 's'} watched</span>
         </div>
-        {stats?.recordChangesLogged != null && (
+        {/* Changes caught while we were watching - not the first reading
+            taken when a case is added, which would inflate the count. */}
+        {stats?.recordChangesCaught != null && (
           <div role="listitem">
-            <b>{stats.recordChangesLogged}</b>
-            <span>Court-record changes logged</span>
+            <b>{stats.recordChangesCaught}</b>
+            <span>Court-record changes caught</span>
           </div>
         )}
         {stats?.medianDetectionMinutes != null && (

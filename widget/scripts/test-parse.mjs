@@ -11,6 +11,7 @@ import {
   parseWccaUrl,
   STAGES,
 } from '../src/parseCase.js';
+import { linkLabel, storyDate } from '../src/linkLabel.js';
 
 let failures = 0;
 function test(name, fn) {
@@ -188,6 +189,25 @@ test('stage: key in the entry, label in the issue form, mirror of the pipeline',
   // ...and the issue form must offer exactly these labels.
   const yml = readFileSync(new URL('../../.github/ISSUE_TEMPLATE/track-a-case.yml', import.meta.url), 'utf8');
   for (const label of Object.values(STAGES)) assert(yml.includes(`        - ${label}`), label);
+});
+
+test('story links: a generic label gets the date from the address', () => {
+  const wpr = 'https://wausaupilotandreview.com/2026/10/27/some-story/';
+  assert(linkLabel({ label: 'WPR coverage', url: wpr }, 2026) === 'WPR coverage, Oct. 27');
+  // Another year is spelled out; AP months; no leading zero on the day.
+  assert(linkLabel({ label: 'WPR coverage', url: wpr }, 2027) === 'WPR coverage, Oct. 27, 2026');
+  assert(
+    linkLabel({ label: 'WPR coverage', url: 'https://www.wausaupilotandreview.com/2026/06/05/x/' }, 2026) ===
+      'WPR coverage, June 5'
+  );
+  assert(linkLabel({ label: 'wpt.org', url: 'https://wpt.org/2025/09/01/x/' }, 2026) === 'wpt.org, Sept. 1, 2025');
+  // A label an editor dated or described by hand is left alone.
+  const hand = 'WPR, Oct. 27: hearing delayed';
+  assert(linkLabel({ label: hand, url: wpr }, 2026) === hand);
+  // No date in the address: nothing to add.
+  assert(linkLabel({ label: 'WPR coverage', url: 'https://wausaupilotandreview.com/the-care-ledger/' }, 2026) === 'WPR coverage');
+  assert(linkLabel({ label: 'Court filing', url: 'https://example.org/2026/13/45/x/' }, 2026) === 'Court filing');
+  assert(storyDate('not a url') === null && storyDate(undefined) === null);
 });
 
 process.exit(failures ? 1 : 0);

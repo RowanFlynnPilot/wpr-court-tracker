@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { datePartsToMs } from './App.jsx';
 import Timeline from './Timeline.jsx';
+import { linkLabel } from './linkLabel.js';
 
 const dateFmt = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -144,6 +145,8 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
   // A closed file says so whatever stage it last carried.
   const stageText = isClosed ? 'Closed' : c.stageLabel;
   const detailId = `detail-${c.id}`;
+  // Story links are dated against the year the feed was built.
+  const thisYear = new Date(generatedMs || Date.now()).getFullYear();
 
   return (
     <article id={c.id} className={`folder${c.placeholder ? ' folder-sample' : ''}${open ? ' folder-open' : ''}`}>
@@ -284,7 +287,7 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
           )}
           <p className="detail-links">
             {(c.links ?? []).map((l) => (
-              <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{l.label}</a>
+              <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{linkLabel(l, thisYear)}</a>
             ))}
             <a href={c.wccaUrl} target="_blank" rel="noreferrer">Full court record (WCCA)</a>
             <button className="linkbtn" aria-live="polite" onClick={copyLink}>

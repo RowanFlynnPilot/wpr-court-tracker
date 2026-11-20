@@ -265,6 +265,7 @@ jobs:
         run: |
           npm ci
           node scripts/test-parse.mjs
+          node ../tools/test-backstop.mjs
           npm run build
 
       # Same pattern as wpr-brewers-tracker: email clients strip iframes

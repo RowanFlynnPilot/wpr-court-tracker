@@ -89,9 +89,16 @@ Everything specific to Wausau Pilot & Review lives in the places below.
 | Project name and README | `widget/package.json`, `README.md` | Yours. The README's links and embed snippet all point at our site. |
 | License | `LICENSE` | Keep the existing copyright notice (MIT requires it) and add your own line |
 
-`tools/backstop-check.ps1` is an optional Windows helper that asks
-GitHub to run a check when its own scheduler has fallen behind. Skip it,
-or change the two addresses at the top.
+GitHub's free scheduler starts many scheduled runs late and skips
+others. Two optional helpers ask GitHub to run a check when it has fallen
+behind, and do nothing when it is keeping up. Use one, or neither:
+
+- `tools/backstop-apps-script.gs` runs on Google Apps Script, so it works
+  with every computer switched off. Setup takes about five minutes and is
+  written at the top of the file. Change the two addresses there.
+- `tools/backstop-check.ps1` does the same from a Windows scheduled task,
+  and works only while that machine is on. Change the two addresses at
+  the top.
 
 The time zone in the workflows is `America/Chicago`, which is right for
 all of Wisconsin.

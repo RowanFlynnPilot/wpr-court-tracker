@@ -35,6 +35,7 @@ SKIP = (
     "LICENSE",
     "tools/replication_check.py",
     "tools/backstop-check.ps1",
+    "tools/backstop-apps-script.gs",
     "config/cases.example.json",
     "widget/package-lock.json",
     "data/",

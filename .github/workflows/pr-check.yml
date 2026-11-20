@@ -47,4 +47,5 @@ jobs:
         run: |
           npm ci
           node scripts/test-parse.mjs
+          node ../tools/test-backstop.mjs
           npm run build

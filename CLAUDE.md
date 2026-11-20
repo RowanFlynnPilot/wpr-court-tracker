@@ -316,6 +316,16 @@ pattern as wpr-brewers-tracker, never committed).
   body from the live config entry and change only what is meant to
   change; dry-run it through issue_case.build_case + add_to_config,
   then `git checkout -- config/cases.json` before filing.
+  HOSTED BACKSTOP (written 2026-11-19, NOT yet installed as of that
+  night): tools/backstop-apps-script.gs is the laptop backstop's logic
+  for Google Apps Script, so checks no longer depend on one computer
+  being awake. Setup is in the file's header; it needs a fine-grained
+  GitHub token (this repo only, Actions read+write) stored as the
+  GITHUB_TOKEN script property - a person creates that, never an
+  assistant, and it never goes in the file. tools/test-backstop.mjs
+  tests its decide() and fails if its thresholds drift from
+  backstop-check.ps1. Once it has run clean for a day, unregister the
+  Windows task so the two do not double-dispatch.
   CCAP FACT (read from the Rev. 08/2022 agreement, Sec. IV.D): the
   $12,500 subscription carries case data only; "copies of documents
   must be obtained from the Clerk of Circuit Court." Whether filed

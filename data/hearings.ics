@@ -48,7 +48,15 @@ UID:2025CF000943-20270105@wpr-court-tracker
 DTSTART;VALUE=DATE:20270105
 DTEND;VALUE=DATE:20270106
 SUMMARY:Hearing: Wausau man charged with killing roommate faces January trial
-DESCRIPTION:Motion hearing. A jury trial is scheduled to begin Jan. 25. (Case 2025CF000943\, Marathon County)
+DESCRIPTION:Motion hearing (Case 2025CF000943\, Marathon County)
+URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2025cf000943
+END:VEVENT
+BEGIN:VEVENT
+UID:2025CF000943-20270125@wpr-court-tracker
+DTSTART;VALUE=DATE:20270125
+DTEND;VALUE=DATE:20270126
+SUMMARY:Hearing: Wausau man charged with killing roommate faces January trial
+DESCRIPTION:Jury trial\, expected to last five days (Case 2025CF000943\, Marathon County)
 URL:https://rowanflynnpilot.github.io/wpr-court-tracker/#marathon-2025cf000943
 END:VEVENT
 BEGIN:VEVENT

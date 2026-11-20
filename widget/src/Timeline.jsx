@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { datePartsToMs } from './App.jsx';
+import { caseHearings, datePartsToMs } from './App.jsx';
 
 // Case timeline strip: the file's whole history at a glance. Two lanes so
 // identity never rests on colour alone - court-record changes are red
@@ -30,12 +30,13 @@ export default function Timeline({ c, generatedMs }) {
     const notes = (c.updates ?? [])
       .map((u) => ({ ms: datePartsToMs(u.date), note: u.note }))
       .sort((a, b) => a.ms - b.ms);
-    const hearing = c.nextHearing ? datePartsToMs(c.nextHearing.date) : null;
+    // Every hearing on the file gets a diamond: the next one and any later.
+    const hearings = caseHearings(c).map((h) => ({ ms: datePartsToMs(h.date), note: h.note }));
     const points = [...court, ...notes.map((n) => n.ms)];
     if (points.length === 0) return null;
 
     let start = Math.min(...points);
-    let end = Math.max(generatedMs, hearing ?? 0, ...points);
+    let end = Math.max(generatedMs, ...hearings.map((h) => h.ms), ...points);
     const pad = Math.max((end - start) * 0.03, 3 * DAY);
     start -= pad;
     end += pad;
@@ -57,7 +58,7 @@ export default function Timeline({ c, generatedMs }) {
       .filter((_, i) => i % step === 0)
       .map((mo) => ({ mo, x: x(mo.getTime()) }))
       // Keep clear of the edges; the "today" label wins any collision.
-      .filter((l) => l.x > 4 && l.x < 96 && Math.abs(l.x - today) > 8)
+      .filter((l) => l.x > 4 && l.x < 96 && Math.abs(l.x - today) > 11)
       // Year on the first label shown and on each January.
       .map((l, i) => ({
         x: l.x,
@@ -66,7 +67,7 @@ export default function Timeline({ c, generatedMs }) {
           (i === 0 || l.mo.getMonth() === 0 ? ` ’${String(l.mo.getFullYear()).slice(2)}` : ''),
       }));
 
-    return { court, notes, hearing, x, labels, today };
+    return { court, notes, hearings, x, labels, today };
   }, [c, generatedMs]);
 
   if (!m) return null;
@@ -86,11 +87,15 @@ export default function Timeline({ c, generatedMs }) {
 
   const nCourt = m.court.length;
   const nNotes = m.notes.length;
-  const hearingUpcoming = m.hearing != null && m.hearing >= generatedMs - DAY;
+  const isUpcoming = (ms) => ms >= generatedMs - DAY;
+  const hearingTip = (h) =>
+    `Hearing · ${dayFmt.format(h.ms)}${h.note ? ` · ${clip(h.note, 80)}` : ''}`;
   const summary =
     `${nCourt} court-record change${nCourt === 1 ? '' : 's'} and ` +
     `${nNotes} newsroom note${nNotes === 1 ? '' : 's'}` +
-    (m.hearing != null ? `; hearing ${dayFmt.format(m.hearing)}` : '');
+    (m.hearings.length
+      ? `; hearing${m.hearings.length === 1 ? '' : 's'} ${m.hearings.map((h) => dayFmt.format(h.ms)).join(' and ')}`
+      : '');
 
   return (
     <figure className="tl" aria-label={`Case timeline: ${summary}. Details are in the activity list.`}>
@@ -138,10 +143,10 @@ export default function Timeline({ c, generatedMs }) {
                 />
               </svg>
             ))}
-            {m.hearing != null && (
-              <svg x={`${m.x(m.hearing)}%`} y="12" overflow="visible">
+            {m.hearings.map((h, i) => (
+              <svg key={`h-${h.ms}-${i}`} x={`${m.x(h.ms)}%`} y="12" overflow="visible">
                 <rect
-                  className={`tl-hearing${hearingUpcoming ? '' : ' tl-hearing-past'}`}
+                  className={`tl-hearing${isUpcoming(h.ms) ? '' : ' tl-hearing-past'}`}
                   x="-4.5"
                   y="-4.5"
                   width="9"
@@ -151,12 +156,12 @@ export default function Timeline({ c, generatedMs }) {
                 <circle
                   className="tl-hit-dot"
                   r="11"
-                  onMouseEnter={show('wpr', m.hearing, `Hearing · ${dayFmt.format(m.hearing)}${c.nextHearing.note ? ` · ${clip(c.nextHearing.note, 80)}` : ''}`)}
+                  onMouseEnter={show('wpr', h.ms, hearingTip(h))}
                   onMouseLeave={hide}
-                  onClick={show('wpr', m.hearing, `Hearing · ${dayFmt.format(m.hearing)}${c.nextHearing.note ? ` · ${clip(c.nextHearing.note, 80)}` : ''}`)}
+                  onClick={show('wpr', h.ms, hearingTip(h))}
                 />
               </svg>
-            )}
+            ))}
           </svg>
           {tipEl('wpr')}
         </span>
@@ -178,8 +183,10 @@ export default function Timeline({ c, generatedMs }) {
           <b>{nNotes}</b> newsroom note{nNotes === 1 ? '' : 's'}
           {c.firstTrackedAt && <> &middot; tracked since {dayFmt.format(Date.parse(c.firstTrackedAt))}</>}
         </span>
-        {m.hearing != null && (
-          <span className="tl-legend"><i className="tl-key tl-key-hearing" aria-hidden="true" />hearing date</span>
+        {m.hearings.length > 0 && (
+          <span className="tl-legend">
+            <i className="tl-key tl-key-hearing" aria-hidden="true" />hearing date{m.hearings.length === 1 ? '' : 's'}
+          </span>
         )}
       </figcaption>
     </figure>

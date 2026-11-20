@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { datePartsToMs } from './App.jsx';
+import { datePartsToMs, upcomingHearings } from './App.jsx';
 
 // Newsletter digest card. Rendered to PNG by scripts/render-digest.mjs at
 // deploy time (email clients strip iframes/JS), so keep it self-contained
@@ -57,9 +57,11 @@ export default function MiniDigest() {
 
   const today = new Date();
   const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  // One row per upcoming hearing: a file with two dates appears twice.
   const hearings = real
-    .filter((c) => c.status !== 'closed' && c.nextHearing && datePartsToMs(c.nextHearing.date) >= startOfToday)
-    .sort((a, b) => datePartsToMs(a.nextHearing.date) - datePartsToMs(b.nextHearing.date))
+    .filter((c) => c.status !== 'closed')
+    .flatMap((c) => upcomingHearings(c, startOfToday).map((h) => ({ c, h })))
+    .sort((a, b) => datePartsToMs(a.h.date) - datePartsToMs(b.h.date))
     .slice(0, MAX_ROWS);
 
   const watched = real.filter((c) => c.status !== 'closed').length;
@@ -123,14 +125,14 @@ export default function MiniDigest() {
         {hearings.length === 0 ? (
           <p className="digest-empty">None scheduled on tracked cases.</p>
         ) : (
-          hearings.map((c) => (
-            <div key={c.id} className="digest-row">
+          hearings.map(({ c, h }) => (
+            <div key={`${c.id}-${h.date}`} className="digest-row">
               <span className="digest-when digest-when-hearing">
-                {dayFmt.format(datePartsToMs(c.nextHearing.date))}
+                {dayFmt.format(datePartsToMs(h.date))}
               </span>
               <span className="digest-what">
                 <b>{c.headline}</b>
-                {c.nextHearing.note}
+                {h.note}
               </span>
             </div>
           ))

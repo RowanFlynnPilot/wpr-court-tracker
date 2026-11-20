@@ -435,6 +435,18 @@ body {
 }
 .hearing-date { font-weight: 700; color: var(--teal-deep); white-space: nowrap; }
 .hearing-what { min-width: 0; }
+/* Dates already set after the next one (a trial behind a motion hearing):
+   one quiet line each, under the next hearing and above the caveat. */
+.hearing-later { display: block; margin-top: 3px; font-size: 13px; color: var(--ink-soft); }
+.hearing-later-lab {
+  margin-right: 7px;
+  font: 600 10.5px var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-deep);
+}
+.hearing-later-date { margin-right: 7px; font-weight: 700; color: var(--teal-deep); white-space: nowrap; }
+.caselist-more { color: var(--muted-deep); font-size: 0.9em; white-space: nowrap; }
 .hearing-caveat { display: block; margin-top: 1px; font-size: 12px; color: var(--muted-deep); }
 /* No date on file: the same slot, quieter, so every open file answers
    "what's next" one way or the other. */

@@ -166,6 +166,22 @@ def load_config() -> dict:
         if "nextHearing" in case:
             validate_date(case["nextHearing"].get("date"),
                           f"{case['id']}: nextHearing.date")
+        # Hearings already on the calendar AFTER the next one (a trial set
+        # behind a motion hearing). The soonest always lives in nextHearing.
+        later = case.get("laterHearings", [])
+        if later and "nextHearing" not in case:
+            raise PipelineError(
+                f"{case['id']}: later hearings need a next hearing first - "
+                "put the soonest date in the next hearing field."
+            )
+        for i, hearing in enumerate(later):
+            validate_date(hearing.get("date"), f"{case['id']}: laterHearings[{i}].date")
+            if hearing["date"] < case["nextHearing"]["date"]:
+                raise PipelineError(
+                    f"{case['id']}: later hearing {hearing['date']} comes before "
+                    f"the next hearing ({case['nextHearing']['date']}). Put the "
+                    "soonest date in the next hearing field."
+                )
         for i, update in enumerate(case.get("updates", [])):
             validate_date(update.get("date"), f"{case['id']}: updates[{i}].date")
     return config
@@ -314,6 +330,12 @@ def build_tracker_rss(feed: dict) -> bytes:
     return ET.tostring(rss, encoding="utf-8", xml_declaration=True)
 
 
+def case_hearings(case: dict) -> list[dict]:
+    """Every hearing on a file, soonest first: the next one plus any later ones."""
+    hearings = [case["nextHearing"]] if case.get("nextHearing") else []
+    return sorted(hearings + list(case.get("laterHearings", [])), key=lambda h: h["date"])
+
+
 def _ics_escape(text: str) -> str:
     return (
         text.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,")
@@ -337,22 +359,24 @@ def build_hearings_ics(feed: dict) -> str:
     for case in feed["cases"]:
         if case.get("placeholder") or case.get("status") == "closed":
             continue
-        hearing = case.get("nextHearing")
-        if not hearing:
-            continue
-        start = hearing["date"].replace("-", "")
-        d = datetime.strptime(hearing["date"], "%Y-%m-%d")
-        end = datetime.fromordinal(d.toordinal() + 1).strftime("%Y%m%d")
-        lines += [
-            "BEGIN:VEVENT",
-            f"UID:{case['caseNo']}-{start}@wpr-court-tracker",
-            f"DTSTART;VALUE=DATE:{start}",
-            f"DTEND;VALUE=DATE:{end}",
-            f"SUMMARY:{_ics_escape('Hearing: ' + case['headline'])}",
-            f"DESCRIPTION:{_ics_escape(hearing.get('note', '') + ' (Case ' + case['caseNo'] + ', ' + case['county'] + ' County)')}",
-            f"URL:{SITE_URL}#{case['id']}",
-            "END:VEVENT",
-        ]
+        seen = set()
+        for hearing in case_hearings(case):
+            start = hearing["date"].replace("-", "")
+            if start in seen:  # one all-day event per case per day
+                continue
+            seen.add(start)
+            d = datetime.strptime(hearing["date"], "%Y-%m-%d")
+            end = datetime.fromordinal(d.toordinal() + 1).strftime("%Y%m%d")
+            lines += [
+                "BEGIN:VEVENT",
+                f"UID:{case['caseNo']}-{start}@wpr-court-tracker",
+                f"DTSTART;VALUE=DATE:{start}",
+                f"DTEND;VALUE=DATE:{end}",
+                f"SUMMARY:{_ics_escape('Hearing: ' + case['headline'])}",
+                f"DESCRIPTION:{_ics_escape(hearing.get('note', '') + ' (Case ' + case['caseNo'] + ', ' + case['county'] + ' County)')}",
+                f"URL:{SITE_URL}#{case['id']}",
+                "END:VEVENT",
+            ]
     lines.append("END:VCALENDAR")
     return "\r\n".join(lines) + "\r\n"
 

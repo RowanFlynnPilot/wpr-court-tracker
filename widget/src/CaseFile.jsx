@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { datePartsToMs } from './App.jsx';
+import { datePartsToMs, upcomingHearings } from './App.jsx';
 import Timeline from './Timeline.jsx';
 import { linkLabel } from './linkLabel.js';
 
@@ -106,39 +106,51 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
     </li>
   );
 
-  const hearingUpcoming =
-    c.nextHearing && datePartsToMs(c.nextHearing.date) >= startOfToday();
+  // The bar shows the soonest hearing still ahead; any others already on
+  // the calendar (a trial set behind a motion hearing) are listed under it.
+  const upcoming = useMemo(() => upcomingHearings(c, startOfToday()), [c]);
+  const nextUp = upcoming[0];
+  const laterUp = upcoming.slice(1);
 
-  // All-day .ics event as a data URI - no backend, works from the iframe.
+  // All-day .ics events as a data URI - no backend, works from the iframe.
   // All-day on purpose: hearing times live in free-text notes; a wrong
-  // parsed time on a reader's calendar is worse than no time.
+  // parsed time on a reader's calendar is worse than no time. One file
+  // carries every upcoming hearing on the case.
   const icsHref = useMemo(() => {
-    if (!c.nextHearing) return null;
-    const start = c.nextHearing.date.replaceAll('-', '');
-    const nextDay = new Date(datePartsToMs(c.nextHearing.date) + 86400000);
-    const end =
-      `${nextDay.getFullYear()}` +
-      `${String(nextDay.getMonth() + 1).padStart(2, '0')}` +
-      `${String(nextDay.getDate()).padStart(2, '0')}`;
+    if (!upcoming.length) return null;
     const esc = (s) => s.replace(/([,;\\])/g, '\\$1');
+    const seen = new Set();
+    const events = upcoming.flatMap((h) => {
+      const start = h.date.replaceAll('-', '');
+      if (seen.has(start)) return [];
+      seen.add(start);
+      const nextDay = new Date(datePartsToMs(h.date) + 86400000);
+      const end =
+        `${nextDay.getFullYear()}` +
+        `${String(nextDay.getMonth() + 1).padStart(2, '0')}` +
+        `${String(nextDay.getDate()).padStart(2, '0')}`;
+      return [
+        'BEGIN:VEVENT',
+        `UID:${c.caseNo}-${start}@wpr-court-tracker`,
+        `DTSTART;VALUE=DATE:${start}`,
+        `DTEND;VALUE=DATE:${end}`,
+        `SUMMARY:${esc(`Hearing: ${c.headline}`)}`,
+        `DESCRIPTION:${esc(`${h.note || ''} (Case ${c.caseNo}, ${c.county} County)`)}`,
+        `URL:${c.wccaUrl}`,
+        'END:VEVENT',
+      ];
+    });
     const lines = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
       'PRODID:-//Wausau Pilot & Review//Court Tracker//EN',
-      'BEGIN:VEVENT',
-      `UID:${c.caseNo}-${start}@wpr-court-tracker`,
-      `DTSTART;VALUE=DATE:${start}`,
-      `DTEND;VALUE=DATE:${end}`,
-      `SUMMARY:${esc(`Hearing: ${c.headline}`)}`,
-      `DESCRIPTION:${esc(`${c.nextHearing.note} (Case ${c.caseNo}, ${c.county} County)`)}`,
-      `URL:${c.wccaUrl}`,
-      'END:VEVENT',
+      ...events,
       'END:VCALENDAR',
     ];
     return (
       'data:text/calendar;charset=utf-8,' + encodeURIComponent(lines.join('\r\n'))
     );
-  }, [c]);
+  }, [c, upcoming]);
   const lastActivity = ledger.length ? ledger[0].ms : null;
   const isClosed = c.status === 'closed';
   // One word on where the case stands, chosen by a reporter (optional).
@@ -183,13 +195,20 @@ export default function CaseFile({ c, generatedMs, presumptionNote, isNew, defau
 
         <p className="case-summary">{c.summary}</p>
 
-        {hearingUpcoming ? (
+        {nextUp ? (
           <p className="hearing">
             <span className="hearing-date mono">
-              {dateFmt.format(datePartsToMs(c.nextHearing.date))}
+              {dateFmt.format(datePartsToMs(nextUp.date))}
             </span>
             <span className="hearing-what">
-              {c.nextHearing.note || 'Hearing scheduled'}
+              {nextUp.note || 'Hearing scheduled'}
+              {laterUp.map((h) => (
+                <span key={`${h.date}-${h.note}`} className="hearing-later">
+                  <span className="hearing-later-lab">Also set</span>
+                  <span className="mono hearing-later-date">{dateFmt.format(datePartsToMs(h.date))}</span>
+                  {h.note || 'Hearing scheduled'}
+                </span>
+              ))}
               <span className="hearing-caveat">
                 Court dates can change. Check{' '}
                 <a href={c.wccaUrl} target="_blank" rel="noreferrer">the docket</a>{' '}

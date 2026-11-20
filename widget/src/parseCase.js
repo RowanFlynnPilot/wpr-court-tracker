@@ -198,6 +198,19 @@ function cleanLinks(links) {
     .filter((l) => l.label && l.url);
 }
 
+/**
+ * Later hearings as the desk and the issue form take them: one per line,
+ * "YYYY-MM-DD | what it is". Lines that are not in that shape are dropped
+ * here; the intake gate is what rejects a malformed submission.
+ */
+export function parseLaterHearings(text) {
+  return (text || '')
+    .split('\n')
+    .map((line) => /^\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.+?)\s*$/.exec(line))
+    .filter(Boolean)
+    .map((m) => ({ date: m[1], note: m[2] }));
+}
+
 /** Build the config/cases.json entry (same shape the intake workflow makes). */
 export function buildCaseEntry(f) {
   const { caseNo } = parseWccaUrl(f.wccaUrl);
@@ -216,6 +229,8 @@ export function buildCaseEntry(f) {
   if (f.stage && f.stage in STAGES) entry.stage = f.stage;
   if (f.hearingDate) {
     entry.nextHearing = { date: f.hearingDate, note: f.hearingNote.trim() };
+    const later = parseLaterHearings(f.laterHearings);
+    if (later.length) entry.laterHearings = later;
   }
   const updates = (f.updates || []).filter((u) => u.date && u.note.trim());
   if (updates.length) {
@@ -242,6 +257,10 @@ export function buildIssueUrl(f) {
   if (f.hearingDate) {
     params.set('hearing_date', f.hearingDate);
     params.set('hearing_note', f.hearingNote.trim());
+    const later = parseLaterHearings(f.laterHearings)
+      .map((h) => `${h.date} | ${h.note}`)
+      .join('\n');
+    if (later) params.set('later_hearings', later);
   }
   const updates = (f.updates || [])
     .filter((u) => u.date && u.note.trim())

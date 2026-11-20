@@ -32,6 +32,18 @@ export function datePartsToMs(d) {
   return new Date(y, m - 1, day).getTime();
 }
 
+// Every hearing on a file, soonest first: the next one plus any later
+// ones already on the calendar (a trial set behind a motion hearing).
+export function caseHearings(c) {
+  return [c.nextHearing, ...(c.laterHearings ?? [])]
+    .filter((h) => h && h.date)
+    .sort((a, b) => datePartsToMs(a.date) - datePartsToMs(b.date));
+}
+
+export function upcomingHearings(c, todayMs) {
+  return caseHearings(c).filter((h) => datePartsToMs(h.date) >= todayMs);
+}
+
 export default function App() {
   const [feed, setFeed] = useState(null);
   const [error, setError] = useState(null);
@@ -121,8 +133,8 @@ export default function App() {
     const today = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
     // Upcoming hearings soonest first; files with none keep activity order.
     const hearingMs = (c) => {
-      const ms = c.nextHearing ? datePartsToMs(c.nextHearing.date) : 0;
-      return ms >= today ? ms : Infinity;
+      const next = upcomingHearings(c, today)[0];
+      return next ? datePartsToMs(next.date) : Infinity;
     };
     const order =
       sort === 'hearing'
@@ -167,15 +179,11 @@ export default function App() {
     if (!feed) return [];
     const n = new Date();
     const today = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+    // One entry per upcoming hearing, so a file with two dates shows twice.
     return feed.cases
-      .filter(
-        (c) =>
-          !c.placeholder &&
-          c.status !== 'closed' &&
-          c.nextHearing &&
-          datePartsToMs(c.nextHearing.date) >= today
-      )
-      .sort((a, b) => datePartsToMs(a.nextHearing.date) - datePartsToMs(b.nextHearing.date))
+      .filter((c) => !c.placeholder && c.status !== 'closed')
+      .flatMap((c) => upcomingHearings(c, today).map((h) => ({ c, h })))
+      .sort((a, b) => datePartsToMs(a.h.date) - datePartsToMs(b.h.date))
       .slice(0, 4);
   }, [feed]);
 
@@ -422,12 +430,12 @@ export default function App() {
       {docket.length > 0 && (
         <p className="docket">
           <span className="docket-label">Next on the docket</span>
-          {docket.map((c) => (
+          {docket.map(({ c, h }) => (
             <a
-              key={c.id}
+              key={`${c.id}-${h.date}`}
               href={`#${c.id}`}
               className="docket-item"
-              title={c.headline}
+              title={h.note ? `${c.headline} (${h.note})` : c.headline}
               onClick={(e) => {
                 if (showList) {
                   e.preventDefault();
@@ -438,7 +446,7 @@ export default function App() {
               }}
             >
               <span className="mono docket-date">
-                {docketFmt.format(datePartsToMs(c.nextHearing.date))}
+                {docketFmt.format(datePartsToMs(h.date))}
               </span>
               {c.headline}
             </a>

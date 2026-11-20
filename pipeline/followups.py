@@ -33,7 +33,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from fetch import FEED_PATH, SITE_URL, load_config  # noqa: E402
+from fetch import FEED_PATH, SITE_URL, case_hearings, load_config  # noqa: E402
 
 GRACE_DAYS = 2
 NUDGE_AFTER_DAYS = 7
@@ -47,10 +47,13 @@ def stale_hearings(cases: list[dict], today: str) -> list[dict]:
     for case in cases:
         if case.get("placeholder") or case.get("status") == "closed":
             continue
-        hearing = case.get("nextHearing")
-        if not hearing or hearing["date"] > cutoff:
+        # The most recent hearing that has passed, whether it was filed as
+        # the next hearing or as a later one. YYYY-MM-DD strings compare
+        # correctly as strings.
+        passed = [h for h in case_hearings(case) if h["date"] <= cutoff]
+        if not passed:
             continue
-        # YYYY-MM-DD strings compare correctly as strings.
+        hearing = passed[-1]
         if any(u["date"] >= hearing["date"] for u in case.get("updates", [])):
             continue
         stale.append(

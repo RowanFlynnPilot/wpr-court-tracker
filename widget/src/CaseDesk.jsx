@@ -10,6 +10,7 @@ import {
   buildIssueUrl,
   caseType,
   extractFromText,
+  parseLaterHearings,
   parseWccaUrl,
 } from './parseCase.js';
 
@@ -33,6 +34,7 @@ const EMPTY = {
   topics: '',
   hearingDate: '',
   hearingNote: '',
+  laterHearings: '',
   updates: [],
   links: [],
   status: 'watching',
@@ -123,6 +125,7 @@ export default function CaseDesk() {
       topics: (c.tags || []).join(', '),
       hearingDate: c.nextHearing?.date || '',
       hearingNote: c.nextHearing?.note || '',
+      laterHearings: (c.laterHearings || []).map((h) => `${h.date} | ${h.note}`).join('\n'),
       updates: (c.updates || []).map((u) => ({ ...u })),
       links: (c.links || []).map((l) => ({ ...l })),
       status: c.status === 'closed' ? 'closed' : 'watching',
@@ -170,6 +173,10 @@ export default function CaseDesk() {
   const n = new Date();
   const todayIso = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
   const hearingPast = f.hearingDate && f.hearingDate < todayIso;
+  // Later-hearing lines the parser will drop (not "date | what it is").
+  const laterBad =
+    f.laterHearings.split('\n').filter((line) => line.trim()).length -
+    parseLaterHearings(f.laterHearings).length;
 
   // Prefill only fields the editor hasn't already typed in.
   const applyParse = (text) => {
@@ -259,7 +266,10 @@ export default function CaseDesk() {
           summary: f.summary.trim(),
           tags: f.topics.split(',').map((t) => t.trim()).filter(Boolean),
           ...(f.hearingDate
-            ? { nextHearing: { date: f.hearingDate, note: f.hearingNote } }
+            ? {
+                nextHearing: { date: f.hearingDate, note: f.hearingNote },
+                laterHearings: parseLaterHearings(f.laterHearings),
+              }
             : {}),
           updates: f.updates.filter((u) => u.date && u.note.trim()),
           links: f.links.filter((l) => l.label.trim() && l.url.trim()),
@@ -484,6 +494,28 @@ next publish sweep, or right away if you run it yourself (step 3
             <p className="desk-warn">
               That hearing date is in the past &mdash; double-check it. (Past
               dates simply don&rsquo;t show on the card.)
+            </p>
+          )}
+          <label className="desk-label">
+            Later hearings (optional)
+            <textarea
+              rows={2}
+              value={f.laterHearings}
+              onChange={set('laterHearings')}
+              disabled={!f.hearingDate}
+              placeholder="2027-01-25 | Jury trial, expected to last five days"
+            />
+          </label>
+          <p className="desk-muted">
+            Dates already on the calendar after the next hearing, one per
+            line: date, a bar, then what it is.
+          </p>
+          {laterBad > 0 && (
+            <p className="desk-warn">
+              {laterBad === 1 ? 'One line' : `${laterBad} lines`} above
+              {laterBad === 1 ? ' is' : ' are'} not in the form
+              <span className="mono"> 2027-01-25 | Jury trial</span> and will
+              be left out.
             </p>
           )}
 

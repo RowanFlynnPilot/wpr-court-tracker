@@ -223,6 +223,87 @@ def test_issue_form_parses_to_case():
     assert "links" not in case  # "_No response_" means empty
 
 
+def test_later_hearings_from_form_to_config_calendar_and_followups():
+    """A file can carry dates already set behind the next hearing."""
+    import json
+    import shutil
+    import tempfile
+
+    import fetch
+    import issue_case
+    from fetch import case_hearings
+    from followups import stale_hearings
+
+    later = "\n### Later hearings (optional)\n\n2026-11-09 | Jury trial, three days\n2026-12-01 | Sentencing\n"
+    case = build_case(ISSUE_BODY + later)
+    assert case["nextHearing"]["date"] == "2026-10-01"
+    assert case["laterHearings"] == [
+        {"date": "2026-11-09", "note": "Jury trial, three days"},
+        {"date": "2026-12-01", "note": "Sentencing"},
+    ]
+    assert "laterHearings" not in build_case(ISSUE_BODY)
+    assert [h["date"] for h in case_hearings(case)] == ["2026-10-01", "2026-11-09", "2026-12-01"]
+
+    # The same shape the form requires for timeline lines.
+    try:
+        build_case(ISSUE_BODY + "\n### Later hearings (optional)\n\n2026-11-09 Jury trial\n")
+        raise AssertionError("a line without a bar must be rejected")
+    except PipelineError as e:
+        assert "Later hearings" in str(e)
+
+    with tempfile.TemporaryDirectory() as td:
+        cfg = Path(td) / "cases.json"
+        shutil.copy(ROOT / "config" / "cases.json", cfg)
+        saved = (fetch.CONFIG_PATH, issue_case.CONFIG_PATH, issue_case.OUT_PATH)
+        fetch.CONFIG_PATH = issue_case.CONFIG_PATH = cfg
+        issue_case.OUT_PATH = Path(td) / "new_case.json"
+        try:
+            before = cfg.read_text(encoding="utf-8")
+            issue_case.add_to_config(case)
+            stored = next(c for c in json.loads(cfg.read_text(encoding="utf-8"))["cases"]
+                          if c["id"] == case["id"])
+            assert stored["laterHearings"][0]["date"] == "2026-11-09"
+
+            # A later hearing dated BEFORE the next one, or with no next
+            # hearing at all, is refused and the config is left as it was.
+            for bad in (
+                {**case, "id": "x1", "wccaUrl": case["wccaUrl"].replace("000456", "000457"),
+                 "laterHearings": [{"date": "2026-09-01", "note": "Too early"}]},
+                {k: v for k, v in {**case, "id": "x2",
+                                   "wccaUrl": case["wccaUrl"].replace("000456", "000458")}.items()
+                 if k != "nextHearing"},
+                {**case, "id": "x3", "wccaUrl": case["wccaUrl"].replace("000456", "000459"),
+                 "laterHearings": [{"date": "soon", "note": "Not a date"}]},
+            ):
+                snapshot = cfg.read_text(encoding="utf-8")
+                try:
+                    issue_case.add_to_config(bad)
+                    raise AssertionError(f"{bad['id']} should have been refused")
+                except PipelineError:
+                    assert cfg.read_text(encoding="utf-8") == snapshot
+            assert before != cfg.read_text(encoding="utf-8")
+        finally:
+            fetch.CONFIG_PATH, issue_case.CONFIG_PATH, issue_case.OUT_PATH = saved
+
+    # Calendar: one all-day event per hearing.
+    feed_case = {**case, "caseNo": "2026CF000456", "status": "watching"}
+    ics = build_hearings_ics({"cases": [feed_case]})
+    assert ics.count("BEGIN:VEVENT") == 3
+    for day in ("20261001", "20261109", "20261201"):
+        assert f"UID:2026CF000456-{day}@wpr-court-tracker" in ics
+    assert "Jury trial\\, three days" in ics
+
+    # Follow-ups: the most recent PASSED hearing is the one owed a note,
+    # whichever field it was filed in.
+    base = {"id": "f1", "headline": "Case f1", "caseNo": "2026CF000456",
+            "nextHearing": case["nextHearing"], "laterHearings": case["laterHearings"]}
+    owed = stale_hearings([{**base, "updates": [{"date": "2026-10-02", "note": "n"}]}], "2026-11-12")
+    assert [(c["id"], c["date"]) for c in owed] == [("f1", "2026-11-09")]
+    assert stale_hearings([{**base, "updates": [{"date": "2026-11-10", "note": "n"}]}], "2026-11-12") == []
+    # Before the later date passes, a note after the first hearing settles it.
+    assert stale_hearings([{**base, "updates": [{"date": "2026-10-02", "note": "n"}]}], "2026-10-20") == []
+
+
 def test_stage_is_a_short_fixed_list():
     for key in STAGES:
         assert validate_stage(key, "t") == key

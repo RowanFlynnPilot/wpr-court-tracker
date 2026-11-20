@@ -289,6 +289,40 @@ pattern as wpr-brewers-tracker, never committed).
   median 90 min, slowest 4.5 h (NOT "all within two hours").
   Brand: tagline is "Where Locals Look First For News" per the
   wpr-brand skill; flag links home; footer carries 715-301-5539.
+- 2026-11-19 (demo day, then after): the watchlist went from two cases
+  to eight. Lessons kept in code:
+  LATER HEARINGS: optional `laterHearings` ([{date, note}]) for dates
+  already set behind the next hearing (a trial behind a motion
+  hearing). The soonest always lives in `nextHearing`; load_config
+  refuses later hearings with no next hearing or dated before it.
+  fetch.case_hearings() / App.jsx caseHearings() + upcomingHearings()
+  are the ONE way to read a file's hearings - card ("Also set" lines),
+  docket strip, list view, timeline diamonds, digest, hearings.ics and
+  followups all go through them. The form field is "Later hearings
+  (optional)" (id later_hearings), one `date | note` per line;
+  test-parse.mjs fails if desk, form and pipeline drift.
+  STORY LINK DATES: linkLabel.js appends the story's date, read from a
+  /YYYY/MM/DD/ address, to any link label with no digit in it ("WPR
+  coverage, Oct. 27"). A hand-written label with a date is untouched.
+  STATS TILE counts changes CAUGHT (recordChangesCaught), not logged:
+  logged includes the first reading taken when a case is added, so
+  adding six cases had raised it by six.
+  INTAKE LANES: track-case.yml feedback runs in a concurrency lane per
+  issue and publish in its own. They used to share one, so seven
+  issues filed together left five without a comment and a just-filed
+  issue cancelled a waiting sweep. When filing several by script, the
+  sweep can be dispatched right away.
+  FILING BY SCRIPT: an update REPLACES the entry, so build the issue
+  body from the live config entry and change only what is meant to
+  change; dry-run it through issue_case.build_case + add_to_config,
+  then `git checkout -- config/cases.json` before filing.
+  CCAP FACT (read from the Rev. 08/2022 agreement, Sec. IV.D): the
+  $12,500 subscription carries case data only; "copies of documents
+  must be obtained from the Clerk of Circuit Court." Whether filed
+  documents can be read electronically is an open question for CCAP
+  (WCCAREST@wicourts.gov; an email was drafted after the funder call) -
+  do not state that the subscription includes documents until they
+  answer.
 - 2026-09-01: public methodology page (widget/about.html - plain HTML in
   the brand system; its service-record tiles are hand-dated and get
   refreshed alongside the roadmap artifact), MIT LICENSE, README preface.

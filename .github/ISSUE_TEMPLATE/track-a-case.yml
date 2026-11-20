@@ -99,6 +99,12 @@ body:
       label: Next hearing details (optional)
       placeholder: "Judicial pretrial, Branch 3, 10:40 a.m., Judge LaMont Jacobson"
   - type: textarea
+    id: later_hearings
+    attributes:
+      label: Later hearings (optional)
+      description: "Dates already on the calendar after the next hearing, such as a trial set behind a motion hearing. One per line: YYYY-MM-DD | what it is"
+      placeholder: "2027-01-25 | Jury trial, expected to last five days"
+  - type: textarea
     id: updates
     attributes:
       label: Timeline entries (optional)

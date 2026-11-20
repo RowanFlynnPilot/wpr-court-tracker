@@ -49,6 +49,7 @@ F_SUMMARY = "Summary"
 F_TOPICS = "Topics"
 F_HEARING_DATE = "Next hearing date (optional)"
 F_HEARING_NOTE = "Next hearing details (optional)"
+F_LATER = "Later hearings (optional)"
 F_UPDATES = "Timeline entries (optional)"
 F_LINKS = "Related links (optional)"
 
@@ -179,7 +180,10 @@ def build_case(body: str) -> dict:
             "date": form[F_HEARING_DATE],
             "note": form.get(F_HEARING_NOTE, ""),
         }
-    updates = parse_piped_lines(form.get(F_UPDATES, ""), "Timeline entries", ("date", "note"))
+    later = parse_piped_lines(form.get(F_LATER, ""), "Later hearings", ("date", "note"))
+    if later:
+        case["laterHearings"] = later
+    updates =parse_piped_lines(form.get(F_UPDATES, ""), "Timeline entries", ("date", "note"))
     if updates:
         case["updates"] = updates
     links = parse_link_lines(form.get(F_LINKS, ""))

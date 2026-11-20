@@ -1,5 +1,5 @@
 import React from 'react';
-import { datePartsToMs, latestActivity } from './App.jsx';
+import { datePartsToMs, latestActivity, upcomingHearings } from './App.jsx';
 
 // Compact list view of the watched cases: one row each, for scanning a
 // longer watchlist. Cards stay the default; picking a row switches back to
@@ -28,7 +28,8 @@ export default function CaseList({ cases, isNew, onPick }) {
       </thead>
       <tbody>
         {cases.map((c) => {
-          const hearing = c.nextHearing ? datePartsToMs(c.nextHearing.date) : null;
+          const ahead = upcomingHearings(c, today);
+          const hearing = ahead.length ? datePartsToMs(ahead[0].date) : null;
           const last = latestActivity(c);
           return (
             <tr key={c.id} className="caselist-row">
@@ -56,7 +57,14 @@ export default function CaseList({ cases, isNew, onPick }) {
                 </span>
               </td>
               <td className="caselist-when mono" data-label="Next hearing">
-                {hearing != null && hearing >= today ? dayFmt.format(hearing) : <span className="caselist-none">None on file</span>}
+                {hearing != null ? (
+                  <>
+                    {dayFmt.format(hearing)}
+                    {ahead.length > 1 && <span className="caselist-more"> +{ahead.length - 1} later</span>}
+                  </>
+                ) : (
+                  <span className="caselist-none">None on file</span>
+                )}
               </td>
               <td className="caselist-when mono" data-label="Last activity">
                 {last ? tsFmt.format(last) : <span className="caselist-none">None yet</span>}

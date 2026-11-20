@@ -8,6 +8,7 @@ import {
   buildIssueUrl,
   caseType,
   extractFromText,
+  parseLaterHearings,
   parseWccaUrl,
   STAGES,
 } from '../src/parseCase.js';
@@ -189,6 +190,35 @@ test('stage: key in the entry, label in the issue form, mirror of the pipeline',
   // ...and the issue form must offer exactly these labels.
   const yml = readFileSync(new URL('../../.github/ISSUE_TEMPLATE/track-a-case.yml', import.meta.url), 'utf8');
   for (const label of Object.values(STAGES)) assert(yml.includes(`        - ${label}`), label);
+});
+
+test('later hearings: desk text to entry and issue form, mirror of the pipeline', () => {
+  const text = '2027-01-25 | Jury trial, expected to last five days\n\n  2027-03-02|Sentencing  \nnot a line\n2027-13 | bad date';
+  const parsed = parseLaterHearings(text);
+  assert(
+    JSON.stringify(parsed) ===
+      JSON.stringify([
+        { date: '2027-01-25', note: 'Jury trial, expected to last five days' },
+        { date: '2027-03-02', note: 'Sentencing' },
+      ]),
+    JSON.stringify(parsed)
+  );
+  assert(parseLaterHearings('').length === 0 && parseLaterHearings(undefined).length === 0);
+  const withHearing = { ...FORM, hearingDate: '2027-01-05', hearingNote: 'Motion hearing', laterHearings: text };
+  assert(buildCaseEntry(withHearing).laterHearings.length === 2);
+  assert(
+    new URL(buildIssueUrl(withHearing)).searchParams.get('later_hearings') ===
+      '2027-01-25 | Jury trial, expected to last five days\n2027-03-02 | Sentencing'
+  );
+  // No next hearing: later ones are not sent (the pipeline would refuse them).
+  const noNext = { ...FORM, hearingDate: '', hearingNote: '', laterHearings: text };
+  assert(!('laterHearings' in buildCaseEntry(noNext)));
+  assert(new URL(buildIssueUrl(noNext)).searchParams.get('later_hearings') === null);
+  // The issue form field and the pipeline's heading must match this id and label.
+  const yml = readFileSync(new URL('../../.github/ISSUE_TEMPLATE/track-a-case.yml', import.meta.url), 'utf8');
+  assert(yml.includes('id: later_hearings') && yml.includes('label: Later hearings (optional)'));
+  const py = readFileSync(new URL('../../pipeline/issue_case.py', import.meta.url), 'utf8');
+  assert(py.includes('F_LATER = "Later hearings (optional)"'));
 });
 
 test('story links: a generic label gets the date from the address', () => {

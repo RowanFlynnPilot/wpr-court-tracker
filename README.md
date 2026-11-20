@@ -75,13 +75,18 @@ description and it re-checks.
   "tags": ["Public safety"],
   "stage": "pretrial",
   "nextHearing": { "date": "2026-08-03", "note": "Preliminary hearing, Branch 2" },
+  "laterHearings": [ { "date": "2026-10-19", "note": "Jury trial, three days" } ],
   "updates": [ { "date": "2026-07-01", "note": "Complaint filed." } ],
   "links": [ { "label": "WPR coverage", "url": "https://..." } ]
 }
 ```
 
-`stage`, `nextHearing`, `updates`, and `links` are optional. Everything
-else is required. `stage` is the one-word label on the card saying where
+`stage`, `nextHearing`, `laterHearings`, `updates`, and `links` are
+optional. Everything else is required. `laterHearings` holds dates already
+on the calendar after the next hearing, such as a trial set behind a
+motion hearing; it needs a `nextHearing`, and none of its dates may come
+before that one. Every hearing shows on the card, the docket strip, the
+timeline and the calendar feed. `stage` is the one-word label on the card saying where
 the case stands, chosen by a reporter: `charged`, `filed`, `pretrial`,
 `trial`, `sentencing`, `deferred` or `appeal` (the list lives in
 `pipeline/fetch.py`). Family, juvenile, guardianship, and mental health cases are

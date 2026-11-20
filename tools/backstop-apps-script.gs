@@ -25,8 +25,9 @@
  *      sample code. Save.
  *   3. Project Settings > Script properties > add GITHUB_TOKEN with the
  *      token as its value. (The token lives there, never in this file.)
- *   4. Back in the editor, choose the function `dryRun` and press Run.
- *      Approve the permission prompt. The log shows what it would do.
+ *   4. Back in the editor, choose the function `checkToken` and press
+ *      Run. Approve the permission prompt. The log should say the token
+ *      works. Then run `dryRun`: the log shows what it would do now.
  *   5. Choose `install` and press Run. That creates the 30-minute trigger.
  *   To stop it: run `uninstall`, or delete the trigger under Triggers.
  *
@@ -135,6 +136,29 @@ function checkAndDispatch() {
 /** Prints what it would do, and dispatches nothing. */
 function dryRun() {
   run_(true);
+}
+
+/**
+ * Confirms the token is set and GitHub accepts it, without starting a
+ * check: it only reads the workflow's name. (Reading needs less than
+ * dispatching does, so also confirm the token's Actions permission says
+ * "Read and write".)
+ */
+function checkToken() {
+  var token = PropertiesService.getScriptProperties().getProperty('GITHUB_TOKEN');
+  if (!token) throw new Error('No GITHUB_TOKEN script property yet (Project Settings > Script properties).');
+  var res = UrlFetchApp.fetch('https://api.github.com/repos/' + REPO + '/actions/workflows/' + WORKFLOW_FILE, {
+    headers: {
+      Authorization: 'Bearer ' + token,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    muteHttpExceptions: true,
+  });
+  if (res.getResponseCode() !== 200) {
+    throw new Error('GitHub did not accept the token: HTTP ' + res.getResponseCode() + ' ' + res.getContentText().slice(0, 200));
+  }
+  console.log('Token works. It can see the workflow "' + JSON.parse(res.getContentText()).name + '".');
 }
 
 /** Creates the 30-minute trigger (replacing any earlier one). */

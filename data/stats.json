@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-11-20T20:05:21.618801+00:00",
+  "generatedAt": "2026-11-23T23:39:41.543176+00:00",
   "casesWatching": 8,
   "casesClosed": 0,
-  "recordChangesLogged": 25,
-  "recordChangesCaught": 17,
-  "medianDetectionMinutes": 93,
-  "slowestDetectionMinutes": 267,
+  "recordChangesLogged": 27,
+  "recordChangesCaught": 19,
+  "medianDetectionMinutes": 99,
+  "slowestDetectionMinutes": 274,
   "newsroomNotes": 17,
   "trackingSince": "2026-07-11"
 }

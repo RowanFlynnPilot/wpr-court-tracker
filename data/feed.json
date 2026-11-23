@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T20:05:21.618801+00:00",
+  "generatedAt": "2026-11-23T23:39:41.543176+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
@@ -36,6 +36,12 @@
       "isCriminal": true,
       "status": "watching",
       "observed": [
+        {
+          "guid": "37-2026CM000231-Some(2026-11-23T20:18:41.436Z)",
+          "updated": "2026-11-23T20:18:41+00:00",
+          "officialCaption": "State of Wisconsin vs. Robert Edward Dewayne Stevens Jr",
+          "observedAt": "2026-11-23T23:39:41.543176+00:00"
+        },
         {
           "guid": "37-2026CM000231-Some(2026-10-01T14:24:22.292Z)",
           "updated": "2026-10-01T14:24:22+00:00",
@@ -427,6 +433,12 @@
       "status": "watching",
       "stageLabel": "Pretrial",
       "observed": [
+        {
+          "guid": "37-2026CF000431-Some(2026-11-23T19:05:38.953Z)",
+          "updated": "2026-11-23T19:05:38+00:00",
+          "officialCaption": "State of Wisconsin vs. Timothy J. Anker",
+          "observedAt": "2026-11-23T23:39:41.543176+00:00"
+        },
         {
           "guid": "37-2026CF000431-Some(2026-11-18T15:37:52.152Z)",
           "updated": "2026-11-18T15:37:52+00:00",

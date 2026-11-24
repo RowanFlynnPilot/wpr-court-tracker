@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T18:05:25.900618+00:00",
+  "generatedAt": "2026-11-24T20:05:28.940876+00:00",
   "source": "Wisconsin Circuit Court Access (official per-case RSS feeds)",
   "requestEmail": "news@wausaupilotandreview.com",
   "disclaimer": "Information here is drawn from Wisconsin Circuit Court Access (WCCA) and Wausau Pilot & Review reporting. It is not the official court record and may lag the court file. The official custodian of circuit court records is the Clerk of Circuit Court in the county where the case was filed.",
@@ -495,6 +495,12 @@
       "status": "watching",
       "stageLabel": "Pretrial",
       "observed": [
+        {
+          "guid": "37-2026CF000604-Some(2026-11-24T18:07:11.978Z)",
+          "updated": "2026-11-24T18:07:11+00:00",
+          "officialCaption": "State of Wisconsin vs. Jacob Allen Fong Lo",
+          "observedAt": "2026-11-24T20:05:28.940876+00:00"
+        },
         {
           "guid": "37-2026CF000604-Some(2026-11-24T17:31:11.040Z)",
           "updated": "2026-11-24T17:31:11+00:00",
